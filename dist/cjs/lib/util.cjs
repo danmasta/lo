@@ -1,7 +1,7 @@
 var constants = require('./constants.cjs');
 var types = require('./types.cjs');
 
-// Run an iterator fn for each own and inherited enumerable property in obj
+// Run an iterator fn for each own and inherited enumerable property in iter
 // Can break iteration early by returning BREAK symbol
 function forIn (iter, fn) {
     fn = types.toFn(fn);
@@ -12,7 +12,7 @@ function forIn (iter, fn) {
     return iter;
 }
 
-// Run an iterator fn for each own enumerable property in obj
+// Run an iterator fn for each own enumerable property in iter
 // Can break iteration early by returning BREAK symbol
 function forOwn (iter, fn) {
     let type = this ? this : types.getType(iter);
@@ -239,9 +239,13 @@ function everyNotNil (iter, fn, col) {
 }
 
 // Recursively assigns properties from sources to new object
-// Uses final argument as default option set to pick propertiess from
+// Uses final argument as default definition to pick properties from
+// Works for all iterables and objects
+// Definition must be an object or iterable that implements entries
 function defaults (...args) {
+    args = compact(args);
     let acc = {};
+    let def = types.toObject(args.at(-1));
     function iterate (res, obj, def) {
         forOwn(obj, (val, key) => {
             if (constants.hasOwn(def, key)) {
@@ -256,8 +260,8 @@ function defaults (...args) {
         });
         return res;
     }
-    args.map(obj => {
-        iterate(acc, obj, args.at(-1));
+    each(args, obj => {
+        iterate(acc, obj, def);
     });
     return acc;
 }

@@ -197,7 +197,7 @@ function hasForEach (obj) {
     return getType(obj).each;
 }
 
-// Checks for Symbol.iterator on prototype
+// Checks for @@iterator on prototype
 // String
 // Array
 // Map
@@ -263,7 +263,16 @@ function toFn (fn) {
 }
 
 function toObject (obj) {
-    return isObject(obj) ? obj : {};
+    let type = getType(obj);
+    if (type === constants.TYPES.Object) {
+        return obj;
+    }
+    if (type.entries) {
+        // Note: @@iterator does not work
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
+        return Object.fromEntries(obj.entries());
+    }
+    return {};
 }
 
 exports.getCtorType = getCtorType;

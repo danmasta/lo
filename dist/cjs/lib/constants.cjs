@@ -20,7 +20,7 @@ const isPrototypeOf = Object.isPrototypeOf;
 //     collection: 0,    // boolean
 //     abstract: 0,      // boolean
 //     each: 0,          // boolean (forEach)
-//     iterable: 0,      // boolean (Symbol.iterator)
+//     iterable: 0,      // boolean (@@iterator)
 //     entries: 0        // boolean (entries)
 // };
 function genType (obj) {
