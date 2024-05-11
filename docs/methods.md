@@ -11,10 +11,14 @@
 * `eachNotNil`
 * `every`
 * `everyNotNil`
+* `filter`
+* `filterNotNil`
 * `forEach`
 * `iterate`
 * `map`
 * `mapNotNil`
+* `remove`
+* `removeNotNil`
 * `some`
 * `someNotNil`
 * `tap`
