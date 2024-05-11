@@ -7,6 +7,7 @@ Lightweight utility library for node and browser
 * Node and browser support
 * Native esm and cjs support
 * Treeshakeable by default
+* Support for all iterable types
 * 0 dependencies
 
 ## About
@@ -56,7 +57,7 @@ What is not a collection type:
 * `Stream`
 
 ### Iteration
-When using iterator functions like `each`, `map`, `tap`, `some`, `every`, and `iterate` the default mode is to iterate *as a collection*. This means they will iterate on whole objects only, and not on the properties of a single object. For iterating the properties of a single object you can use the functions `forIn` and `forOwn`.
+When using iterator functions like `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate` the default mode is to iterate *as a collection*. This means they will iterate on whole objects only, and not on the properties of a single object. For iterating the properties of a single object you can use the functions `forIn` and `forOwn`.
 
 This means if you pass a single object instead of a [collection](#collections) type it will treat the object as a one-object collection and iterate one time:
 ```js
@@ -87,7 +88,7 @@ each(obj, (val, key) => {
 Methods to iterate the properties of individual objects and iterators: `forIn`, and `forOwn`.
 
 #### Iterate collections
-Methods for iterating collections of objects include: `each`, `map`, `tap`, `some`, `every`, and `iterate`.
+Methods for iterating collections of objects include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate`.
 
 #### Iterate with forEach
 Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
@@ -117,7 +118,7 @@ map(arr, val => {
 });
 // [1, 2]
 ```
-*Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`*
+*Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
 
 ### Methods
 A list of methods and some documentation can be found [here](docs/methods.md)
