@@ -37,7 +37,7 @@ import lo from '@danmasta/lo/browser';
 ```
 
 ### Collections
-This package is different from other utility libraries in that it defines *collection* types for iteration. By default if it is not a collection type, it is iterated as a whole object. The current collection types are defined as:
+This package is different from other utility libraries in that it defines *`collection`* types for iteration. By default if it is not a collection type, it is iterated as a whole object. The current collection types are defined as:
 * `Array`
 * `Map`
 * `Set`
