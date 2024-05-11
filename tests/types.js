@@ -1,0 +1,57 @@
+describe('Types', () => {
+
+    it('Should get correct type by instance', () => {
+        // Instances should be type of the constructor
+        expect(lo.getType({})).to.equal(TYPES.Object);
+        expect(lo.getType([])).to.equal(TYPES.Array);
+        expect(lo.getType(Object.create(Number.prototype))).to.equal(TYPES.Number);
+        expect(lo.getType(123)).to.equal(TYPES.Number);
+        expect(lo.getType(new Number(123))).to.equal(TYPES.Number);
+        expect(lo.getType(true)).to.equal(TYPES.Boolean);
+        expect(lo.getType(new Date)).to.equal(TYPES.Date);
+        expect(lo.getType(NaN)).to.equal(TYPES.NaN);
+        expect(lo.getType(null)).to.equal(TYPES.Null);
+        expect(lo.getType(undefined)).to.equal(TYPES.Undefined);
+        expect(lo.getType(fx.arrow)).to.equal(TYPES.Function);
+        expect(lo.getType(fx.fn)).to.equal(TYPES.Function);
+        expect(lo.getType(fx.promise)).to.equal(TYPES.Promise);
+        expect(lo.getType(new fx.TestClass)).to.equal(TYPES.Object);
+        expect(lo.getType(new fx.TestError)).to.equal(TYPES.Error);
+        expect(lo.getType(new fx.TestErrorTwo)).to.equal(TYPES.Error);
+        expect(lo.getType(new fx.TestArray)).to.equal(TYPES.Array);
+        expect(lo.getType(fx.readable)).to.equal(TYPES.Readable);
+        // Constructor functions should be type of Function
+        expect(lo.getType(Promise)).to.equal(TYPES.Function);
+        expect(lo.getType(Boolean)).to.equal(TYPES.Function);
+        expect(lo.getType(fx.TestClass)).to.equal(TYPES.Function);
+        expect(lo.getType(fx.TestError)).to.equal(TYPES.Function);
+        expect(lo.getType(fx.TestArray)).to.equal(TYPES.Function);
+    });
+
+    it('Should get correct type by constructor', () => {
+        expect(lo.getCtorType(Promise)).to.equal(TYPES.Promise);
+        expect(lo.getCtorType(Boolean)).to.equal(TYPES.Boolean);
+        expect(lo.getCtorType(Date)).to.equal(TYPES.Date);
+        expect(lo.getCtorType(NaN)).to.equal(TYPES.NaN);
+        expect(lo.getCtorType(null)).to.equal(TYPES.Null);
+        expect(lo.getCtorType(undefined)).to.equal(TYPES.Undefined);
+        expect(lo.getCtorType(Error)).to.equal(TYPES.Error);
+        expect(lo.getCtorType(fx.TestClass)).to.equal(TYPES.Function);
+        expect(lo.getCtorType(fx.TestError)).to.equal(TYPES.Error);
+        expect(lo.getCtorType(fx.TestErrorTwo)).to.equal(TYPES.Error);
+        expect(lo.getCtorType(fx.TestArray)).to.equal(TYPES.Array);
+        expect(lo.getCtorType(fx.Readable)).to.equal(TYPES.Readable);
+    });
+
+    it('Should convert to instance of correct type', () => {
+        expect(lo.toType(Boolean, 1)).to.be.a('boolean');
+        expect(lo.toType(Array, 1)).to.be.an.instanceof(Array);
+        expect(lo.toType(fx.TestArray, 1)).to.be.an.instanceof(Array);
+        expect(lo.toType(fx.TestError, 1)).to.be.an.instanceof(Error);
+        expect(lo.toType(String, 1)).to.be.a('string');
+        expect(lo.toType(BigInt, 1)).to.be.a('bigint');
+        expect(lo.toType(Map, [[1, 2]])).to.be.an.instanceof(Map);
+        expect(lo.toType(Set, [1, 2])).to.be.an.instanceof(Set);
+    });
+
+});
