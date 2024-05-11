@@ -62,12 +62,14 @@
 
 ## Util
 #### Base
+* `assign`
 * `compact`
 * `concat`
 * `defaults`
 * `flat`
 * `flatCompact`
 * `freeze`
+* `merge`
 * `toArray`
 * `toFn`
 * `toObject`
