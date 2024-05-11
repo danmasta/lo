@@ -41,7 +41,6 @@
 * `isIterator`
 * `isModule`
 * `isNil`
-* `isNotNil`
 * `isNull`
 * `isNumber`
 * `isNumeric`
@@ -49,6 +48,7 @@
 * `isPromise`
 * `isTypedArray`
 * `isUndefined`
+* `notNil`
 #### Node
 * `isDuplex`
 * `isPassThrough`
