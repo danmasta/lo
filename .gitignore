@@ -1,0 +1,11 @@
+logs/
+node_modules/
+tmp/
+build/
+coverage/
+.nyc_output/
+.DS_Store
+.idea
+.log
+.vscode
+.backup/
