@@ -288,8 +288,9 @@ function removeNotNil (iter, fn, col) {
     return res;
 }
 
-// Recursively assigns properties from sources to new object
-// Uses final argument as default definition to pick properties from
+// Recursively assign properties from sources to new object
+// Does not override previously set values
+// Uses final argument as default definition to 'pick' properties from
 // Works for all iterables and objects
 // Definition must be an object or iterable that implements entries
 function defaults (...args) {
@@ -302,7 +303,7 @@ function defaults (...args) {
                 if (types.isObject(def[key])) {
                     res[key] = iterate(types.toObject(res[key]), val, def[key]);
                 } else {
-                    if (types.isUndefined(res[key])) {
+                    if (!constants.hasOwn(res, key) || (types.isNil(res[key]) && types.isNotNil(val))) {
                         res[key] = val;
                     }
                 }
@@ -314,6 +315,42 @@ function defaults (...args) {
         iterate(acc, obj, def);
     });
     return acc;
+}
+
+// Assign values from multiple sources to res
+// Source properties that resolve to nil are ignored if res value already exists
+// Note: if res is not an object it is converted to one if possible
+function assign (res, ...args) {
+    res = types.toObject(res);
+    eachNotNil(args, src => {
+        forOwn(src, (val, key) => {
+            if (!constants.hasOwn(res, key) || types.isNotNil(val)) {
+                res[key] = val;
+            }
+        });
+    });
+    return res;
+}
+
+// Recursively assign values from multiple sources to res
+// Source properties that resolve to nil are ignored if res value already exists
+// Note: if res is not an object it is converted to one if possible
+function merge (res, ...args) {
+    res = types.toObject(res);
+    eachNotNil(args, src => {
+        forOwn(src, (val, key) => {
+            if (!constants.hasOwn(res, key)) {
+                res[key] = val;
+            } else {
+                if (types.isObject(res[key]) && types.isObject(val)) {
+                    res[key] = merge(res[key], val);
+                } else if (types.isNotNil(val)) {
+                    res[key] = val;
+                }
+            }
+        });
+    });
+    return res;
 }
 
 // Recursively freeze an object to become immutable
@@ -329,6 +366,7 @@ function freeze (obj, recurse=1, cache) {
     return Object.freeze(obj);
 }
 
+exports.assign = assign;
 exports.compact = compact;
 exports.concat = concat;
 exports.defaults = defaults;
@@ -348,6 +386,7 @@ exports.iterate = iterate;
 exports.iterateF = iterateF;
 exports.map = map;
 exports.mapNotNil = mapNotNil;
+exports.merge = merge;
 exports.remove = remove;
 exports.removeNotNil = removeNotNil;
 exports.some = some;
