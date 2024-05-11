@@ -1,0 +1,66 @@
+{
+  "name": "@danmasta/lo",
+  "private": true,
+  "version": "0.0.1",
+  "author": "Daniel Smith <dannmasta@gmail.com>",
+  "description": "Lightweight utility library for node and browser",
+  "license": "Apache-2.0",
+  "keywords": [
+    "util",
+    "stdlib",
+    "node",
+    "browser"
+  ],
+  "main": "index.js",
+  "browser": "browser.js",
+  "type": "module",
+  "files": [
+    "browser.js",
+    "index.js",
+    "dist/**/*",
+    "lib/**/*",
+    "types/**/*"
+  ],
+  "exports": {
+    ".": {
+      "browser": "./browser.js",
+      "import": "./index.js",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./browser": {
+      "import": "./browser.js",
+      "require": "./dist/cjs/browser.cjs"
+    },
+    "./constants": {
+      "import": "./lib/constants.js",
+      "require": "./dist/cjs/lib/constants.cjs"
+    }
+  },
+  "scripts": {
+    "test": "make test",
+    "coverage": "make coverage",
+    "build": "make build",
+    "watch": "make watch",
+    "preversion": "make test build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danmasta/lo.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "chai": "^5.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "glob": "^10.3.12",
+    "mocha": "^10.4.0",
+    "nyc": "^15.1.0",
+    "rollup": "^4.17.2"
+  }
+}
