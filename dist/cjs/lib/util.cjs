@@ -92,12 +92,12 @@ function flat (...args) {
 
 // Return a compact array (null and undefined removed)
 function compact (...args) {
-    return toArray(...args).filter(types.isNotNil);
+    return toArray(...args).filter(types.notNil);
 }
 
 // Return a flat and compact array
 function flatCompact (...args) {
-    return flat(...args).filter(types.isNotNil);
+    return flat(...args).filter(types.notNil);
 }
 
 function concat (...args) {
@@ -157,7 +157,7 @@ function each (iter, fn, col) {
 
 // Alias for each (ignores null and undefined)
 function eachNotNil (iter, fn, col) {
-    iterateF(iter, fn, col, undefined, types.isNotNil);
+    iterateF(iter, fn, col, undefined, types.notNil);
 }
 
 // Return a new array of return values from an iterator fn
@@ -174,7 +174,7 @@ function mapNotNil (iter, fn, col) {
     let res = [];
     iterateF(iter, fn, col, ret => {
         res.push(ret);
-    }, types.isNotNil, types.isNotNil);
+    }, types.notNil, types.notNil);
     return res;
 }
 
@@ -192,7 +192,7 @@ function tapNotNil (iter, fn, col) {
     let res = [];
     iterateF(iter, fn, col, (ret, val) => {
         res.push(val);
-    }, types.isNotNil);
+    }, types.notNil);
     return res;
 }
 
@@ -216,7 +216,7 @@ function someNotNil (iter, fn, col) {
             res = 1;
             return constants.BREAK;
         }
-    }, types.isNotNil, types.isNotNil);
+    }, types.notNil, types.notNil);
     return !!res;
 }
 
@@ -240,7 +240,7 @@ function everyNotNil (iter, fn, col) {
             res = 0;
             return constants.BREAK;
         }
-    }, types.isNotNil, types.isNotNil);
+    }, types.notNil, types.notNil);
     return !!res;
 }
 
@@ -262,7 +262,7 @@ function filterNotNil (iter, fn, col) {
         if (ret) {
             res.push(val);
         }
-    }, types.isNotNil, types.isNotNil);
+    }, types.notNil, types.notNil);
     return res;
 }
 
@@ -284,7 +284,7 @@ function removeNotNil (iter, fn, col) {
         if (!ret) {
             res.push(val);
         }
-    }, types.isNotNil, types.isNotNil);
+    }, types.notNil, types.notNil);
     return res;
 }
 
@@ -303,7 +303,7 @@ function defaults (...args) {
                 if (types.isObject(def[key])) {
                     res[key] = iterate(types.toObject(res[key]), val, def[key]);
                 } else {
-                    if (!constants.hasOwn(res, key) || (types.isNil(res[key]) && types.isNotNil(val))) {
+                    if (!constants.hasOwn(res, key) || (types.isNil(res[key]) && types.notNil(val))) {
                         res[key] = val;
                     }
                 }
@@ -324,7 +324,7 @@ function assign (res, ...args) {
     res = types.toObject(res);
     eachNotNil(args, src => {
         forOwn(src, (val, key) => {
-            if (!constants.hasOwn(res, key) || types.isNotNil(val)) {
+            if (!constants.hasOwn(res, key) || types.notNil(val)) {
                 res[key] = val;
             }
         });
@@ -344,7 +344,7 @@ function merge (res, ...args) {
             } else {
                 if (types.isObject(res[key]) && types.isObject(val)) {
                     res[key] = merge(res[key], val);
-                } else if (types.isNotNil(val)) {
+                } else if (types.notNil(val)) {
                     res[key] = val;
                 }
             }

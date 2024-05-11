@@ -135,7 +135,7 @@ function isNil (obj) {
     return obj == null;
 }
 
-function isNotNil (obj) {
+function notNil (obj) {
     return obj != null;
 }
 
@@ -295,7 +295,6 @@ exports.isIterable = isIterable;
 exports.isIterator = isIterator;
 exports.isModule = isModule;
 exports.isNil = isNil;
-exports.isNotNil = isNotNil;
 exports.isNull = isNull;
 exports.isNumber = isNumber;
 exports.isNumeric = isNumeric;
@@ -303,6 +302,7 @@ exports.isObject = isObject;
 exports.isPromise = isPromise;
 exports.isTypedArray = isTypedArray;
 exports.isUndefined = isUndefined;
+exports.notNil = notNil;
 exports.toFn = toFn;
 exports.toObject = toObject;
 exports.toType = toType;
