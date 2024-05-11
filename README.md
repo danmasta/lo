@@ -1,0 +1,135 @@
+# Lo
+Lightweight utility library for node and browser
+
+#### Features:
+* Easy to use
+* Lightweight (~7.5kb minified, ~2.5kb gzip)
+* Node and browser support
+* Native esm and cjs support
+* Treeshakeable by default
+* 0 dependencies
+
+## About
+I wanted a lighter weight utility library. I had written a bunch of methods over the years that I copy between projects as needed, so I just decided to normalize them, add a type checking system, and consolidate them into this package. I also wanted to be able to add different methods for specific environments like node or browser and not have to use polyfills.
+
+## Usage
+Add lo as a dependency for your app and install via npm
+```bash
+npm install github:danmasta/lo --save
+```
+Install as different name or version
+```bash
+npm install lo@github:danmasta/lo#v0.0.1 --save
+```
+Import or require the package in your app
+```js
+import lo from '@danmasta/lo';
+```
+Import specific functions only
+```js
+import { each, isFunction } from '@danmasta/lo';
+```
+
+### Browser
+This package exports a browser version which excludes functions that depend on node specific apis and includes some browser specific types. If you use a bundler it should automatically be able to resolve the browser entry point. If you want to explicity import it you can do that too:
+```js
+import lo from '@danmasta/lo/browser';
+```
+
+### Collections
+This package is different from other utility libraries in that it defines *collection* types for iteration. By default if it is not a collection type, it is iterated as a whole object. The current collection types are defined as:
+* `Array`
+* `Map`
+* `Set`
+* `Array Iterator`
+* `String Iterator`
+* `Map Iterator`
+* `Set Iterator`
+* `Iterator`
+* `NodeList`
+
+What is not a collection type:
+* `Object`
+* `String`
+* `Buffer`
+* `TypedArray`
+* `Stream`
+
+### Iteration
+When using iterator functions like `each`, `map`, `tap`, `some`, `every`, and `iterate` the default mode is to iterate *as a collection*. This means they will iterate on whole objects only, and not on the properties of a single object. For iterating the properties of a single object you can use the functions `forIn` and `forOwn`.
+
+This means if you pass a single object instead of a [collection](#collections) type it will treat the object as a one-object collection and iterate one time:
+```js
+let obj = { 1: true, 2: false };
+
+each(obj, (val, key) => {
+    console.log(key, val);
+});
+
+// 0 { 1: true, 2: false }
+```
+Each iterator function has the following signature:
+```
+method(iterable, iteratorFn, collection?)
+```
+Where `collection` is `true` by default. If you want to use an iterator method to iterate the properties of a single object you can set the `collection` argument to `false`:
+```js
+let obj = { 1: true, 2: false };
+
+each(obj, (val, key) => {
+    console.log(key, val);
+}, false);
+
+// 1 true
+// 2 false
+```
+*Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, and `Iterator`.*
+
+#### Iterate single objects
+Methods to iterate the properties of individual objects and iterators: `forIn`, and `forOwn`.
+
+#### Iterate collections
+Methods for iterating collections of objects include: `each`, `map`, `tap`, `some`, `every`, and `iterate`.
+
+#### Iterate with forEach
+Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
+
+### Breaking Iteration Early
+All iteration methods can be stopped early by returning the `BREAK` symbol:
+```js
+import { map, BREAK } from '@danmasta/lo';
+
+let arr = [1, 2, 3, 4];
+
+map(arr, val => {
+    return val % 3 === 0 ? BREAK : val*2;
+});
+
+// [2, 4]
+```
+
+### Null and Undefined Filtering
+A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration methods. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, and, `every`. To use, just append `NotNil` to the function name:
+```js
+import { mapNotNil as map } from '@danmasta/lo';
+
+let arr = [1, undefined, 2, 3, null];
+
+map(arr, val => {
+    return val % 3 === 0 ? undefined : val;
+});
+
+// [1, 2]
+```
+*Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`*
+
+### Methods
+A list of methods and some documentation can be found [here](docs/methods.md)
+
+## Examples
+
+## Testing
+Tests are currently run using mocha and chai. To execute tests run `make test`. To generate unit test coverage reports run `make coverage`
+
+## Contact
+If you have any questions feel free to get in touch
