@@ -155,7 +155,7 @@ function each (iter, fn, col) {
     iterate(iter, fn, col);
 }
 
-// Run an iterator fn for each item in iter (ignores null and undefined)
+// Alias for each (ignores null and undefined)
 function eachNotNil (iter, fn, col) {
     iterateF(iter, fn, col, undefined, types.isNotNil);
 }
@@ -169,7 +169,7 @@ function map (iter, fn, col) {
     return res;
 }
 
-// Return a new array of return values from an iterator fn (ignores null and undefined)
+// Alias for map (ignores null and undefined)
 function mapNotNil (iter, fn, col) {
     let res = [];
     iterateF(iter, fn, col, ret => {
@@ -178,6 +178,7 @@ function mapNotNil (iter, fn, col) {
     return res;
 }
 
+// Run an iterator fn for each item in iter, return new array with original values
 function tap (iter, fn, col) {
     let res = [];
     iterateF(iter, fn, col, (ret, val) => {
@@ -186,6 +187,7 @@ function tap (iter, fn, col) {
     return res;
 }
 
+// Alias for tap (ignores null and undefined)
 function tapNotNil (iter, fn, col) {
     let res = [];
     iterateF(iter, fn, col, (ret, val) => {
@@ -194,6 +196,7 @@ function tapNotNil (iter, fn, col) {
     return res;
 }
 
+// Return true if iterator fn returns truthy for any item in iter
 function some (iter, fn, col) {
     let res = 0;
     iterateF(iter, fn, col, ret => {
@@ -205,6 +208,7 @@ function some (iter, fn, col) {
     return !!res;
 }
 
+// Alias for some (ignores null and undefined)
 function someNotNil (iter, fn, col) {
     let res = 0;
     iterateF(iter, fn, col, ret => {
@@ -216,6 +220,7 @@ function someNotNil (iter, fn, col) {
     return !!res;
 }
 
+// Return true if iterator fn returns truthy for all items in iter
 function every (iter, fn, col) {
     let res = 1;
     iterateF(iter, fn, col, ret => {
@@ -227,6 +232,7 @@ function every (iter, fn, col) {
     return !!res;
 }
 
+// Alias for every (ignores null and undefined)
 function everyNotNil (iter, fn, col) {
     let res = 1;
     iterateF(iter, fn, col, ret => {
@@ -236,6 +242,50 @@ function everyNotNil (iter, fn, col) {
         }
     }, types.isNotNil, types.isNotNil);
     return !!res;
+}
+
+// Return new array with items that iterator fn returns truthy for
+function filter (iter, fn, col) {
+    let res = [];
+    iterateF(iter, fn, col, (ret, val) => {
+        if (ret) {
+            res.push(val);
+        }
+    });
+    return res;
+}
+
+// Alias for filter (ignores null and undefined)
+function filterNotNil (iter, fn, col) {
+    let res = [];
+    iterateF(iter, fn, col, (ret, val) => {
+        if (ret) {
+            res.push(val);
+        }
+    }, types.isNotNil, types.isNotNil);
+    return res;
+}
+
+// Return new array with items that iterator fn returns falsy for
+function remove (iter, fn, col) {
+    let res = [];
+    iterateF(iter, fn, col, (ret, val) => {
+        if (!ret) {
+            res.push(val);
+        }
+    });
+    return res;
+}
+
+// Alias for remove (ignores null and undefined)
+function removeNotNil (iter, fn, col) {
+    let res = [];
+    iterateF(iter, fn, col, (ret, val) => {
+        if (!ret) {
+            res.push(val);
+        }
+    }, types.isNotNil, types.isNotNil);
+    return res;
 }
 
 // Recursively assigns properties from sources to new object
@@ -286,6 +336,8 @@ exports.each = each;
 exports.eachNotNil = eachNotNil;
 exports.every = every;
 exports.everyNotNil = everyNotNil;
+exports.filter = filter;
+exports.filterNotNil = filterNotNil;
 exports.flat = flat;
 exports.flatCompact = flatCompact;
 exports.forEach = forEach;
@@ -296,6 +348,8 @@ exports.iterate = iterate;
 exports.iterateF = iterateF;
 exports.map = map;
 exports.mapNotNil = mapNotNil;
+exports.remove = remove;
+exports.removeNotNil = removeNotNil;
 exports.some = some;
 exports.someNotNil = someNotNil;
 exports.tap = tap;
