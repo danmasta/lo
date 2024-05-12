@@ -28,7 +28,6 @@
 #### Base
 * `hasEntries`
 * `hasForEach`
-* `hasOwn`
 * `isArray`
 * `isAsyncFunction`
 * `isBuffer`
@@ -69,7 +68,13 @@
 * `flat`
 * `flatCompact`
 * `freeze`
+* `get`
+* `getOwn`
+* `has`
+* `hasOwn`
 * `merge`
+* `set`
+* `setOwn`
 * `toArray`
 * `toFn`
 * `toObject`
