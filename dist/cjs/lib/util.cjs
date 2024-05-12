@@ -366,6 +366,73 @@ function freeze (obj, recurse=1, cache) {
     return Object.freeze(obj);
 }
 
+function getOwn (obj, key) {
+    if (types.notNil(obj) && constants.hasOwn(obj, key)) {
+        return obj[key];
+    }
+}
+
+function setOwn (obj, key, val) {
+    if (types.notNil(obj)) {
+        return obj[key] = val;
+    }
+}
+
+function has (obj, path) {
+    if (types.notNil(obj)) {
+        return everyNotNil(types.toPath(path), key => {
+            if (constants.hasOwn(obj, key)) {
+                obj = obj[key];
+            } else {
+                return false;
+            }
+        });
+    }
+    return false;
+}
+
+function get (obj, path, def) {
+    if (types.notNil(obj)) {
+        let found = everyNotNil(types.toPath(path), key => {
+            if (!constants.hasOwn(obj, key)) {
+                return false;
+            } else {
+                obj = obj[key];
+            }
+        });
+        if (!found || types.isNil(obj)) {
+            return def;
+        }
+        return obj;
+    }
+}
+
+function set (obj, path, val) {
+    let cur = obj;
+    if (types.isObject(obj) || types.isArray(obj)) {
+        each(types.toPath(path), (key, index, arr) => {
+            if (index === arr.length - 1) {
+                cur[key] = val;
+            } else {
+                if (constants.hasOwn(cur, key)) {
+                    if (types.isObject(cur[key])) {
+                        cur = cur[key];
+                    } else {
+                        if (types.isNumeric(arr[index + 1])) {
+                            cur = cur[key] = types.isArray(cur[key]) ? cur[key] : [];
+                        } else {
+                            cur = cur[key] = {};
+                        }
+                    }
+                } else {
+                    cur = cur[key] = types.isNumeric(arr[index + 1]) ? [] : {};
+                }
+            }
+        });
+    }
+    return obj;
+}
+
 exports.assign = assign;
 exports.compact = compact;
 exports.concat = concat;
@@ -382,6 +449,9 @@ exports.forEach = forEach;
 exports.forIn = forIn;
 exports.forOwn = forOwn;
 exports.freeze = freeze;
+exports.get = get;
+exports.getOwn = getOwn;
+exports.has = has;
 exports.iterate = iterate;
 exports.iterateF = iterateF;
 exports.map = map;
@@ -389,6 +459,8 @@ exports.mapNotNil = mapNotNil;
 exports.merge = merge;
 exports.remove = remove;
 exports.removeNotNil = removeNotNil;
+exports.set = set;
+exports.setOwn = setOwn;
 exports.some = some;
 exports.someNotNil = someNotNil;
 exports.tap = tap;

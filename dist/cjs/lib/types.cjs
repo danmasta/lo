@@ -250,16 +250,20 @@ function isBuffer (obj) {
     return getType(obj) === constants.TYPES.Buffer;
 }
 
-function isNumber (n) {
-    return getType(n) === constants.TYPES.Number;
+function isNumber (obj) {
+    return getType(obj) === constants.TYPES.Number;
 }
 
-function isNumeric (n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+function isNumeric (obj) {
+    return !isNaN(parseFloat(obj)) && isFinite(obj);
 }
 
-function toFn (fn) {
-    return isFunction(fn) ? fn : constants.noop;
+function isString (obj) {
+    return getType(obj) === constants.TYPES.String;
+}
+
+function toFn (obj) {
+    return isFunction(obj) ? obj : constants.noop;
 }
 
 function toObject (obj) {
@@ -273,6 +277,24 @@ function toObject (obj) {
         return Object.fromEntries(obj.entries());
     }
     return {};
+}
+
+function toString (obj) {
+    return isString(obj) ? obj : '';
+}
+
+function toPath (str) {
+    if (isArray(str)) {
+        return str;
+    }
+    let arr = toString(str).split(constants.REGEX.path);
+    if (!arr.at(0)) {
+        arr.shift();
+    }
+    if (!arr.at(-1)) {
+        arr.pop();
+    }
+    return arr;
 }
 
 exports.getCtorType = getCtorType;
@@ -300,9 +322,12 @@ exports.isNumber = isNumber;
 exports.isNumeric = isNumeric;
 exports.isObject = isObject;
 exports.isPromise = isPromise;
+exports.isString = isString;
 exports.isTypedArray = isTypedArray;
 exports.isUndefined = isUndefined;
 exports.notNil = notNil;
 exports.toFn = toFn;
 exports.toObject = toObject;
+exports.toPath = toPath;
+exports.toString = toString;
 exports.toType = toType;

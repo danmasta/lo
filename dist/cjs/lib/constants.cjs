@@ -110,9 +110,14 @@ const typesByCtor = new Map([
     [-Infinity, TYPES.Infinity]
 ]);
 
+const REGEX = {
+    path: /[\[\]\."']+/g
+};
+
 addTypes(TYPES);
 
 exports.BREAK = BREAK;
+exports.REGEX = REGEX;
 exports.TYPES = TYPES;
 exports.addType = addType;
 exports.addTypes = addTypes;
