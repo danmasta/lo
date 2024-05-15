@@ -14,9 +14,9 @@ function forIn (iter, fn) {
 
 // Run an iterator fn for each own enumerable property in iter
 // Can break iteration early by returning BREAK symbol
-function forOwn (iter, fn) {
-    let type = this ? this : types.getType(iter);
+function forOwn (iter, fn, type) {
     fn = types.toFn(fn);
+    type = type || types.getType(iter);
     if (type.entries) {
         for (const [key, val] of iter.entries()) {
             if (fn(val, key, iter) === constants.BREAK) {
@@ -113,7 +113,7 @@ function iterate (iter, fn, col=1) {
         types.toFn(fn)(iter, 0, iter);
     } else {
         if (type.entries || type.iterable || (!col && type === constants.TYPES.Object)) {
-            forOwn.call(type, iter, fn);
+            forOwn(iter, fn, type);
         } else {
             types.toFn(fn)(iter, 0, iter);
         }
@@ -322,10 +322,15 @@ function defaults (...args) {
 // Note: if res is not an object it is converted to one if possible
 function assign (res, ...args) {
     res = types.toObject(res);
+    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
     eachNotNil(args, src => {
         forOwn(src, (val, key) => {
-            if (!constants.hasOwn(res, key) || types.notNil(val)) {
+            if (!constants.hasOwn(res, key)) {
                 res[key] = val;
+            } else {
+                if (types.notNil(val) && (!def || types.isNil(res[key]))) {
+                    res[key] = val;
+                }
             }
         });
     });
@@ -335,8 +340,10 @@ function assign (res, ...args) {
 // Recursively assign values from multiple sources to res
 // Source properties that resolve to nil are ignored if res value already exists
 // Note: if res is not an object it is converted to one if possible
+// Note: arrays are not merged
 function merge (res, ...args) {
     res = types.toObject(res);
+    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
     eachNotNil(args, src => {
         forOwn(src, (val, key) => {
             if (!constants.hasOwn(res, key)) {
@@ -344,8 +351,10 @@ function merge (res, ...args) {
             } else {
                 if (types.isObject(res[key]) && types.isObject(val)) {
                     res[key] = merge(res[key], val);
-                } else if (types.notNil(val)) {
-                    res[key] = val;
+                } else {
+                    if (types.notNil(val) && (!def || types.isNil(res[key]))) {
+                        res[key] = val;
+                    }
                 }
             }
         });
@@ -433,6 +442,20 @@ function set (obj, path, val) {
     return obj;
 }
 
+function keys (obj) {
+    if (types.notNil(obj)) {
+        return Object.keys(obj);
+    }
+    return [];
+}
+
+function join (obj, sep) {
+    if (types.notNil(obj)) {
+        return Array.prototype.join.call(obj, toString(sep));
+    }
+    return '';
+}
+
 exports.assign = assign;
 exports.compact = compact;
 exports.concat = concat;
@@ -454,6 +477,8 @@ exports.getOwn = getOwn;
 exports.has = has;
 exports.iterate = iterate;
 exports.iterateF = iterateF;
+exports.join = join;
+exports.keys = keys;
 exports.map = map;
 exports.mapNotNil = mapNotNil;
 exports.merge = merge;

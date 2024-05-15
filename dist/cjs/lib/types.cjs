@@ -262,6 +262,10 @@ function isString (obj) {
     return getType(obj) === constants.TYPES.String;
 }
 
+function isBoolean (obj) {
+    return getType(obj) === constants.TYPES.Boolean;
+}
+
 function toFn (obj) {
     return isFunction(obj) ? obj : constants.noop;
 }
@@ -307,6 +311,7 @@ exports.hasEntries = hasEntries;
 exports.hasForEach = hasForEach;
 exports.isArray = isArray;
 exports.isAsyncFunction = isAsyncFunction;
+exports.isBoolean = isBoolean;
 exports.isBuffer = isBuffer;
 exports.isCollection = isCollection;
 exports.isCtor = isCtor;
