@@ -1,6 +1,6 @@
 describe('Types', () => {
 
-    it('Should get correct type by instance', () => {
+    it('get type by instance', () => {
         // Instances should be type of the constructor
         expect(lo.getType({})).to.equal(TYPES.Object);
         expect(lo.getType([])).to.equal(TYPES.Array);
@@ -28,7 +28,7 @@ describe('Types', () => {
         expect(lo.getType(fx.TestArray)).to.equal(TYPES.Function);
     });
 
-    it('Should get correct type by constructor', () => {
+    it('get type by constructor', () => {
         expect(lo.getCtorType(Promise)).to.equal(TYPES.Promise);
         expect(lo.getCtorType(Boolean)).to.equal(TYPES.Boolean);
         expect(lo.getCtorType(Date)).to.equal(TYPES.Date);
@@ -43,7 +43,7 @@ describe('Types', () => {
         expect(lo.getCtorType(fx.Readable)).to.equal(TYPES.Readable);
     });
 
-    it('Should convert to instance of correct type', () => {
+    it('cast to type', () => {
         expect(lo.toType(Boolean, 1)).to.be.a('boolean');
         expect(lo.toType(Array, 1)).to.be.an.instanceof(Array);
         expect(lo.toType(fx.TestArray, 1)).to.be.an.instanceof(Array);
@@ -52,6 +52,20 @@ describe('Types', () => {
         expect(lo.toType(BigInt, 1)).to.be.a('bigint');
         expect(lo.toType(Map, [[1, 2]])).to.be.an.instanceof(Map);
         expect(lo.toType(Set, [1, 2])).to.be.an.instanceof(Set);
+    });
+
+    it('toArray', () => {
+        expect(lo.toArray(null)).to.eql([]);
+        expect(lo.toArray(undefined)).to.eql([]);
+        expect(lo.toArray(1,2,3)).to.eql([1,2,3]);
+        expect(lo.toArray([1,2,3])).to.eql([1,2,3]);
+        expect(lo.toArray('123')).to.eql(['1','2','3']);
+        expect(lo.toArray('123', '123')).to.eql(['1','2','3','1','2','3']);
+        expect(lo.toArray({1: 1})).to.eql([{1: 1}]);
+        expect(lo.toArray({1: 1}, {2: 2})).to.eql([{1: 1}, {2: 2}]);
+        expect(lo.toArray(true)).to.eql([true]);
+        expect(lo.toArray(fx.set)).to.eql([1,2,3]);
+        expect(lo.toArray(fx.map)).to.eql([[1,2],[3,4]]);
     });
 
     it('toString', () => {
