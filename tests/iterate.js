@@ -84,7 +84,7 @@ describe('Iterate', () => {
     });
 
     it('filterNotNil', () => {
-        let res = lo.filterNotNil(fx.arr1, val => {
+        let res = lo.filterNotNil(fx.arr2, val => {
             return val % 2 === 0 ? true : false;
         });
         expect(res).to.eql([2]);
@@ -98,7 +98,7 @@ describe('Iterate', () => {
     });
 
     it('removeNotNil', () => {
-        let res = lo.removeNotNil(fx.arr1, val => {
+        let res = lo.removeNotNil(fx.arr2, val => {
             return val % 2 === 0 ? true : false;
         });
         expect(res).to.eql([1,3]);
