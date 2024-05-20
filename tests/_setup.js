@@ -10,6 +10,10 @@ class TestArray extends Array {}
 const arrow = () => {};
 const fn = function () {};
 const promise = new Promise(arrow);
+const arr1 = [1,2,3];
+const arr2 = [1,null,2,undefined,3];
+const map = new Map([[1,2],[3,4]]);
+const set = new Set([1,2,3]);
 
 const fixtures = {
     TestClass,
@@ -20,7 +24,11 @@ const fixtures = {
     arrow,
     fn,
     Readable,
-    promise
+    promise,
+    arr1,
+    arr2,
+    map,
+    set
 };
 
 beforeEach(() => {
