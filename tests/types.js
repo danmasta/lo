@@ -54,4 +54,15 @@ describe('Types', () => {
         expect(lo.toType(Set, [1, 2])).to.be.an.instanceof(Set);
     });
 
+    it('toString', () => {
+        expect(lo.toString(null)).to.equal('');
+        expect(lo.toString(undefined)).to.equal('');
+        expect(lo.toString(NaN)).to.equal('NaN');
+        expect(lo.toString([1,2,3])).to.equal('1,2,3');
+        expect(lo.toString({1: 1, 2: 2})).to.equal('1,1,2,2');
+        expect(lo.toString(true)).to.equal('true');
+        expect(lo.toString(123)).to.equal('123');
+        expect(lo.toString(BigInt(123))).to.equal('123');
+    });
+
 });
