@@ -9,7 +9,6 @@ constants.addTypes(browser$2.default);
 var browser = {
     BREAK: constants.BREAK,
     noop: constants.noop,
-    hasOwn: constants.hasOwn,
     ...types,
     ...util,
     ...browser$1
@@ -48,6 +47,7 @@ exports.isString = types.isString;
 exports.isTypedArray = types.isTypedArray;
 exports.isUndefined = types.isUndefined;
 exports.notNil = types.notNil;
+exports.toArray = types.toArray;
 exports.toFn = types.toFn;
 exports.toObject = types.toObject;
 exports.toPath = types.toPath;
@@ -87,7 +87,6 @@ exports.some = util.some;
 exports.someNotNil = util.someNotNil;
 exports.tap = util.tap;
 exports.tapNotNil = util.tapNotNil;
-exports.toArray = util.toArray;
 exports.isElement = browser$1.isElement;
 exports.isNodeList = browser$1.isNodeList;
 exports.default = browser;

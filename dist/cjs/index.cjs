@@ -9,7 +9,6 @@ constants.addTypes(node$1.default);
 var index = {
     BREAK: constants.BREAK,
     noop: constants.noop,
-    hasOwn: constants.hasOwn,
     ...types,
     ...util,
     ...node
@@ -48,6 +47,7 @@ exports.isString = types.isString;
 exports.isTypedArray = types.isTypedArray;
 exports.isUndefined = types.isUndefined;
 exports.notNil = types.notNil;
+exports.toArray = types.toArray;
 exports.toFn = types.toFn;
 exports.toObject = types.toObject;
 exports.toPath = types.toPath;
@@ -87,7 +87,6 @@ exports.some = util.some;
 exports.someNotNil = util.someNotNil;
 exports.tap = util.tap;
 exports.tapNotNil = util.tapNotNil;
-exports.toArray = util.toArray;
 exports.isDuplex = node.isDuplex;
 exports.isPassThrough = node.isPassThrough;
 exports.isReadable = node.isReadable;

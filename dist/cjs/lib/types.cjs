@@ -266,10 +266,35 @@ function isBoolean (obj) {
     return getType(obj) === constants.TYPES.Boolean;
 }
 
+function toArrayOrSelf (obj, self) {
+    if (isArray(obj)) {
+        return obj;
+    }
+    if (isIterable(obj)) {
+        return Array.from(obj);
+    }
+    return self ? obj : [obj];
+}
+
+// Return an array from one or more objects
+// If multiple objects are passed they are concatenated into one array
+// If an object is iterable it is merged into the array
+function toArray (obj, ...args) {
+    if (args.length === 0) {
+        return isNil(obj) ? [] : toArrayOrSelf(obj);
+    } else {
+        args.unshift(obj);
+        return Array.prototype.concat.call([], ...args.map(obj => {
+            return toArrayOrSelf(obj, true);
+        }));
+    }
+}
+
 function toFn (obj) {
     return isFunction(obj) ? obj : constants.noop;
 }
 
+// Note: only iterables that implement entries can be cast to an object
 function toObject (obj) {
     let type = getType(obj);
     if (type === constants.TYPES.Object) {
@@ -281,10 +306,6 @@ function toObject (obj) {
         return Object.fromEntries(obj.entries());
     }
     return {};
-}
-
-function toString (obj) {
-    return isString(obj) ? obj : '';
 }
 
 function toPath (str) {
@@ -299,6 +320,26 @@ function toPath (str) {
         arr.pop();
     }
     return arr;
+}
+
+// Note: supports all types including iterables and objects
+function toString (obj) {
+    let type = getType(obj);
+    if (type === constants.TYPES.String) {
+        return obj;
+    }
+    if (!type.proto) {
+        return '';
+    }
+    if (type.proto.toString !== Object.prototype.toString) {
+        return type.proto.toString.call(obj);
+    }
+    if (type.iterable) {
+        return Array.from(obj).toString();
+    }
+    if (type === constants.TYPES.Object) {
+        return Object.entries(obj).toString();
+    }
 }
 
 exports.getCtorType = getCtorType;
@@ -331,6 +372,7 @@ exports.isString = isString;
 exports.isTypedArray = isTypedArray;
 exports.isUndefined = isUndefined;
 exports.notNil = notNil;
+exports.toArray = toArray;
 exports.toFn = toFn;
 exports.toObject = toObject;
 exports.toPath = toPath;

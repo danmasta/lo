@@ -43,7 +43,7 @@ function forOwn (iter, fn, type) {
 // Run an iterator fn for each item in iter
 // Defers to forEach method
 // Can break iteration early by returning BREAK symbol
-function forEach(iter, fn) {
+function forEach (iter, fn) {
     fn = types.toFn(fn);
     if (types.hasForEach(iter)) {
         try {
@@ -62,37 +62,14 @@ function forEach(iter, fn) {
     }
 }
 
-function toArrayOrSelf (arr, self) {
-    if (types.isArray(arr)) {
-        return arr;
-    }
-    if (types.isIterable(arr)) {
-        return Array.from(arr);
-    }
-    return self ? arr : [arr];
-}
-
-// Return an array from one or more objects
-// If multiple objects are passed they are concatenated into one array
-// If an object is iterable it is merged into the array
-function toArray (...args) {
-    if (args.length === 1) {
-        return toArrayOrSelf(args.pop());
-    } else {
-        return Array.prototype.concat.call([], ...args.map(arr => {
-            return toArrayOrSelf(arr, true);
-        }));
-    }
-}
-
 // Return a flat array
 function flat (...args) {
-    return toArray(...args).flat(Infinity);
+    return types.toArray(...args).flat(Infinity);
 }
 
 // Return a compact array (null and undefined removed)
 function compact (...args) {
-    return toArray(...args).filter(types.notNil);
+    return types.toArray(...args).filter(types.notNil);
 }
 
 // Return a flat and compact array
@@ -456,6 +433,7 @@ function join (obj, sep) {
     return '';
 }
 
+exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
 exports.compact = compact;
 exports.concat = concat;
@@ -490,4 +468,3 @@ exports.some = some;
 exports.someNotNil = someNotNil;
 exports.tap = tap;
 exports.tapNotNil = tapNotNil;
-exports.toArray = toArray;
