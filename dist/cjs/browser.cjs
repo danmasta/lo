@@ -1,5 +1,6 @@
 var constants = require('./lib/constants.cjs');
 var types = require('./lib/types.cjs');
+var iterate = require('./lib/iterate.cjs');
 var util = require('./lib/util.cjs');
 var browser$2 = require('./types/browser.cjs');
 var browser$1 = require('./lib/browser.cjs');
@@ -10,6 +11,7 @@ var browser = {
     BREAK: constants.BREAK,
     noop: constants.noop,
     ...types,
+    ...iterate,
     ...util,
     ...browser$1
 };
@@ -53,40 +55,40 @@ exports.toObject = types.toObject;
 exports.toPath = types.toPath;
 exports.toString = types.toString;
 exports.toType = types.toType;
+exports.each = iterate.each;
+exports.eachNotNil = iterate.eachNotNil;
+exports.every = iterate.every;
+exports.everyNotNil = iterate.everyNotNil;
+exports.filter = iterate.filter;
+exports.filterNotNil = iterate.filterNotNil;
+exports.forEach = iterate.forEach;
+exports.forIn = iterate.forIn;
+exports.forOwn = iterate.forOwn;
+exports.iterate = iterate.iterate;
+exports.iterateF = iterate.iterateF;
+exports.map = iterate.map;
+exports.mapNotNil = iterate.mapNotNil;
+exports.remove = iterate.remove;
+exports.removeNotNil = iterate.removeNotNil;
+exports.some = iterate.some;
+exports.someNotNil = iterate.someNotNil;
+exports.tap = iterate.tap;
+exports.tapNotNil = iterate.tapNotNil;
 exports.assign = util.assign;
 exports.compact = util.compact;
 exports.concat = util.concat;
 exports.defaults = util.defaults;
-exports.each = util.each;
-exports.eachNotNil = util.eachNotNil;
-exports.every = util.every;
-exports.everyNotNil = util.everyNotNil;
-exports.filter = util.filter;
-exports.filterNotNil = util.filterNotNil;
 exports.flat = util.flat;
 exports.flatCompact = util.flatCompact;
-exports.forEach = util.forEach;
-exports.forIn = util.forIn;
-exports.forOwn = util.forOwn;
 exports.freeze = util.freeze;
 exports.get = util.get;
 exports.getOwn = util.getOwn;
 exports.has = util.has;
-exports.iterate = util.iterate;
-exports.iterateF = util.iterateF;
 exports.join = util.join;
 exports.keys = util.keys;
-exports.map = util.map;
-exports.mapNotNil = util.mapNotNil;
 exports.merge = util.merge;
-exports.remove = util.remove;
-exports.removeNotNil = util.removeNotNil;
 exports.set = util.set;
 exports.setOwn = util.setOwn;
-exports.some = util.some;
-exports.someNotNil = util.someNotNil;
-exports.tap = util.tap;
-exports.tapNotNil = util.tapNotNil;
 exports.isElement = browser$1.isElement;
 exports.isNodeList = browser$1.isNodeList;
 exports.default = browser;
