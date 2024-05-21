@@ -14,6 +14,12 @@ const arr1 = [1,2,3];
 const arr2 = [1,null,2,undefined,3];
 const map = new Map([[1,2],[3,4]]);
 const set = new Set([1,2,3]);
+const obj1 = {1:1};
+const obj2 = {1:1,2:{2:2}};
+const obj3 = Object.create(obj1, { 3: {
+    value: 3,
+    enumerable: true
+}});
 
 const fixtures = {
     TestClass,
@@ -28,7 +34,10 @@ const fixtures = {
     arr1,
     arr2,
     map,
-    set
+    set,
+    obj1,
+    obj2,
+    obj3
 };
 
 beforeEach(() => {

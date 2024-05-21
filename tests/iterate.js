@@ -1,5 +1,47 @@
 describe('Iterate', () => {
 
+    it('forIn', () => {
+        let res = {};
+        lo.forIn(fx.obj3, (val, key) => {
+            res[key] = val;
+        });
+        expect(res).to.eql({1:1,3:3});
+    });
+
+    it('forOwn', () => {
+        let res = {};
+        lo.forOwn(fx.obj3, (val, key) => {
+            res[key] = val;
+        });
+        expect(res).to.eql({3:3});
+    });
+
+    it('forEach', () => {
+        let res1 = [];
+        lo.forEach(fx.arr1, val => {
+            res1.push(val);
+        });
+        expect(res1).to.eql([1,2,3]);
+        let res2 = [];
+        lo.forEach(fx.obj1, val => {
+            res2.push(val);
+        });
+        expect(res2).to.eql([{1:1}]);
+    });
+
+    it('iterate', () => {
+        let res1 = [];
+        lo.iterate(fx.obj1, val => {
+            res1.push(val);
+        });
+        expect(res1).to.eql([{1:1}]);
+        let res2 = {};
+        lo.iterate(fx.obj1, (val, key) => {
+            res2[key] = val;
+        }, false);
+        expect(res2).to.eql({1:1});
+    });
+
     it('each', () => {
         let count = 0;
         lo.each(fx.arr1, val => {
