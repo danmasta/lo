@@ -182,9 +182,9 @@ function keys (obj) {
     return [];
 }
 
-function join (obj, sep) {
+function join (obj, sep=',') {
     if (types.notNil(obj)) {
-        return Array.prototype.join.call(obj, toString(sep));
+        return Array.prototype.join.call(obj, types.toString(sep));
     }
     return '';
 }
