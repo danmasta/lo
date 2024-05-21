@@ -17,4 +17,15 @@ describe('Util', () => {
         expect(lo.concat([1,2],[3,4])).to.eql([1,2,3,4]);
     });
 
+    it('keys', () => {
+        expect(lo.keys(fx.arr1)).to.eql(['0','1','2']);
+        expect(lo.keys(fx.obj2)).to.eql(['1','2']);
+    });
+
+    it('join', () => {
+        expect(lo.join(fx.arr1)).to.eql('1,2,3');
+        expect(lo.join(fx.arr1, '')).to.eql('123');
+        expect(lo.join(fx.obj1)).to.eql('');
+    });
+
 });
