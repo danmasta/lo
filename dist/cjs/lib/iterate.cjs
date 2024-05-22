@@ -30,7 +30,7 @@ function forOwn (iter, fn, type) {
                 break;
             }
         }
-    } else if (type === TYPES.Object) {
+    } else if (type === constants.TYPES.Object) {
         for (const [key, val] of Object.entries(iter)) {
             if (fn(val, key, iter) === constants.BREAK) {
                 break;
@@ -70,7 +70,7 @@ function iterate (iter, fn, col=1) {
     if (col && !type.collection) {
         types.toFn(fn)(iter, 0, iter);
     } else {
-        if (type.entries || type.iterable || (!col && type === TYPES.Object)) {
+        if (type.entries || type.iterable || (!col && type === constants.TYPES.Object)) {
             forOwn(iter, fn, type);
         } else {
             types.toFn(fn)(iter, 0, iter);
