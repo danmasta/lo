@@ -1,6 +1,5 @@
 import { assert, expect, should } from 'chai';
 import lo from '../index.js';
-import { TYPES } from '../lib/constants.js';
 import { Readable } from 'stream';
 
 class TestClass {}
@@ -45,7 +44,6 @@ beforeEach(() => {
     global.expect = expect;
     global.should = should();
     global.lo = lo;
-    global.TYPES = TYPES;
     global.fixtures = fixtures;
     global.fx = fixtures;
 });

@@ -1,3 +1,5 @@
+import { TYPES } from '../lib/constants.js';
+
 describe('Types', () => {
 
     it('get type by instance', () => {
