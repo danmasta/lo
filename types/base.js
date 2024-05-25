@@ -1,4 +1,7 @@
 const getPrototypeOf = Object.getPrototypeOf;
+const genFn = function*(){};
+const asyncGenFn = async function*(){};
+
 const types = [
     {
         t: 'undefined',
@@ -218,14 +221,57 @@ const types = [
     {
         t: 'function',
         n: 'GeneratorFunction',
-        c: (function*(){}).constructor,
+        c: genFn.constructor,
         x: [1, 1, 2]
+    },
+    {
+        t: 'function',
+        n: 'AsyncGeneratorFunction',
+        c: asyncGenFn.constructor,
+        x: [1, 1, 2]
+    },
+    {
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator
+        // Note: Generator.constructor is GeneratorFunction.prototype
+        // Note: Generator is a subclass of Iterator
+        // Note: getPrototypeOf(generator) !== generator.constructor.prototype
+        n: 'Generator',
+        c: genFn().constructor,
+        x: [0, 0, 0, 1]
+    },
+    {
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator
+        // Note: AsyncGenerator.constructor is AsyncGeneratorFunction.prototype
+        // Note: AsyncGenerator is a subclass of AsyncIterator
+        // Note: getPrototypeOf(asyncgenerator) !== asyncgenerator.constructor.prototype
+        n: 'AsyncGenerator',
+        c: asyncGenFn().constructor,
+        x: [0, 0, 0, 1]
+    },
+    {
+        t: 'unknown',
+        n: 'Unknown',
+        x: [0, 0, 0]
     }
 ];
 
 // Node v22.x+
 if (typeof Iterator !== 'undefined') {
-    types.push({ n: 'Iterator', x: [0, 0, 0, 1] });
+    types.push({
+        n: 'Iterator',
+        x: [0, 0, 0, 1],
+        a: 1
+    });
+}
+
+// Not implemented yet:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator
+if (typeof AsyncIterator !== 'undefined') {
+    types.push({
+        n: 'AsyncIterator',
+        x: [0, 0, 0, 1],
+        a: 1
+    });
 }
 
 export {
