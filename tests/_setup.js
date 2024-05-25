@@ -3,6 +3,7 @@ import lo from '../index.js';
 import { Readable } from 'stream';
 
 class TestClass {}
+class TestClassTwo extends TestClass {}
 class TestError extends Error {}
 class TestErrorTwo extends TestError {}
 class TestArray extends Array {}
@@ -22,6 +23,7 @@ const obj3 = Object.create(obj1, { 3: {
 
 const fixtures = {
     TestClass,
+    TestClassTwo,
     TestError,
     TestErrorTwo,
     TestArray,

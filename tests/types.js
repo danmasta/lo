@@ -39,6 +39,7 @@ describe('Types', () => {
         expect(lo.getCtorType(undefined)).to.equal(TYPES.Undefined);
         expect(lo.getCtorType(Error)).to.equal(TYPES.Error);
         expect(lo.getCtorType(fx.TestClass)).to.equal(TYPES.Function);
+        expect(lo.getCtorType(fx.TestClassTwo)).to.equal(TYPES.Function);
         expect(lo.getCtorType(fx.TestError)).to.equal(TYPES.Error);
         expect(lo.getCtorType(fx.TestErrorTwo)).to.equal(TYPES.Error);
         expect(lo.getCtorType(fx.TestArray)).to.equal(TYPES.Array);
