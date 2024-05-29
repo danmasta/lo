@@ -75,7 +75,7 @@ each(obj, (val, key) => {
 // 0 { 1: true, 2: false }
 ```
 Each iterator function has the following signature:
-```
+```js
 method(iterable, iteratorFn, collection?)
 ```
 Where `collection` is `true` by default. If you want to use an iterator method to iterate the properties of a single object you can set the `collection` argument to `false`:
