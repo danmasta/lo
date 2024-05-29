@@ -8,10 +8,26 @@ describe('Iterate', () => {
         expect(res).to.eql({1:1,3:3});
     });
 
+    it('forInAsync', async () => {
+        let res = {};
+        await lo.forIn(fx.obj3, async (val, key) => {
+            res[key] = await Promise.resolve(val);
+        });
+        expect(res).to.eql({1:1,3:3});
+    });
+
     it('forOwn', () => {
         let res = {};
         lo.forOwn(fx.obj3, (val, key) => {
             res[key] = val;
+        });
+        expect(res).to.eql({3:3});
+    });
+
+    it('forOwnAsync', async () => {
+        let res = {};
+        await lo.forOwn(fx.obj3, async (val, key) => {
+            res[key] = await Promise.resolve(val);
         });
         expect(res).to.eql({3:3});
     });
