@@ -129,7 +129,7 @@ map(arr, val => {
 *Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
 
 ### Async Iteration
-Every iteration method supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
+Every iteration method also supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
 ```js
 import { map } from '@danmasta/lo';
 
