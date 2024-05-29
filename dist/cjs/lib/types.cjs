@@ -6,49 +6,64 @@ function toStringTag (obj) {
 }
 
 // Get the type definition from an object's prototype
-// Will recurse 1 level to check parent proto if recurse not explicitly false
-// Will recurse the whole prototype chain if recurse is true
-function getTypeFromProto (obj, recurse) {
-    let type = constants.typesByProto.get(constants.getPrototypeOf(obj));
+// Will recurse 3 levels to check parent proto if recurse not explicitly false
+// Will recurse the whole prototype chain if recurse is -1 or Infinity
+// Returns TYPES.Unknown if type not found
+function getTypeFromProto (obj, recurse=3) {
+    let proto = constants.getPrototypeOf(obj);
+    let type = constants.typesByProto.get(proto);
     if (type) {
         return type;
     }
-    if (recurse !== false) {
-        // Check the parent prototype
-        return getTypeFromProto(obj.constructor.prototype, recurse === true);
+    if (recurse) {
+        // Note: Recursing with obj.constructor.prototype can be infinite if
+        // type and parent type are not found (ex: if both Generator and Iterator are missing)
+        // Although it does match the parent type quickly if it exists
+        // return getTypeFromProto(obj.constructor.prototype, --recurse);
+        // Note: Recursing with proto is more accurate
+        return getTypeFromProto(proto, --recurse);
     }
     if (constants.isPrototypeOf.call(Error.prototype, obj)) {
         return constants.TYPES.Error;
     }
-    if (constants.TYPES[type = toStringTag(obj)]) {
-        return constants.TYPES[type];
+    if (type = constants.TYPES[toStringTag(obj)]) {
+        return type;
     }
-    // What to return if not found? Undefined, TYPES.Undefined, or StringTag?
-    // Need to test for not found states
-    return type;
+    // Return unknown because undefined or null are technically known types
+    return constants.TYPES.Unknown;
 }
 
-// Get the type definition from constructor function
-function getTypeFromCtor (obj, recurse) {
+// Get the type definition from a constructor function
+// Will recurse 3 levels to check parent class if recurse not explicitly false
+// Will recurse the whole prototype chain if recurse is -1 or Infinity
+// Returns TYPES.Unknown if type not found
+function getTypeFromCtor (obj, recurse=3) {
     let type = constants.typesByCtor.get(obj);
     if (type) {
         return type;
     }
-    if (recurse !== false) {
-        // If subclass the constructor prototype will be the parent class
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends
-        return getTypeFromCtor(constants.getPrototypeOf(obj), false);
+    // If class, but not subclass (or extends null), it's prototype will be Function.prototype
+    let proto = constants.getPrototypeOf(obj);
+    if (proto === Function.prototype) {
+        return constants.TYPES.Function;
     }
+    if (recurse) {
+        // If subclass, the constructor prototype will be the parent class:
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends
+        return getTypeFromCtor(proto, --recurse);
+        // Note: Recursing with obj.constructor is not as accurate
+        // return getTypeFromCtor(obj.constructor, --recurse);
+    }
+    // Note: Because obj is a constructor function we need to
+    // check obj.prototype instead of obj itself
     if (constants.isPrototypeOf.call(Error.prototype, obj.prototype)) {
         return constants.TYPES.Error;
     }
-    // Not sure which is more accurate yet
-    // Regular classes will have a constructor of Function
-    // return getTypeFromCtor(obj.constructor);
-    if (constants.TYPES[type = toStringTag(obj)]) {
-        return constants.TYPES[type];
+    if (type = constants.TYPES[toStringTag(obj)]) {
+        return type;
     }
-    return type;
+    // Return unknown because undefined or null are technically known types
+    return constants.TYPES.Unknown;
 }
 
 // Get the object type definition
@@ -78,8 +93,16 @@ function getType (obj) {
             }
             // TypedArrays
             // Module
-            if (obj[Symbol.toStringTag] && constants.TYPES[type = obj[Symbol.toStringTag]]) {
-                return constants.TYPES[type];
+            // Promise
+            // Iterator
+            // AsyncIterator
+            // AsyncFunction
+            // GeneratorFunction
+            // AsyncGeneratorFunction
+            // Generator
+            // AsyncGenerator
+            if (type = constants.TYPES[obj[Symbol.toStringTag]]) {
+                return type;
             }
             return getTypeFromProto(obj);
         default:
@@ -87,19 +110,32 @@ function getType (obj) {
     }
 }
 
+// Get the type name string of an object
+// returns toStringTag if type not found
 function getTypeStr (obj) {
-    return (obj = getType(obj))?.name ? obj.name : toStringTag(obj);
+    let type = getType(obj);
+    if (type === constants.TYPES.Unknown) {
+        return toStringTag(obj);
+    }
+    return type.name;
 }
 
+// Alias
 function getCtorType (obj) {
     return getTypeFromCtor(obj);
 }
 
+// Get the type name string of a constructor function
+// returns toStringTag if type not found
 function getCtorTypeStr (obj) {
-    return (obj = getCtorType(obj))?.name ? obj.name : toStringTag(obj);
+    let type = getCtorType(obj);
+    if (type === constants.TYPES.Unknown) {
+        return toStringTag(obj);
+    }
+    return type.name;
 }
 
-// Convert object to a specific type via a constructor or factory function
+// Cast object to a specific type via a constructor or factory function
 // Note: Does not validate arguments
 function toType (Type, obj, ...args) {
     let type = getType(obj);
@@ -107,7 +143,7 @@ function toType (Type, obj, ...args) {
     if (type === ctor) {
         return obj;
     }
-    switch (ctor?.create) {
+    switch (ctor.create) {
         case 1:
             return Type.call(undefined, obj, ...args);
         case 2:
@@ -161,6 +197,7 @@ function isObject (obj) {
     return getType(obj) === constants.TYPES.Object;
 }
 
+// Regular or async
 function isFunction (obj) {
     return obj instanceof constants.TYPES.Function.ctor;
 }
@@ -193,11 +230,12 @@ function isPromise (obj) {
 // PassThrough
 // Iterator
 // NodeList
+// Generator
 function hasForEach (obj) {
     return getType(obj).each;
 }
 
-// Checks for @@iterator on prototype
+// Checks for @@iterator
 // String
 // Array
 // Map
@@ -210,8 +248,9 @@ function hasForEach (obj) {
 // Buffer
 // Iterator
 // NodeList
+// Generator
 function isIterable (obj) {
-    return getType(obj).iterable;
+    return notNil(obj) && !!obj[Symbol.iterator];
 }
 
 // Checks for entries on prototype
@@ -234,6 +273,8 @@ function hasEntries (obj) {
 // Set Iterator
 // Iterator
 // NodeList
+// Generator
+// AsyncGenerator
 function isCollection (obj) {
     return getType(obj).collection;
 }
@@ -264,6 +305,13 @@ function isString (obj) {
 
 function isBoolean (obj) {
     return getType(obj) === constants.TYPES.Boolean;
+}
+
+// Checks for @@asyncIterator
+// AsyncGenerator
+// Currently no built-in async iterables except ReadableStream
+function isAsyncIterable (obj) {
+    return notNil(obj) && !!obj[Symbol.asyncIterator];
 }
 
 function toArrayOrSelf (obj, self) {
@@ -352,6 +400,7 @@ exports.hasEntries = hasEntries;
 exports.hasForEach = hasForEach;
 exports.isArray = isArray;
 exports.isAsyncFunction = isAsyncFunction;
+exports.isAsyncIterable = isAsyncIterable;
 exports.isBoolean = isBoolean;
 exports.isBuffer = isBuffer;
 exports.isCollection = isCollection;

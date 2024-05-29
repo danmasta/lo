@@ -29,6 +29,7 @@ exports.hasEntries = types.hasEntries;
 exports.hasForEach = types.hasForEach;
 exports.isArray = types.isArray;
 exports.isAsyncFunction = types.isAsyncFunction;
+exports.isAsyncIterable = types.isAsyncIterable;
 exports.isBoolean = types.isBoolean;
 exports.isBuffer = types.isBuffer;
 exports.isCollection = types.isCollection;
