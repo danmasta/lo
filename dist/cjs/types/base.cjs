@@ -1,9 +1,9 @@
-const getPrototypeOf = Object.getPrototypeOf;
 const genFn = function*(){};
 const asyncGenFn = async function*(){};
 const iterator = Symbol.iterator;
 const constructor = 'constructor';
 const prototype = 'prototype';
+const getPrototypeOf = Object.getPrototypeOf;
 
 const types = [
     {

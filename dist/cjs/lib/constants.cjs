@@ -1,14 +1,12 @@
 var base = require('../types/base.cjs');
 
-function noop () {}
-
+const noop = ()=>{};
 const BREAK = Symbol();
 
 const g = globalThis;
 const hasOwn = Object.hasOwn;
 const getPrototypeOf = Object.getPrototypeOf;
 const isPrototypeOf = Object.isPrototypeOf;
-
 const types = {
     0: 'undefined',
     1: 'boolean',
