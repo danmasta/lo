@@ -229,8 +229,8 @@ function isPromise (obj) {
 // Duplex
 // PassThrough
 // Iterator
-// NodeList
 // Generator
+// NodeList
 function hasForEach (obj) {
     return getType(obj).each;
 }
@@ -247,8 +247,8 @@ function hasForEach (obj) {
 // Set Iterator
 // Buffer
 // Iterator
-// NodeList
 // Generator
+// NodeList
 function isIterable (obj) {
     return notNil(obj) && !!obj[Symbol.iterator];
 }
@@ -272,9 +272,10 @@ function hasEntries (obj) {
 // Map Iterator
 // Set Iterator
 // Iterator
-// NodeList
+// AsyncIterator
 // Generator
 // AsyncGenerator
+// NodeList
 function isCollection (obj) {
     return getType(obj).collection;
 }
