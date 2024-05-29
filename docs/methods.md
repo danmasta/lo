@@ -15,6 +15,7 @@
 * `filterNotNil`
 * `forEach`
 * `iterate`
+* `iterateF`
 * `map`
 * `mapNotNil`
 * `remove`
@@ -26,10 +27,17 @@
 
 ## Types
 #### Base
+* `getCtorType`
+* `getCtorTypeStr`
+* `getType`
+* `getTypeFromCtor`
+* `getTypeFromProto`
+* `getTypeStr`
 * `hasEntries`
 * `hasForEach`
 * `isArray`
 * `isAsyncFunction`
+* `isAsyncIterable`
 * `isBoolean`
 * `isBuffer`
 * `isCollection`
