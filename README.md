@@ -8,6 +8,7 @@ Lightweight utility library for node and browser
 * Native esm and cjs support
 * Treeshakeable by default
 * Support for all iterable types
+* Support for [async](#async-iteration) iterables and async iterator functions
 * 0 dependencies
 
 ## About
@@ -47,6 +48,9 @@ This package is different from other utility libraries in that it defines *`coll
 * `Map Iterator`
 * `Set Iterator`
 * `Iterator`
+* `AsyncIterator`
+* `Generator`
+* `AsyncGenerator`
 * `NodeList`
 
 What is not a collection type:
@@ -61,6 +65,8 @@ When using iterator functions like `each`, `map`, `tap`, `some`, `every`, `filte
 
 This means if you pass a single object instead of a [collection](#collections) type it will treat the object as a one-object collection and iterate one time:
 ```js
+import { each } from '@danmasta/lo';
+
 let obj = { 1: true, 2: false };
 
 each(obj, (val, key) => {
@@ -74,6 +80,8 @@ method(iterable, iteratorFn, collection?)
 ```
 Where `collection` is `true` by default. If you want to use an iterator method to iterate the properties of a single object you can set the `collection` argument to `false`:
 ```js
+import { each } from '@danmasta/lo';
+
 let obj = { 1: true, 2: false };
 
 each(obj, (val, key) => {
@@ -82,7 +90,7 @@ each(obj, (val, key) => {
 // 1 true
 // 2 false
 ```
-*Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, and `Iterator`.*
+*Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, `Iterator`, and `Generator`.*
 
 #### Iterate single objects
 Methods to iterate the properties of individual objects and iterators: `forIn`, and `forOwn`.
@@ -119,6 +127,23 @@ map(arr, val => {
 // [1, 2]
 ```
 *Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
+
+### Async Iteration
+Every iteration method supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
+```js
+import { map } from '@danmasta/lo';
+
+async function* list () {
+    yield 1;
+    yield 2;
+    yield 3;
+}
+
+await map(list(), async val => {
+    return await val*2;
+});
+// [2, 4, 6]
+```
 
 ### Methods
 A list of methods and some documentation can be found [here](docs/methods.md)
