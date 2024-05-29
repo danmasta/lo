@@ -12,7 +12,7 @@ Lightweight utility library for node and browser
 * 0 dependencies
 
 ## About
-I wanted a lighter weight utility library. I had written a bunch of methods over the years that I copy between projects as needed, so I just decided to normalize them, add a type checking system, and consolidate them into this package. I also wanted to be able to add different methods for specific environments like node or browser and not have to use polyfills.
+I wanted a lighter weight utility library. I had written a bunch of methods over the years that I used between projects as needed, so I decided to normalize them, add a type checking system, and consolidate them into this package. I also wanted to be able to add different methods for environments like node/browser, not have to use polyfills, and support [async iteration](#async-iteration).
 
 ## Usage
 Add lo as a dependency for your app and install via npm
