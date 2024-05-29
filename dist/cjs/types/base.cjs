@@ -1,66 +1,67 @@
 const getPrototypeOf = Object.getPrototypeOf;
 const genFn = function*(){};
 const asyncGenFn = async function*(){};
+const iterator = Symbol.iterator;
+const constructor = 'constructor';
+const prototype = 'prototype';
 
 const types = [
     {
-        t: 'undefined',
+        t: 0,
         n: 'Undefined',
         c: undefined,
         p: undefined,
         x: [0, 0, 0]
     },
     {
-        t: 'object',
         n: 'Null',
         c: undefined,
         p: undefined,
         x: [0, 0, 0]
     },
     {
-        t: 'boolean',
+        t: 1,
         n: 'Boolean',
         x: [1, 1, 1]
     },
     {
-        t: 'number',
+        t: 2,
         n: 'Number',
         x: [1, 1, 1]
     },
     {
-        t: 'number',
+        t: 2,
         n: 'NaN',
         c: Number,
         x: [0, 0, 0]
     },
     {
-        t: 'number',
+        t: 2,
         n: 'Infinity',
         c: Number,
         x: [0, 0, 0]
     },
     {
-        t: 'bigint',
+        t: 3,
         n: 'BigInt',
         x: [0, 1, 1]
     },
     {
-        t: 'string',
+        t: 4,
         n: 'String',
         x: [1, 1, 1]
     },
     {
-        t: 'symbol',
+        t: 5,
         n: 'Symbol',
         x: [0, 1, 1]
     },
     {
-        t: 'function',
+        t: 6,
         n: 'Function',
         x: [1, 1, 2]
     },
     {
-        t: 'object',
         n: 'Object',
         x: [1, 1, 2]
     },
@@ -164,25 +165,25 @@ const types = [
     },
     {
         n: 'Array Iterator',
-        c: Array.prototype[Symbol.iterator],
-        p: getPrototypeOf(Array.prototype[Symbol.iterator]()),
+        c: Array[prototype][iterator],
+        p: getPrototypeOf(Array[prototype][iterator]()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'String Iterator',
-        c: String.prototype[Symbol.iterator],
-        p: getPrototypeOf(String.prototype[Symbol.iterator]()),
+        c: String[prototype][iterator],
+        p: getPrototypeOf(String[prototype][iterator]()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'Map Iterator',
-        c: Map.prototype[Symbol.iterator],
+        c: Map[prototype][iterator],
         p: getPrototypeOf(new Map().entries()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'Set Iterator',
-        c: Set.prototype[Symbol.iterator],
+        c: Set[prototype][iterator],
         p: getPrototypeOf(new Set().entries()),
         x: [0, 1, 1, 1]
     },
@@ -213,21 +214,21 @@ const types = [
         x: [1, 0, 2]
     },
     {
-        t: 'function',
+        t: 6,
         n: 'AsyncFunction',
-        c: (async()=>{}).constructor,
+        c: (async()=>{})[constructor],
         x: [1, 1, 2]
     },
     {
-        t: 'function',
+        t: 6,
         n: 'GeneratorFunction',
-        c: genFn.constructor,
+        c: genFn[constructor],
         x: [1, 1, 2]
     },
     {
-        t: 'function',
+        t: 6,
         n: 'AsyncGeneratorFunction',
-        c: asyncGenFn.constructor,
+        c: asyncGenFn[constructor],
         x: [1, 1, 2]
     },
     {
@@ -236,7 +237,7 @@ const types = [
         // Note: Generator is a subclass of Iterator
         // Note: getPrototypeOf(generator) !== generator.constructor.prototype
         n: 'Generator',
-        c: genFn().constructor,
+        c: genFn()[constructor],
         x: [0, 0, 0, 1]
     },
     {
@@ -245,11 +246,11 @@ const types = [
         // Note: AsyncGenerator is a subclass of AsyncIterator
         // Note: getPrototypeOf(asyncgenerator) !== asyncgenerator.constructor.prototype
         n: 'AsyncGenerator',
-        c: asyncGenFn().constructor,
+        c: asyncGenFn()[constructor],
         x: [0, 0, 0, 1]
     },
     {
-        t: 'unknown',
+        t: 8,
         n: 'Unknown',
         x: [0, 0, 0]
     }
