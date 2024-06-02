@@ -53,7 +53,7 @@ function forEach (iter, fn) {
 }
 
 // Async alias
-async function iterateA (iter, fn, col, type, iterA, fnA) {
+async function iterateA (iter, fn, col=1, type, iterA, fnA) {
     if (col && !type.collection) {
         await fn(iter, 0, iter);
     } else {
@@ -202,7 +202,7 @@ function compose (iter, fn, col=1) {
 // Compose iteration method with filters
 // Checks type info
 // Returns sync or async based on iterable and iterator fn types
-function composeF (iter, fn, col, retFn, res, valFltr, retFltr) {
+function composeF (iter, fn, col=1, retFn, res, valFltr, retFltr) {
     let type = types.getType(iter);
     let iterA = type.async || types.isAsyncIterable(iter);
     let fnA = types.isAsyncFunction(fn);
