@@ -1,5 +1,5 @@
-var promises = require('node:fs/promises');
 var node_fs = require('node:fs');
+var promises = require('node:fs/promises');
 var node_module = require('node:module');
 var node_os = require('node:os');
 var node_path = require('node:path');
