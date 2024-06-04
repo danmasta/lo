@@ -94,5 +94,12 @@
 * `set`
 * `setOwn`
 #### Node
+* `env`
+* `importOrRequire`
+* `importRequireOrRead`
+* `require`
+* `requireOrReadSync`
 * `resolvePath`
+* `resolvePathIfExists`
+* `resolvePathIfExistsSync`
 #### Browser
