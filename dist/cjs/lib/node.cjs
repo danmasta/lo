@@ -3,13 +3,14 @@ var promises = require('node:fs/promises');
 var node_module = require('node:module');
 var node_os = require('node:os');
 var node_path = require('node:path');
+var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var errors = require('./errors.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
 
 // Note: Doesn't work with directory paths
-const _require = node_module.createRequire(process.cwd() + node_path.sep + '.');
+const _require = node_module.createRequire(node_process.cwd() + node_path.sep + '.');
 
 function isStream (obj) {
     return obj instanceof constants.TYPES.Stream.ctor;
@@ -122,8 +123,8 @@ function resolvePathIfExistsSync (str, { dir, resolve, ext }={}) {
     }
 }
 
-// If a value was never set on process.env it will return typeof undefined
-// If a value was set on process.env that was typeof undefined it will become string 'undefined'
+// If a value was never set on _env it will return typeof undefined
+// If a value was set on _env that was typeof undefined it will become string 'undefined'
 function isNilEnv (val) {
     return types.isNil(val) || val === 'undefined' || val === 'null';
 }
@@ -131,14 +132,14 @@ function isNilEnv (val) {
 // Getter/setter for env vars
 function env (key, val) {
     if (types.isString(key)) {
-        let cur = process.env[key];
-        if (types.notNil(val) && isNilEnv(cur)) {
-            return process.env[key] = val;
+        let curr = node_process.env[key];
+        if (types.notNil(val) && isNilEnv(curr)) {
+            return node_process.env[key] = val;
         } else {
-            return cur === 'undefined' ? undefined : cur === 'null' ? null : cur;
+            return curr === 'undefined' ? undefined : curr === 'null' ? null : curr;
         }
     }
-    return process.env;
+    return node_process.env;
 }
 
 // Conditionally import or require based on esm-ness
