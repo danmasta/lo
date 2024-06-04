@@ -14,24 +14,46 @@ class LoError extends Error {
 
 class NotFoundError extends LoError {
     constructor (path) {
-        super('File or Directory Not Found: %s', path);
+        super('File or directory not found: %s', path);
         this.path = path;
     }
     static get code () {
-        return 'ERR_NOT_FOUND';
+        return 'ERR_FILE_NOT_FOUND';
     }
 }
 
 class NotResolvedError extends LoError {
     constructor (path) {
-        super('Unable to Resolve File or Directory: %s', path);
+        super('File or directory not resolved: %s', path);
         this.path = path;
     }
     static get code () {
-        return 'ERR_NOT_RESOLVED';
+        return 'ERR_FILE_NOT_RESOLVED';
+    }
+}
+
+class NotSupportedError extends LoError {
+    constructor (path) {
+        super('File type not supported: %s', path);
+        this.path = path;
+    }
+    static get code () {
+        return 'ERR_FILE_NOT_SUPPORTED';
+    }
+}
+
+class RequireAsyncError extends LoError {
+    constructor (path) {
+        super('File requires async import: %s', path);
+        this.path = path;
+    }
+    static get code () {
+        return 'ERR_FILE_REQUIRE_ASYNC';
     }
 }
 
 exports.LoError = LoError;
 exports.NotFoundError = NotFoundError;
 exports.NotResolvedError = NotResolvedError;
+exports.NotSupportedError = NotSupportedError;
+exports.RequireAsyncError = RequireAsyncError;

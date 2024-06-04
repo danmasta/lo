@@ -8,8 +8,8 @@ var errors = require('./errors.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
 
-var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-const require$1 = node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('lib/node.cjs', document.baseURI).href)));
+// Note: Doesn't work with directory paths
+const _require = node_module.createRequire(process.cwd() + node_path.sep + '.');
 
 function isStream (obj) {
     return obj instanceof constants.TYPES.Stream.ctor;
@@ -54,7 +54,7 @@ async function resolvePathIfExists (str, { dir, resolve, ext }={}) {
     } catch (err) {
         if (resolve) {
             try {
-                return require$1.resolve(path);
+                return _require.resolve(path);
             } catch (err) {
                 if (!ext) {
                     throw new errors.NotFoundError(path);
@@ -92,7 +92,7 @@ function resolvePathIfExistsSync (str, { dir, resolve, ext }={}) {
     } catch (err) {
         if (resolve) {
             try {
-                return require$1.resolve(path);
+                return _require.resolve(path);
             } catch (err) {
                 if (!ext) {
                     throw new errors.NotFoundError(path);
@@ -141,13 +141,99 @@ function env (key, val) {
     return process.env;
 }
 
+// Conditionally import or require based on esm-ness
+function importOrRequire (str, ext) {
+    ext = ext || node_path.extname(str);
+    switch (ext) {
+        case '.js':
+            if (types.isEsmMode()) {
+                return import(str);
+            } else {
+                try {
+                    return _require(str);
+                } catch (err) {
+                    if (err.code === 'ERR_REQUIRE_ESM' || err.code === 'ERR_REQUIRE_ASYNC_MODULE') {
+                        return import(str);
+                    }
+                    throw err;
+                }
+            }
+        case '.json':
+            if (types.isEsmMode()) {
+                return import(str);
+            } else {
+                return _require(str);
+            }
+        case '.cjs':
+            return _require(str);
+        case '.mjs':
+            return import(str);
+        default:
+            throw new errors.NotSupportedError(str);
+    }
+}
+
+// Throw error if file requires async import
+// Note: Does not resolve path like regular require
+function require$1 (str, ext) {
+    ext = ext || node_path.extname(str);
+    switch (ext) {
+        case '.js':
+        case '.json':
+        case '.cjs':
+            try {
+                return _require(str);
+            } catch (err) {
+                if (err.code === 'ERR_REQUIRE_ESM' || err.code === 'ERR_REQUIRE_ASYNC_MODULE') {
+                    throw new errors.RequireAsyncError(str);
+                }
+                throw err;
+            }
+        case '.mjs':
+            throw new errors.RequireAsyncError(str);
+        default:
+            throw new errors.NotSupportedError(str);
+    }
+}
+
+async function importRequireOrRead (str, encoding='utf8') {
+    let ext = node_path.extname(str);
+    switch (ext) {
+        case '.js':
+        case '.json':
+        case '.cjs':
+        case '.mjs':
+            return await importOrRequire(str, ext);
+        default:
+            return await promises.readFile(str, { encoding });
+    }
+}
+
+// Throw error if file requires async import
+function requireOrReadSync (str, encoding='utf8') {
+    let ext = node_path.extname(str);
+    switch (ext) {
+        case '.js':
+        case '.json':
+        case '.cjs':
+        case '.mjs':
+            return require$1(str, ext);
+        default:
+            return node_fs.readFileSync(str, { encoding });
+    }
+}
+
 exports.env = env;
+exports.importOrRequire = importOrRequire;
+exports.importRequireOrRead = importRequireOrRead;
 exports.isDuplex = isDuplex;
 exports.isPassThrough = isPassThrough;
 exports.isReadable = isReadable;
 exports.isStream = isStream;
 exports.isTransform = isTransform;
 exports.isWritable = isWritable;
+exports.require = require$1;
+exports.requireOrReadSync = requireOrReadSync;
 exports.resolvePath = resolvePath;
 exports.resolvePathIfExists = resolvePathIfExists;
 exports.resolvePathIfExistsSync = resolvePathIfExistsSync;
