@@ -45,7 +45,7 @@
     "coverage": "make coverage",
     "build": "make build",
     "watch": "make watch",
-    "preversion": "make test build"
+    "preversion": "make test build status"
   },
   "repository": {
     "type": "git",
