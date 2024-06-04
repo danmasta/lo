@@ -34,6 +34,10 @@
     "./constants": {
       "import": "./lib/constants.js",
       "require": "./dist/cjs/lib/constants.cjs"
+    },
+    "./errors": {
+      "import": "./lib/errors.js",
+      "require": "./dist/cjs/lib/errors.cjs"
     }
   },
   "scripts": {
