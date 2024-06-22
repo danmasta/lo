@@ -96,9 +96,15 @@
 #### Node
 * `env`
 * `importOrRequire`
+* `importOrRequireFiles`
 * `importRequireOrRead`
+* `importRequireOrReadFiles`
+* `readFiles`
+* `readFilesSync`
 * `require`
+* `requireFiles`
 * `requireOrReadSync`
+* `requireOrReadFilesSync`
 * `resolvePath`
 * `resolvePathIfExists`
 * `resolvePathIfExistsSync`
