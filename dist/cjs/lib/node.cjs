@@ -36,6 +36,25 @@ function isPassThrough (obj) {
     return types.getType(obj) === constants.TYPES.PassThrough;
 }
 
+// If a value was never set on process.env it will return typeof undefined
+// If a value was set on process.env that was typeof undefined it will become string 'undefined'
+function isNilEnv (val) {
+    return types.isNil(val) || val === 'undefined' || val === 'null';
+}
+
+// Getter/setter for env vars
+function env (key, val) {
+    if (types.isString(key)) {
+        let curr = node_process.env[key];
+        if (types.notNil(val) && isNilEnv(curr)) {
+            return node_process.env[key] = val;
+        } else {
+            return curr === 'undefined' ? undefined : curr === 'null' ? null : curr;
+        }
+    }
+    return node_process.env;
+}
+
 // Resolve file path with support for home char or parent dir
 function resolvePath (str, dir) {
     if (str[0] === '~') {
@@ -47,7 +66,7 @@ function resolvePath (str, dir) {
     return node_path.resolve(str);
 }
 
-async function resolvePathIfExists (str, { dir, resolve, ext }={}) {
+async function resolvePathIfExists (str, { dir, resolve, exts }={}) {
     let path = resolvePath(str, dir);
     try {
         await promises.access(path, promises.constants.F_OK);
@@ -57,14 +76,17 @@ async function resolvePathIfExists (str, { dir, resolve, ext }={}) {
             try {
                 return _require.resolve(path);
             } catch (err) {
-                if (!ext) {
+                if (!exts) {
                     throw new errors.NotFoundError(path);
                 }
             }
         }
-        if (ext) {
-            let { dir, name } = node_path.parse(path);
-            let found = await iterate.someNotNil(ext, async ext => {
+        if (exts) {
+            let { dir, name, ext: _ext } = node_path.parse(path);
+            let found = await iterate.someNotNil(exts, async ext => {
+                if (ext === _ext) {
+                    return false;
+                }
                 let file = node_path.format({ dir, name, ext });
                 try {
                     await promises.access(file, promises.constants.F_OK);
@@ -85,7 +107,7 @@ async function resolvePathIfExists (str, { dir, resolve, ext }={}) {
     }
 }
 
-function resolvePathIfExistsSync (str, { dir, resolve, ext }={}) {
+function resolvePathIfExistsSync (str, { dir, resolve, exts }={}) {
     let path = resolvePath(str, dir);
     try {
         node_fs.accessSync(path, promises.constants.F_OK);
@@ -95,14 +117,17 @@ function resolvePathIfExistsSync (str, { dir, resolve, ext }={}) {
             try {
                 return _require.resolve(path);
             } catch (err) {
-                if (!ext) {
+                if (!exts) {
                     throw new errors.NotFoundError(path);
                 }
             }
         }
-        if (ext) {
-            let { dir, name } = node_path.parse(path);
-            let found = iterate.someNotNil(ext, ext => {
+        if (exts) {
+            let { dir, name, ext: _ext } = node_path.parse(path);
+            let found = iterate.someNotNil(exts, ext => {
+                if (ext === _ext) {
+                    return false;
+                }
                 let file = node_path.format({ dir, name, ext });
                 try {
                     node_fs.accessSync(file, promises.constants.F_OK);
@@ -121,25 +146,6 @@ function resolvePathIfExistsSync (str, { dir, resolve, ext }={}) {
             throw new errors.NotFoundError(path);
         }
     }
-}
-
-// If a value was never set on _env it will return typeof undefined
-// If a value was set on _env that was typeof undefined it will become string 'undefined'
-function isNilEnv (val) {
-    return types.isNil(val) || val === 'undefined' || val === 'null';
-}
-
-// Getter/setter for env vars
-function env (key, val) {
-    if (types.isString(key)) {
-        let curr = node_process.env[key];
-        if (types.notNil(val) && isNilEnv(curr)) {
-            return node_process.env[key] = val;
-        } else {
-            return curr === 'undefined' ? undefined : curr === 'null' ? null : curr;
-        }
-    }
-    return node_process.env;
 }
 
 // Conditionally import or require based on esm-ness
@@ -224,16 +230,92 @@ function requireOrReadSync (str, encoding='utf8') {
     }
 }
 
+async function readFiles (paths, { dir, exts, fn, encoding='utf8' }={}) {
+    return await iterate.mapNotNil(paths, async str => {
+        let path, contents, error;
+        try {
+            path = await resolvePathIfExists(str, { dir, exts });
+            switch (fn) {
+                case importOrRequire:
+                    contents = await fn(path);
+                    break;
+                case importRequireOrRead:
+                    contents = await fn(path, encoding);
+                    break;
+                default:
+                    contents = await promises.readFile(path, { encoding });
+            }
+        } catch (err) {
+            error = err;
+        }
+        return {
+            path,
+            original: str,
+            contents,
+            error
+        }
+    });
+}
+
+function readFilesSync (paths, { dir, exts, fn, encoding='utf8' }={}) {
+    return iterate.mapNotNil(paths, str => {
+        let path, contents, error;
+        try {
+            path = resolvePathIfExistsSync(str, { dir, exts });
+            switch (fn) {
+                case require$1:
+                    contents = fn(path);
+                    break;
+                case requireOrReadSync:
+                    contents = fn(path, encoding);
+                    break;
+                default:
+                    contents = node_fs.readFileSync(path, { encoding });
+            }
+        } catch (err) {
+            error = err;
+        }
+        return {
+            path,
+            original: str,
+            contents,
+            error
+        }
+    });
+}
+
+async function importOrRequireFiles (paths, args) {
+    return readFiles(paths, { ...args, fn: importOrRequire });
+}
+
+async function importRequireOrReadFiles (paths, args) {
+    return readFiles(paths, { ...args, fn: importRequireOrRead });
+}
+
+function requireFiles (paths, args) {
+    return readFilesSync(paths, { ...args, fn: require$1 });
+}
+
+function requireOrReadFilesSync (paths, args) {
+    return readFilesSync(paths, { ...args, fn: requireOrReadSync });
+}
+
 exports.env = env;
 exports.importOrRequire = importOrRequire;
+exports.importOrRequireFiles = importOrRequireFiles;
 exports.importRequireOrRead = importRequireOrRead;
+exports.importRequireOrReadFiles = importRequireOrReadFiles;
 exports.isDuplex = isDuplex;
 exports.isPassThrough = isPassThrough;
 exports.isReadable = isReadable;
 exports.isStream = isStream;
 exports.isTransform = isTransform;
 exports.isWritable = isWritable;
+exports.readFiles = readFiles;
+exports.readFilesSync = readFilesSync;
 exports.require = require$1;
+exports.requireFiles = requireFiles;
+exports.requireOrReadFilesSync = requireOrReadFilesSync;
 exports.requireOrReadSync = requireOrReadSync;
 exports.resolvePath = resolvePath;
 exports.resolvePathIfExists = resolvePathIfExists;
