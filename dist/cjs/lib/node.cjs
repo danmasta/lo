@@ -58,7 +58,7 @@ function env (key, val) {
 // Resolve file path with support for home char or parent dir
 function resolvePath (str, dir) {
     if (str[0] === '~') {
-        return node_path.normalize(path.join(node_os.homedir(), str.slice(1)));
+        return node_path.join(node_os.homedir(), str.slice(1));
     }
     if (dir) {
         return node_path.resolve(dir, str);
@@ -252,7 +252,7 @@ async function readFiles (paths, { dir, exts, fn, encoding='utf8' }={}) {
             path,
             original: str,
             contents,
-            error
+            err: error
         }
     });
 }
@@ -279,7 +279,7 @@ function readFilesSync (paths, { dir, exts, fn, encoding='utf8' }={}) {
             path,
             original: str,
             contents,
-            error
+            err: error
         }
     });
 }
@@ -306,6 +306,7 @@ exports.importOrRequireFiles = importOrRequireFiles;
 exports.importRequireOrRead = importRequireOrRead;
 exports.importRequireOrReadFiles = importRequireOrReadFiles;
 exports.isDuplex = isDuplex;
+exports.isNilEnv = isNilEnv;
 exports.isPassThrough = isPassThrough;
 exports.isReadable = isReadable;
 exports.isStream = isStream;

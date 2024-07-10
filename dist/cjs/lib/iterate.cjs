@@ -55,7 +55,9 @@ function forEach (iter, fn) {
 // Async alias
 async function iterateA (iter, fn, col=1, type, iterA, fnA) {
     if (col && !type.collection) {
-        await fn(iter, 0, iter);
+        if (types.notNil(iter)) {
+            await fn(iter, 0, iter);
+        }
     } else {
         if (iterA) {
             let index = 0;
@@ -84,7 +86,9 @@ async function iterateA (iter, fn, col=1, type, iterA, fnA) {
                 }
             }
         } else {
-            await fn(iter, 0, iter);
+            if (types.notNil(iter)) {
+                await fn(iter, 0, iter);
+            }
         }
     }
     return iter;
@@ -95,7 +99,9 @@ async function iterateA (iter, fn, col=1, type, iterA, fnA) {
 // Note: Can break iteration early by returning BREAK symbol
 function iterate (iter, fn, col=1, type) {
     if (col && !type.collection) {
-        fn(iter, 0, iter);
+        if (types.notNil(iter)) {
+            fn(iter, 0, iter);
+        }
     } else {
         if (type.entries) {
             for (const [key, val] of iter.entries()) {
@@ -117,7 +123,9 @@ function iterate (iter, fn, col=1, type) {
                 }
             }
         } else {
-            fn(iter, 0, iter);
+            if (types.notNil(iter)) {
+                fn(iter, 0, iter);
+            }
         }
     }
     return iter;

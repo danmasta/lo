@@ -189,6 +189,69 @@ function join (obj, sep=',') {
     return '';
 }
 
+// Split string on char
+// Limit sets the number of sub strings in result:
+// any remaining matches are included in final sub string
+// Optionally trim results
+// Note: Empty strings are ignored in result
+// Note: Does not support regex
+function split (str, char, limit=Infinity, trim) {
+    str = types.toString(str);
+    // Handle split on each character
+    if (char === '') {
+        return str.split(char);
+    }
+    let index = 0;
+    let match;
+    let sub = '';
+    let res = [];
+    // Ignore empty strings
+    let push = () => {
+        if (trim) {
+            sub = sub.trim();
+        }
+        if (sub.length) {
+            res.push(sub);
+        }
+    };
+    while ((match = str.indexOf(char, index)) > -1) {
+        if (!limit) {
+            break;
+        }
+        sub = str.slice(index, match);
+        push();
+        limit--;
+        index = match + char.length;
+    }
+    if (index < str.length) {
+        sub = str.slice(index);
+        push();
+    }
+    return res;
+}
+
+function toPairs (obj) {
+    return iterate.map(obj, (val, key) => {
+        return [key, val];
+    }, 0);
+}
+
+function fromPairs (arr) {
+    let res = {};
+    iterate.each(arr, pair => {
+        res[pair[0]] = pair[1];
+    });
+    return res;
+}
+
+function toUpper (str) {
+    return types.toString(str).toUpperCase();
+}
+
+function toLower (str) {
+    return types.toString(str).toLowerCase();
+}
+
 exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
 exports.compact = compact;
@@ -197,6 +260,7 @@ exports.defaults = defaults;
 exports.flat = flat;
 exports.flatCompact = flatCompact;
 exports.freeze = freeze;
+exports.fromPairs = fromPairs;
 exports.get = get;
 exports.getOwn = getOwn;
 exports.has = has;
@@ -205,3 +269,7 @@ exports.keys = keys;
 exports.merge = merge;
 exports.set = set;
 exports.setOwn = setOwn;
+exports.split = split;
+exports.toLower = toLower;
+exports.toPairs = toPairs;
+exports.toUpper = toUpper;
