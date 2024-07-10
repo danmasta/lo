@@ -84,6 +84,7 @@
 * `flat`
 * `flatCompact`
 * `freeze`
+* `fromPairs`
 * `get`
 * `getOwn`
 * `has`
@@ -93,6 +94,10 @@
 * `merge`
 * `set`
 * `setOwn`
+* `split`
+* `toLower`
+* `toPairs`
+* `toUpper`
 #### Node
 * `env`
 * `importOrRequire`
