@@ -78,6 +78,7 @@
 ## Util
 #### Base
 * `assign`
+* `capitalize`
 * `compact`
 * `concat`
 * `defaults`
@@ -95,10 +96,15 @@
 * `set`
 * `setOwn`
 * `split`
+* `toCamel`
+* `toKebab`
 * `toLower`
 * `toPairs`
+* `toPascal`
+* `toSnake`
 * `toUpper`
 #### Node
+* `argv`
 * `env`
 * `importOrRequire`
 * `importOrRequireFiles`
