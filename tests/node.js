@@ -33,4 +33,22 @@ describe('Node', () => {
         });
     });
 
+    it('optsFromArgv', () => {
+        let args = '-e true -d false --enabled false --test 100 -';
+        let opts = {
+            enabled: 'e',
+            disabled: 'd',
+            test: undefined,
+            stdin: '-',
+            dir: null
+        }
+        expect(lo.optsFromArgv(opts, { args })).to.eql({
+            enabled: true,
+            disabled: false,
+            test: 100,
+            stdin: true,
+            dir: undefined
+        });
+    });
+
 });
