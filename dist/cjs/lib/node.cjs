@@ -43,17 +43,21 @@ function isNilEnv (val) {
     return types.isNil(val) || val === 'undefined' || val === 'null';
 }
 
-// Getter/setter for env vars
+// Getter/Setter for env vars
+// Returns native types for primitive values
 function env (key, val) {
-    if (types.isString(key)) {
-        let curr = node_process.env[key];
-        if (types.notNil(val) && isNilEnv(curr)) {
-            return node_process.env[key] = val;
-        } else {
-            return curr === 'undefined' ? undefined : curr === 'null' ? null : curr;
-        }
+    switch (arguments.length) {
+        case 1:
+            return types.toNativeType(node_process.env[key]);
+        case 2:
+            let v = node_process.env[key];
+            if (isNilEnv(v)) {
+                return node_process.env[key] = val;
+            }
+            return types.toNativeType(v);
+        default:
+            return node_process.env;
     }
-    return node_process.env;
 }
 
 // Resolve file path with support for home char or parent dir
