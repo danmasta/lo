@@ -191,11 +191,11 @@ function join (obj, sep=',') {
 
 // Split string on char
 // Limit sets the number of sub strings in result:
-// any remaining matches are included in final sub string
+// Any remaining matches are included in final sub string
 // Optionally trim results
-// Note: Empty strings are ignored in result
-// Note: Does not support regex
-function split (str, char, limit=Infinity, trim) {
+// Note: Empty strings are ignored
+// Note: Supports regex, global flag will be added if doesn't exist
+function split (str, char, limit=Infinity, trim, inclusive=0) {
     str = types.toString(str);
     // Handle split on each character
     if (char === '') {
@@ -205,23 +205,51 @@ function split (str, char, limit=Infinity, trim) {
     let match;
     let sub = '';
     let res = [];
-    // Ignore empty strings
     let push = () => {
         if (trim) {
             sub = sub.trim();
         }
+        // Ignore empty strings
         if (sub.length) {
             res.push(sub);
         }
     };
-    while ((match = str.indexOf(char, index)) > -1) {
-        if (!limit) {
-            break;
+    if (types.isRegExp(char)) {
+        if (char.flags.indexOf('g') === -1) {
+            char = new RegExp(char.source, char.flags + 'g');
         }
-        sub = str.slice(index, match);
-        push();
-        limit--;
-        index = match + char.length;
+        while ((match = char.exec(str)) !== null) {
+            if (!limit) {
+                break;
+            }
+            if (match[0]) {
+                sub = str.slice(index, match.index);
+                push();
+                index = char.lastIndex;
+            } else {
+                // Handle empty match
+                if (index !== match.index) {
+                    sub = str.slice(index, match.index);
+                    push();
+                    // If match is zero length, lastIndex won't increment
+                    index = char.lastIndex++;
+                }
+            }
+            limit--;
+        }
+    } else {
+        while ((match = str.indexOf(char, index)) > -1) {
+            if (!limit) {
+                break;
+            }
+            // Ignore empty match
+            if (index !== match) {
+                sub = str.slice(index, match);
+                push();
+            }
+            limit--;
+            index = match + char.length;
+        }
     }
     if (index < str.length) {
         sub = str.slice(index);
@@ -252,8 +280,45 @@ function toLower (str) {
     return types.toString(str).toLowerCase();
 }
 
+function capitalize (str) {
+    str = types.toString(str);
+    let char = str.codePointAt(0) ?? -1;
+    if (char === -1) {
+        return str;
+    }
+    let i = char > 0xFFFF ? 2 : 1;
+    return String.fromCodePoint(char).toUpperCase() + str.slice(i);
+}
+
+function words (str) {
+    return split(str, constants.REGEX.words);
+}
+
+function compound (str, fn=val=>val, sep='') {
+    return join(iterate.map(words(str), fn), sep);
+}
+
+function toCamel (str) {
+    return compound(str, (val, i) => {
+        return i ? capitalize(val) : toLower(val);
+    });
+}
+
+function toKebab (str) {
+    return compound(str, toLower, '-');
+}
+
+function toSnake (str) {
+    return compound(str, toLower, '_');
+}
+
+function toPascal (str) {
+    return compound(str, capitalize);
+}
+
 exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
+exports.capitalize = capitalize;
 exports.compact = compact;
 exports.concat = concat;
 exports.defaults = defaults;
@@ -270,6 +335,10 @@ exports.merge = merge;
 exports.set = set;
 exports.setOwn = setOwn;
 exports.split = split;
+exports.toCamel = toCamel;
+exports.toKebab = toKebab;
 exports.toLower = toLower;
 exports.toPairs = toPairs;
+exports.toPascal = toPascal;
+exports.toSnake = toSnake;
 exports.toUpper = toUpper;

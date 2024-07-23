@@ -183,7 +183,7 @@ function isUndefined (obj) {
     return obj === undefined;
 }
 
-// Test if running in esm or commonjs mode
+// Test if running in esm or cjs mode
 function isEsmMode () {
     return typeof module === 'undefined';
 }
@@ -308,6 +308,10 @@ function isBoolean (obj) {
     return getType(obj) === constants.TYPES.Boolean;
 }
 
+function isRegExp (obj) {
+    return getType(obj) === constants.TYPES.RegExp;
+}
+
 // Checks for @@asyncIterator
 // AsyncGenerator
 // Currently no built-in async iterables except ReadableStream
@@ -343,7 +347,7 @@ function toFn (obj) {
     return isFunction(obj) ? obj : constants.noop;
 }
 
-// Note: only iterables that implement entries can be cast to an object
+// Note: Only iterables that implement entries can be cast to an object
 function toObject (obj) {
     let type = getType(obj);
     if (type === constants.TYPES.Object) {
@@ -371,7 +375,7 @@ function toPath (str) {
     return arr;
 }
 
-// Note: supports all types including iterables and objects
+// Note: Supports all types including iterables and objects
 function toString (obj) {
     let type = getType(obj);
     if (type === constants.TYPES.String) {
@@ -389,6 +393,22 @@ function toString (obj) {
     if (type === constants.TYPES.Object) {
         return Object.entries(obj).toString();
     }
+}
+
+// Convert a string value to it's native type if possible
+// Note: Doesn't convert BigInt (Errors with floats and math operations)
+// Note: Doesn't convert Symbol
+function toNativeType (val) {
+    if (constants.hasOwn(constants.PRIMITIVES, val)) {
+        return constants.PRIMITIVES[val];
+    }
+    if (isNumeric(val)) {
+        if (val > Number.MAX_SAFE_INTEGER || val < Number.MIN_SAFE_INTEGER) {
+            return val;
+        }
+        return parseFloat(val);
+    }
+    return val;
 }
 
 exports.getCtorType = getCtorType;
@@ -418,12 +438,14 @@ exports.isNumber = isNumber;
 exports.isNumeric = isNumeric;
 exports.isObject = isObject;
 exports.isPromise = isPromise;
+exports.isRegExp = isRegExp;
 exports.isString = isString;
 exports.isTypedArray = isTypedArray;
 exports.isUndefined = isUndefined;
 exports.notNil = notNil;
 exports.toArray = toArray;
 exports.toFn = toFn;
+exports.toNativeType = toNativeType;
 exports.toObject = toObject;
 exports.toPath = toPath;
 exports.toString = toString;

@@ -123,12 +123,25 @@ const typesByCtor = new Map([
 ]);
 
 const REGEX = {
-    path: /[\[\]\."']+/g
+    path: /[\[\]\."']+/g,
+    words: /[\W-_]+/g,
+    whitespace: /\s+/g
+};
+
+const PRIMITIVES = {
+    undefined: undefined,
+    null: null,
+    NaN: NaN,
+    Infinity: Infinity,
+    '-Infinity': -Infinity,
+    true: true,
+    false: false
 };
 
 addTypes(TYPES);
 
 exports.BREAK = BREAK;
+exports.PRIMITIVES = PRIMITIVES;
 exports.REGEX = REGEX;
 exports.TYPES = TYPES;
 exports.addType = addType;

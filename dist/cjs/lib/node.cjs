@@ -8,6 +8,7 @@ var constants = require('./constants.cjs');
 var errors = require('./errors.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
+var util = require('./util.cjs');
 
 // Note: Doesn't work with directory paths
 const _require = node_module.createRequire(node_process.cwd() + node_path.sep + '.');
@@ -300,6 +301,111 @@ function requireOrReadFilesSync (paths, args) {
     return readFilesSync(paths, { ...args, fn: requireOrReadSync });
 }
 
+// Parse argv
+// Accepts an array or string of arguments
+// Supports negation, camel casing, and type casting to native types
+function argv (arr, { negate=1, camel=1, native=1 }={}) {
+    if (!types.isArray(arr)) {
+        arr = util.split(arr, constants.REGEX.whitespace);
+    }
+    let res = { _pos: [] };
+    let skip = 0;
+    let ref = res;
+    function add (k, v) {
+        if (camel) {
+            k = util.toCamel(k);
+        }
+        if (native) {
+            v = types.toNativeType(v);
+        }
+        if (constants.hasOwn(ref, k)) {
+            if (!types.isArray(ref[k])) {
+                ref[k] = [ref[k]];
+            }
+            ref[k].push(v);
+        } else {
+            ref[k] = v;
+        }
+    }
+    function isOpt (str='') {
+        return str.startsWith('--') || str.startsWith('-');
+    }
+    function isAlphabetical (p) {
+        return (p >= 65 && p <= 90) || (p >= 97 && p <= 122);
+    }
+    iterate.each(arr, (arg, i, args) => {
+        if (skip) {
+            skip = 0;
+            return;
+        }
+        if (arg === '--') {
+            ref = ref._sub = { _pos: [] };
+            return;
+        }
+        if (arg === '-') {
+            ref['-'] = true;
+            return;
+        }
+        if (arg.startsWith('--')) {
+            let { 0: k, 1: v } = util.split(arg.slice(2), '=', 1, true);
+            if (v) {
+                add(k, v);
+            } else {
+                let next = args.at(i + 1);
+                if (next && !isOpt(next)) {
+                    skip = 1;
+                    add(k, next);
+                } else {
+                    if (negate && k.startsWith('no-')) {
+                        k = k.slice(3);
+                        add(k, false);
+                    } else {
+                        add(k, true);
+                    }
+                }
+            }
+            return;
+        }
+        if (arg.startsWith('-')) {
+            let { 0: k, 1: v } = util.split(arg.slice(1), '=', 1, true);
+            if (v) {
+                add(k, v);
+                return;
+            } else {
+                k = arg.slice(1, 2);
+                v = arg.slice(2);
+            }
+            if (v) {
+                if (!isAlphabetical(v.codePointAt(0))) {
+                    add(k, v);
+                } else {
+                    add(k, true);
+                    for (const char of v) {
+                        add(char, true);
+                    }
+                }
+            } else {
+                let next = args.at(i + 1);
+                if (next && !isOpt(next)) {
+                    skip = 1;
+                    add(k, next);
+                } else {
+                    add(k, true);
+                }
+            }
+            return;
+        }
+        if (arg) {
+            if (native) {
+                arg = types.toNativeType(arg);
+            }
+            ref._pos.push(arg);
+        }
+    });
+    return res;
+}
+
+exports.argv = argv;
 exports.env = env;
 exports.importOrRequire = importOrRequire;
 exports.importOrRequireFiles = importOrRequireFiles;
