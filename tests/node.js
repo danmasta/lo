@@ -3,13 +3,13 @@ describe('Node', () => {
     it('env', () => {
         expect(lo.env('TEST1')).to.be.undefined;
         lo.env('TEST2', 100);
-        expect(lo.env('TEST2')).to.equal('100');
+        expect(lo.env('TEST2')).to.equal(100);
         lo.env('TEST3', null);
-        expect(lo.env('TEST3')).to.be.undefined;
-        lo.env('TEST3', 'null');
         expect(lo.env('TEST3')).to.be.null;
+        lo.env('TEST3', undefined);
+        expect(lo.env('TEST3')).to.be.undefined;
         lo.env('TEST3', 100);
-        expect(lo.env('TEST3')).to.equal('100');
+        expect(lo.env('TEST3')).to.equal(100);
     });
 
     it('argv', () => {
