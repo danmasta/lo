@@ -2,7 +2,7 @@ var node_fs = require('node:fs');
 var promises = require('node:fs/promises');
 var node_module = require('node:module');
 var node_os = require('node:os');
-var node_path = require('node:path');
+var PATH = require('node:path');
 var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var errors = require('./errors.cjs');
@@ -10,8 +10,9 @@ var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
 var util = require('./util.cjs');
 
+// Note: Resolves relative to CWD
 // Note: Doesn't work with directory paths
-const _require = node_module.createRequire(node_process.cwd() + node_path.sep + '.');
+const REQUIRE = node_module.createRequire(node_process.cwd() + PATH.sep + '.');
 
 function isStream (obj) {
     return obj instanceof constants.TYPES.Stream.ctor;
@@ -61,25 +62,25 @@ function env (key, val) {
 }
 
 // Resolve file path with support for home char or parent dir
-function resolvePath (str, dir) {
+function resolve (str, dir) {
     if (str[0] === '~') {
-        return node_path.join(node_os.homedir(), str.slice(1));
+        return PATH.join(node_os.homedir(), str.slice(1));
     }
     if (dir) {
-        return node_path.resolve(dir, str);
+        return PATH.resolve(dir, str);
     }
-    return node_path.resolve(str);
+    return PATH.resolve(str);
 }
 
-async function resolvePathIfExists (str, { dir, resolve, exts }={}) {
-    let path = resolvePath(str, dir);
+async function resolveIfExists (str, { dir, require, exts }={}) {
+    let path = resolve(str, dir);
     try {
         await promises.access(path, promises.constants.F_OK);
         return path;
     } catch (err) {
-        if (resolve) {
+        if (require) {
             try {
-                return _require.resolve(path);
+                return REQUIRE.resolve(path);
             } catch (err) {
                 if (!exts) {
                     throw new errors.NotFoundError(path);
@@ -87,12 +88,12 @@ async function resolvePathIfExists (str, { dir, resolve, exts }={}) {
             }
         }
         if (exts) {
-            let { dir, name, ext: _ext } = node_path.parse(path);
+            let { dir, name, ext: EXT } = PATH.parse(path);
             let found = await iterate.someNotNil(exts, async ext => {
-                if (ext === _ext) {
+                if (ext === EXT) {
                     return false;
                 }
-                let file = node_path.format({ dir, name, ext });
+                let file = PATH.format({ dir, name, ext });
                 try {
                     await promises.access(file, promises.constants.F_OK);
                     path = file;
@@ -112,15 +113,15 @@ async function resolvePathIfExists (str, { dir, resolve, exts }={}) {
     }
 }
 
-function resolvePathIfExistsSync (str, { dir, resolve, exts }={}) {
-    let path = resolvePath(str, dir);
+function resolveIfExistsSync (str, { dir, require, exts }={}) {
+    let path = resolve(str, dir);
     try {
         node_fs.accessSync(path, promises.constants.F_OK);
         return path;
     } catch (err) {
-        if (resolve) {
+        if (require) {
             try {
-                return _require.resolve(path);
+                return REQUIRE.resolve(path);
             } catch (err) {
                 if (!exts) {
                     throw new errors.NotFoundError(path);
@@ -128,12 +129,12 @@ function resolvePathIfExistsSync (str, { dir, resolve, exts }={}) {
             }
         }
         if (exts) {
-            let { dir, name, ext: _ext } = node_path.parse(path);
+            let { dir, name, ext: EXT } = PATH.parse(path);
             let found = iterate.someNotNil(exts, ext => {
-                if (ext === _ext) {
+                if (ext === EXT) {
                     return false;
                 }
-                let file = node_path.format({ dir, name, ext });
+                let file = PATH.format({ dir, name, ext });
                 try {
                     node_fs.accessSync(file, promises.constants.F_OK);
                     path = file;
@@ -155,14 +156,14 @@ function resolvePathIfExistsSync (str, { dir, resolve, exts }={}) {
 
 // Conditionally import or require based on esm-ness
 function importOrRequire (str, ext) {
-    ext = ext || node_path.extname(str);
+    ext = ext ?? PATH.extname(str);
     switch (ext) {
         case '.js':
             if (types.isEsmMode()) {
                 return import(str);
             } else {
                 try {
-                    return _require(str);
+                    return REQUIRE(str);
                 } catch (err) {
                     if (err.code === 'ERR_REQUIRE_ESM' || err.code === 'ERR_REQUIRE_ASYNC_MODULE') {
                         return import(str);
@@ -174,10 +175,10 @@ function importOrRequire (str, ext) {
             if (types.isEsmMode()) {
                 return import(str);
             } else {
-                return _require(str);
+                return REQUIRE(str);
             }
         case '.cjs':
-            return _require(str);
+            return REQUIRE(str);
         case '.mjs':
             return import(str);
         default:
@@ -188,13 +189,13 @@ function importOrRequire (str, ext) {
 // Throw error if file requires async import
 // Note: Does not resolve path like regular require
 function require$1 (str, ext) {
-    ext = ext || node_path.extname(str);
+    ext = ext ?? PATH.extname(str);
     switch (ext) {
         case '.js':
         case '.json':
         case '.cjs':
             try {
-                return _require(str);
+                return REQUIRE(str);
             } catch (err) {
                 if (err.code === 'ERR_REQUIRE_ESM' || err.code === 'ERR_REQUIRE_ASYNC_MODULE') {
                     throw new errors.RequireAsyncError(str);
@@ -209,7 +210,7 @@ function require$1 (str, ext) {
 }
 
 async function importRequireOrRead (str, encoding='utf8') {
-    let ext = node_path.extname(str);
+    let ext = PATH.extname(str);
     switch (ext) {
         case '.js':
         case '.json':
@@ -223,7 +224,7 @@ async function importRequireOrRead (str, encoding='utf8') {
 
 // Throw error if file requires async import
 function requireOrReadSync (str, encoding='utf8') {
-    let ext = node_path.extname(str);
+    let ext = PATH.extname(str);
     switch (ext) {
         case '.js':
         case '.json':
@@ -239,7 +240,7 @@ async function readFiles (paths, { dir, exts, fn, encoding='utf8' }={}) {
     return await iterate.mapNotNil(paths, async str => {
         let path, contents, error;
         try {
-            path = await resolvePathIfExists(str, { dir, exts });
+            path = await resolveIfExists(str, { dir, exts });
             switch (fn) {
                 case importOrRequire:
                     contents = await fn(path);
@@ -266,7 +267,7 @@ function readFilesSync (paths, { dir, exts, fn, encoding='utf8' }={}) {
     return iterate.mapNotNil(paths, str => {
         let path, contents, error;
         try {
-            path = resolvePathIfExistsSync(str, { dir, exts });
+            path = resolveIfExistsSync(str, { dir, exts });
             switch (fn) {
                 case require$1:
                     contents = fn(path);
@@ -409,6 +410,17 @@ function argv (arr, { negate=1, camel=1, native=1 }={}) {
     return res;
 }
 
+// Return an options object from argv
+// Accepts an object of key/alias pairs to match values from
+function optsFromArgv (opts, { args=node_process.argv.slice(2), ...params }={}) {
+    let res = {};
+    let src = argv(args, params);
+    iterate.forOwn(opts, (alias, key) => {
+        res[key] = util.getOwn(src, alias) ?? src[key];
+    });
+    return res;
+}
+
 exports.argv = argv;
 exports.env = env;
 exports.importOrRequire = importOrRequire;
@@ -422,12 +434,13 @@ exports.isReadable = isReadable;
 exports.isStream = isStream;
 exports.isTransform = isTransform;
 exports.isWritable = isWritable;
+exports.optsFromArgv = optsFromArgv;
 exports.readFiles = readFiles;
 exports.readFilesSync = readFilesSync;
 exports.require = require$1;
 exports.requireFiles = requireFiles;
 exports.requireOrReadFilesSync = requireOrReadFilesSync;
 exports.requireOrReadSync = requireOrReadSync;
-exports.resolvePath = resolvePath;
-exports.resolvePathIfExists = resolvePathIfExists;
-exports.resolvePathIfExistsSync = resolvePathIfExistsSync;
+exports.resolve = resolve;
+exports.resolveIfExists = resolveIfExists;
+exports.resolveIfExistsSync = resolveIfExistsSync;
