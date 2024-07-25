@@ -28,4 +28,12 @@ describe('Util', () => {
         expect(lo.join(fx.obj1)).to.eql('');
     });
 
+    it('split', () => {
+        let str = '1|2|3';
+        expect(lo.split(str, '|')).to.eql(['1','2','3']);
+        expect(lo.split(str, /[|]+/)).to.eql(['1','2','3']);
+        expect(lo.split(str, '|', { limit: 1 })).to.eql(['1','2|3']);
+        expect(lo.split(' 1 | 2 | 3 ', '|', { trim: true })).to.eql(['1','2','3']);
+    });
+
 });
