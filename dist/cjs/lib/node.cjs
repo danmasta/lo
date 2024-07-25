@@ -352,7 +352,7 @@ function argv (arr, { negate=1, camel=1, native=1 }={}) {
             return;
         }
         if (arg.startsWith('--')) {
-            let { 0: k, 1: v } = util.split(arg.slice(2), '=', 1, true);
+            let [k, v] = util.split(arg.slice(2), '=', { limit: 1, trim: true });
             if (v) {
                 add(k, v);
             } else {
@@ -372,7 +372,7 @@ function argv (arr, { negate=1, camel=1, native=1 }={}) {
             return;
         }
         if (arg.startsWith('-')) {
-            let { 0: k, 1: v } = util.split(arg.slice(1), '=', 1, true);
+            let [k, v] = util.split(arg.slice(1), '=', { limit: 1, trim: true });
             if (v) {
                 add(k, v);
                 return;

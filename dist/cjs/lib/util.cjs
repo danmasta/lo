@@ -195,7 +195,7 @@ function join (obj, sep=',') {
 // Optionally trim results
 // Note: Empty strings are ignored
 // Note: Supports regex, global flag will be added if doesn't exist
-function split (str, char, limit=Infinity, trim, inclusive=0) {
+function split (str, char, { limit=Infinity, trim, inclusive=0 }={}) {
     str = types.toString(str);
     // Handle split on each character
     if (char === '') {
