@@ -6,7 +6,7 @@ describe('Node', () => {
     it('argv', () => {
         let args = lo.argv('-abc -d=1 -e 1 -f100 --no-g - --test=1 --test 2 one two -- three four --test=fizz= --some-dir=/tmp');
         expect(args).to.eql({
-            _pos: ['one', 'two'],
+            _: ['one', 'two'],
             a: true,
             b: true,
             c: true,
@@ -16,10 +16,10 @@ describe('Node', () => {
             g: false,
             '-': true,
             test: [1, 2],
-            _sub: {
-                _pos: ['three', 'four'],
+            sub: {
+                _: ['three', 'four'],
                 test: 'fizz=',
-                someDir: '/tmp'
+                'some-dir': '/tmp'
             }
         });
     });
