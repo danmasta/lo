@@ -4,6 +4,7 @@ var iterate = require('./lib/iterate.cjs');
 var util = require('./lib/util.cjs');
 var node$1 = require('./types/node.cjs');
 var node = require('./lib/node.cjs');
+var node_process = require('node:process');
 
 constants.addTypes(node$1.default);
 
@@ -116,6 +117,7 @@ exports.isStream = node.isStream;
 exports.isTransform = node.isTransform;
 exports.isWritable = node.isWritable;
 exports.optsFromArgv = node.optsFromArgv;
+exports.parseArgv = node.argv;
 exports.readFiles = node.readFiles;
 exports.readFilesSync = node.readFilesSync;
 exports.require = node.require;
@@ -125,4 +127,16 @@ exports.requireOrReadSync = node.requireOrReadSync;
 exports.resolve = node.resolve;
 exports.resolveIfExists = node.resolveIfExists;
 exports.resolveIfExistsSync = node.resolveIfExistsSync;
+Object.defineProperty(exports, "ARGV", {
+    enumerable: true,
+    get: function () { return node_process.argv; }
+});
+Object.defineProperty(exports, "CWD", {
+    enumerable: true,
+    get: function () { return node_process.cwd; }
+});
+Object.defineProperty(exports, "ENV", {
+    enumerable: true,
+    get: function () { return node_process.env; }
+});
 exports.default = index;

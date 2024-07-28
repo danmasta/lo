@@ -309,11 +309,11 @@ function requireOrReadFilesSync (paths, args) {
 // Parse argv
 // Accepts an array or string of arguments
 // Supports negation, camel casing, and type casting to native types
-function argv (arr, { negate=1, camel=1, native=1 }={}) {
+function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
     if (!types.isArray(arr)) {
         arr = util.split(arr, constants.REGEX.whitespace);
     }
-    let res = { _pos: [] };
+    let res = { _: [] };
     let skip = 0;
     let ref = res;
     function add (k, v) {
@@ -344,7 +344,9 @@ function argv (arr, { negate=1, camel=1, native=1 }={}) {
             return;
         }
         if (arg === '--') {
-            ref = ref._sub = { _pos: [] };
+            if (sub) {
+                ref = ref[sub] = { _: [] };
+            }
             return;
         }
         if (arg === '-') {
@@ -404,7 +406,7 @@ function argv (arr, { negate=1, camel=1, native=1 }={}) {
             if (native) {
                 arg = types.toNativeType(arg);
             }
-            ref._pos.push(arg);
+            ref._.push(arg);
         }
     });
     return res;
@@ -421,6 +423,18 @@ function optsFromArgv (opts, { args=node_process.argv.slice(2), ...params }={}) 
     return res;
 }
 
+Object.defineProperty(exports, "ARGV", {
+    enumerable: true,
+    get: function () { return node_process.argv; }
+});
+Object.defineProperty(exports, "CWD", {
+    enumerable: true,
+    get: function () { return node_process.cwd; }
+});
+Object.defineProperty(exports, "ENV", {
+    enumerable: true,
+    get: function () { return node_process.env; }
+});
 exports.argv = argv;
 exports.env = env;
 exports.importOrRequire = importOrRequire;
@@ -435,6 +449,7 @@ exports.isStream = isStream;
 exports.isTransform = isTransform;
 exports.isWritable = isWritable;
 exports.optsFromArgv = optsFromArgv;
+exports.parseArgv = argv;
 exports.readFiles = readFiles;
 exports.readFilesSync = readFilesSync;
 exports.require = require$1;
