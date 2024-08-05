@@ -42,6 +42,7 @@
 * `isBuffer`
 * `isCollection`
 * `isCtor`
+* `isError`
 * `isEsmMode`
 * `isFunction`
 * `isGeneratorFunction`
