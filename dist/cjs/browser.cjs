@@ -34,6 +34,7 @@ exports.isBoolean = types.isBoolean;
 exports.isBuffer = types.isBuffer;
 exports.isCollection = types.isCollection;
 exports.isCtor = types.isCtor;
+exports.isError = types.isError;
 exports.isEsmMode = types.isEsmMode;
 exports.isFunction = types.isFunction;
 exports.isGeneratorFunction = types.isGeneratorFunction;

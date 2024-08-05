@@ -319,6 +319,10 @@ function isAsyncIterable (obj) {
     return notNil(obj) && !!obj[Symbol.asyncIterator];
 }
 
+function isError (obj) {
+    return getType(obj) === constants.TYPES.Error;
+}
+
 function toArrayOrSelf (obj, self) {
     if (isArray(obj)) {
         return obj;
@@ -426,6 +430,7 @@ exports.isBoolean = isBoolean;
 exports.isBuffer = isBuffer;
 exports.isCollection = isCollection;
 exports.isCtor = isCtor;
+exports.isError = isError;
 exports.isEsmMode = isEsmMode;
 exports.isFunction = isFunction;
 exports.isGeneratorFunction = isGeneratorFunction;
