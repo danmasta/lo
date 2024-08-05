@@ -57,6 +57,11 @@ describe('Types', () => {
         expect(lo.toType(Set, [1, 2])).to.be.an.instanceof(Set);
     });
 
+    it('isType', () => {
+        expect(lo.isError(new Error)).to.be.true;
+        expect(lo.isError(new fx.TestError)).to.be.true;
+    });
+
     it('toArray', () => {
         expect(lo.toArray(null)).to.eql([]);
         expect(lo.toArray(undefined)).to.eql([]);
