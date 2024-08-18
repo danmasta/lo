@@ -2,11 +2,13 @@ import { TYPES } from '../lib/constants.js';
 
 describe('Types', () => {
 
-    it('get type by instance', () => {
+    it('get type by instance', async () => {
         // Instances should be type of the constructor
         expect(lo.getType({})).to.equal(TYPES.Object);
         expect(lo.getType([])).to.equal(TYPES.Array);
         expect(lo.getType(Object.create(Number.prototype))).to.equal(TYPES.Number);
+        expect(lo.getType(Object.create(null))).to.equal(TYPES.Object);
+        expect(lo.getType(Object.create({}))).to.equal(TYPES.Object);
         expect(lo.getType(123)).to.equal(TYPES.Number);
         expect(lo.getType(new Number(123))).to.equal(TYPES.Number);
         expect(lo.getType(true)).to.equal(TYPES.Boolean);
@@ -17,11 +19,12 @@ describe('Types', () => {
         expect(lo.getType(fx.arrow)).to.equal(TYPES.Function);
         expect(lo.getType(fx.fn)).to.equal(TYPES.Function);
         expect(lo.getType(fx.promise)).to.equal(TYPES.Promise);
-        expect(lo.getType(new fx.TestClass)).to.equal(TYPES.Object);
+        expect(lo.getType(new fx.TestClass)).to.equal(TYPES.Unknown);
         expect(lo.getType(new fx.TestError)).to.equal(TYPES.Error);
         expect(lo.getType(new fx.TestErrorTwo)).to.equal(TYPES.Error);
         expect(lo.getType(new fx.TestArray)).to.equal(TYPES.Array);
         expect(lo.getType(fx.readable)).to.equal(TYPES.Readable);
+        expect(lo.getType(await import('../lib/types.js'))).to.equal(TYPES.Module);
         // Constructor functions should be type of Function
         expect(lo.getType(Promise)).to.equal(TYPES.Function);
         expect(lo.getType(Boolean)).to.equal(TYPES.Function);
