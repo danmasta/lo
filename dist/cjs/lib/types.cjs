@@ -13,6 +13,10 @@ function getTypeFromProto (obj, recurse=3) {
     let proto = constants.getPrototypeOf(obj);
     let type = constants.typesByProto.get(proto);
     if (type) {
+        // Classes that resolve to object type
+        if (type === constants.TYPES.Object && proto && obj.constructor !== type.ctor) {
+            return constants.TYPES.Unknown;
+        }
         return type;
     }
     if (recurse) {
@@ -67,7 +71,7 @@ function getTypeFromCtor (obj, recurse=3) {
 }
 
 // Get the object type definition
-// Uses typeof if possible otherwise checks it's prototype
+// Uses typeof if possible otherwise checks the prototype
 function getType (obj) {
     let type = constants.typesByType.get(typeof obj);
     switch (type) {
@@ -90,6 +94,10 @@ function getType (obj) {
             }
             if (Array.isArray(obj)) {
                 return constants.TYPES.Array;
+            }
+            // Plain objects
+            if (obj.constructor === type.ctor) {
+                return type;
             }
             // TypedArrays
             // Module
