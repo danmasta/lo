@@ -14,6 +14,10 @@ var util = require('./util.cjs');
 // Note: Doesn't work with directory paths
 const REQUIRE = node_module.createRequire(node_process.cwd() + PATH.sep + '.');
 
+function isBuffer (obj) {
+    return types.getType(obj) === constants.TYPES.Buffer;
+}
+
 function isStream (obj) {
     return obj instanceof constants.TYPES.Stream.ctor;
 }
@@ -441,6 +445,7 @@ exports.importOrRequire = importOrRequire;
 exports.importOrRequireFiles = importOrRequireFiles;
 exports.importRequireOrRead = importRequireOrRead;
 exports.importRequireOrReadFiles = importRequireOrReadFiles;
+exports.isBuffer = isBuffer;
 exports.isDuplex = isDuplex;
 exports.isNilEnv = isNilEnv;
 exports.isPassThrough = isPassThrough;

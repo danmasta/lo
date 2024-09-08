@@ -296,8 +296,8 @@ function isTypedArray (obj) {
     return obj instanceof constants.TYPES.TypedArray.ctor;
 }
 
-function isBuffer (obj) {
-    return getType(obj) === constants.TYPES.Buffer;
+function isArrayBuffer (obj) {
+    return getType(obj) === constants.TYPES.ArrayBuffer;
 }
 
 function isNumber (obj) {
@@ -432,10 +432,10 @@ exports.getTypeStr = getTypeStr;
 exports.hasEntries = hasEntries;
 exports.hasForEach = hasForEach;
 exports.isArray = isArray;
+exports.isArrayBuffer = isArrayBuffer;
 exports.isAsyncFunction = isAsyncFunction;
 exports.isAsyncIterable = isAsyncIterable;
 exports.isBoolean = isBoolean;
-exports.isBuffer = isBuffer;
 exports.isCollection = isCollection;
 exports.isCtor = isCtor;
 exports.isError = isError;

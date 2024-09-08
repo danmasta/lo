@@ -116,52 +116,52 @@ const types = [
     {
         n: 'TypedArray',
         c: getPrototypeOf(Int8Array),
-        x: [0, 0, 0],
+        x: [0, 0, 0, 1],
         a: 1
     },
     {
         n: 'Int8Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Uint8Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Uint8ClampedArray',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Int16Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Uint16Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Int32Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Uint32Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Float32Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Float64Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'BigInt64Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'BigUint64Array',
-        x: [1, 0, 2]
+        x: [1, 0, 2, 1]
     },
     {
         n: 'Array Iterator',
@@ -272,6 +272,15 @@ if (typeof AsyncIterator !== 'undefined') {
         n: 'AsyncIterator',
         x: [0, 0, 0, 1],
         a: 1
+    });
+}
+
+// Not available in all contexts:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
+if (typeof SharedArrayBuffer !== 'undefined') {
+    types.push({
+        n: 'SharedArrayBuffer',
+        x: [1, 0, 2]
     });
 }
 

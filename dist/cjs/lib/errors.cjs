@@ -1,58 +1,54 @@
 var node_util = require('node:util');
 
-class LoError extends Error {
+class BaseError extends Error {
     constructor (...args) {
         super(node_util.format(...args));
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
         this.code = this.constructor.code;
     }
-    static get code () {
-        return 'ERR';
-    }
+    static code = 'ERR';
 }
 
-class NotFoundError extends LoError {
+class NotFoundError extends BaseError {
     constructor (path) {
         super('File or directory not found: %s', path);
         this.path = path;
     }
-    static get code () {
-        return 'ERR_FILE_NOT_FOUND';
-    }
+    static code = 'ERR_FILE_NOT_FOUND';
 }
 
-class NotResolvedError extends LoError {
+class NotResolvedError extends BaseError {
     constructor (path) {
         super('File or directory not resolved: %s', path);
         this.path = path;
     }
-    static get code () {
-        return 'ERR_FILE_NOT_RESOLVED';
-    }
+    static code = 'ERR_FILE_NOT_RESOLVED';
 }
 
-class NotSupportedError extends LoError {
+class NotSupportedError extends BaseError {
     constructor (path) {
         super('File type not supported: %s', path);
         this.path = path;
     }
-    static get code () {
-        return 'ERR_FILE_NOT_SUPPORTED';
-    }
+    static code = 'ERR_FILE_NOT_SUPPORTED';
 }
 
-class RequireAsyncError extends LoError {
+class RequireAsyncError extends BaseError {
     constructor (path) {
         super('File requires async import: %s', path);
         this.path = path;
     }
-    static get code () {
-        return 'ERR_FILE_REQUIRE_ASYNC';
-    }
+    static code = 'ERR_FILE_REQUIRE_ASYNC';
 }
 
-exports.LoError = LoError;
+class IpError extends BaseError {
+    static code = 'ERR_IP';
+}
+
+exports.BaseError = BaseError;
+exports.Error = BaseError;
+exports.IpError = IpError;
 exports.NotFoundError = NotFoundError;
 exports.NotResolvedError = NotResolvedError;
 exports.NotSupportedError = NotSupportedError;

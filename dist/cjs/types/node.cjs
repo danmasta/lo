@@ -3,11 +3,7 @@ var stream = require('stream');
 var typesNode = [
     {
         n: 'Buffer',
-        x: [1, 1, 2]
-    },
-    {
-        n: 'SharedArrayBuffer',
-        x: [1, 0, 2]
+        x: [1, 1, 2, 1]
     },
     {
         n: 'Stream',

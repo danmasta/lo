@@ -4,6 +4,7 @@ var iterate = require('./lib/iterate.cjs');
 var util = require('./lib/util.cjs');
 var node$1 = require('./types/node.cjs');
 var node = require('./lib/node.cjs');
+var ip = require('./lib/ip.cjs');
 var node_process = require('node:process');
 
 constants.addTypes(node$1.default);
@@ -14,7 +15,8 @@ var index = {
     ...types,
     ...iterate,
     ...util,
-    ...node
+    ...node,
+    ...ip
 };
 
 exports.BREAK = constants.BREAK;
@@ -29,10 +31,10 @@ exports.getTypeStr = types.getTypeStr;
 exports.hasEntries = types.hasEntries;
 exports.hasForEach = types.hasForEach;
 exports.isArray = types.isArray;
+exports.isArrayBuffer = types.isArrayBuffer;
 exports.isAsyncFunction = types.isAsyncFunction;
 exports.isAsyncIterable = types.isAsyncIterable;
 exports.isBoolean = types.isBoolean;
-exports.isBuffer = types.isBuffer;
 exports.isCollection = types.isCollection;
 exports.isCtor = types.isCtor;
 exports.isError = types.isError;
@@ -110,6 +112,7 @@ exports.importOrRequire = node.importOrRequire;
 exports.importOrRequireFiles = node.importOrRequireFiles;
 exports.importRequireOrRead = node.importRequireOrRead;
 exports.importRequireOrReadFiles = node.importRequireOrReadFiles;
+exports.isBuffer = node.isBuffer;
 exports.isDuplex = node.isDuplex;
 exports.isNilEnv = node.isNilEnv;
 exports.isPassThrough = node.isPassThrough;
@@ -128,6 +131,13 @@ exports.requireOrReadSync = node.requireOrReadSync;
 exports.resolve = node.resolve;
 exports.resolveIfExists = node.resolveIfExists;
 exports.resolveIfExistsSync = node.resolveIfExistsSync;
+exports.fromIp = ip.fromIp;
+exports.fromIp4 = ip.fromIp4;
+exports.fromIp6 = ip.fromIp6;
+exports.fromIp6Parts = ip.fromIp6Parts;
+exports.toIp = ip.toIp;
+exports.toIp4 = ip.toIp4;
+exports.toIp6 = ip.toIp6;
 Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
