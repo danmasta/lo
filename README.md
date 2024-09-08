@@ -43,22 +43,30 @@ This package is different from other utility libraries in that it defines *`coll
 * `Array`
 * `Map`
 * `Set`
+* `TypedArray`
 * `Array Iterator`
 * `String Iterator`
 * `Map Iterator`
 * `Set Iterator`
-* `Iterator`
-* `AsyncIterator`
 * `Generator`
 * `AsyncGenerator`
+* `Iterator`
+* `AsyncIterator`
+* `Buffer`
 * `NodeList`
 
 What is not a collection type:
-* `Object`
+* `Boolean`
+* `Number`
+* `BigInt`
 * `String`
-* `Buffer`
-* `TypedArray`
+* `Symbol`
+* `Function`
+* `Object`
+* `ArrayBuffer`
+* `DataView`
 * `Stream`
+* ...other object types like `RegExp`, `Date`, `Promise`, `Error`, etc
 
 ### Iteration
 When using iterator functions like `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate` the default mode is to iterate *as a collection*. This means they will iterate on whole objects only, and not on the properties of a single object. For iterating the properties of a single object you can use the functions `forIn` and `forOwn`.
