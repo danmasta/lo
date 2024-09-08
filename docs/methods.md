@@ -36,10 +36,10 @@
 * `hasEntries`
 * `hasForEach`
 * `isArray`
+* `isArrayBuffer`
 * `isAsyncFunction`
 * `isAsyncIterable`
 * `isBoolean`
-* `isBuffer`
 * `isCollection`
 * `isCtor`
 * `isError`
@@ -68,6 +68,7 @@
 * `toString`
 * `toType`
 #### Node
+* `isBuffer`
 * `isDuplex`
 * `isPassThrough`
 * `isReadable`
@@ -109,6 +110,9 @@
 #### Node
 * `argv`
 * `env`
+* `fromIp`
+* `fromIp4`
+* `fromIp6`
 * `importOrRequire`
 * `importOrRequireFiles`
 * `importRequireOrRead`
@@ -123,4 +127,7 @@
 * `resolve`
 * `resolveIfExists`
 * `resolveIfExistsSync`
+* `toIp`
+* `toIp4`
+* `toIp6`
 #### Browser
