@@ -3,11 +3,7 @@ import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'stre
 export default [
     {
         n: 'Buffer',
-        x: [1, 1, 2]
-    },
-    {
-        n: 'SharedArrayBuffer',
-        x: [1, 0, 2]
+        x: [1, 1, 2, 1]
     },
     {
         n: 'Stream',
