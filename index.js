@@ -4,6 +4,7 @@ import * as iterate from './lib/iterate.js';
 import * as util from './lib/util.js';
 import typesNode from './types/node.js';
 import * as libNode from './lib/node.js';
+import * as ip from './lib/ip.js';
 
 addTypes(typesNode);
 
@@ -12,6 +13,7 @@ export * from './lib/types.js';
 export * from './lib/iterate.js';
 export * from './lib/util.js';
 export * from './lib/node.js';
+export * from './lib/ip.js';
 
 export default {
     BREAK,
@@ -19,5 +21,6 @@ export default {
     ...types,
     ...iterate,
     ...util,
-    ...libNode
+    ...libNode,
+    ...ip
 };
