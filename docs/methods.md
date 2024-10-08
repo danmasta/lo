@@ -88,6 +88,8 @@
 * `defaults`
 * `flat`
 * `flatCompact`
+* `fmt`
+* `format`
 * `freeze`
 * `fromPairs`
 * `get`
