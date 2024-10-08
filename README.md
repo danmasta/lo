@@ -103,16 +103,16 @@ each(obj, (val, key) => {
 ```
 *Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, `Iterator`, and `Generator`.*
 
-#### Iterate single objects
-Methods to iterate the properties of individual objects and iterators: `forIn`, and `forOwn`.
+#### Iterate Objects
+Methods to iterate the properties of individual objects and iterables: `forIn`, and `forOwn`.
 
-#### Iterate collections
-Methods for iterating collections of objects include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate`.
+#### Iterate Collections
+Methods for iterating collections of objects: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate`.
 
 #### Iterate with forEach
 Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
 
-### Breaking Iteration Early
+#### Break Iteration Early
 All iteration methods can be stopped early by returning the `BREAK` symbol:
 ```js
 import { map, BREAK } from 'lo';
@@ -125,7 +125,7 @@ map(arr, val => {
 // [2, 4]
 ```
 
-### Null and Undefined Filtering
+#### Nil Filtering
 A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration methods. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, and, `every`. To use, just append `NotNil` to the function name:
 ```js
 import { mapNotNil as map } from 'lo';
@@ -139,7 +139,7 @@ map(arr, val => {
 ```
 *Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
 
-### Async Iteration
+#### Async Iteration
 Every iteration method also supports both async iterables and async iterator functions. You don't need to do anything special, just use them as normal:
 ```js
 import { map } from 'lo';
