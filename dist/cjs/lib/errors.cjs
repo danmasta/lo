@@ -1,8 +1,8 @@
-var node_util = require('node:util');
+var util = require('./util.cjs');
 
 class BaseError extends Error {
     constructor (...args) {
-        super(node_util.format(...args));
+        super(util.format(...args));
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
         this.code = this.constructor.code;

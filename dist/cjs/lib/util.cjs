@@ -316,6 +316,101 @@ function toPascal (str) {
     return compound(str, capitalize);
 }
 
+// Note: Replaces circular references with '[Circular]'
+function JSONReplacer () {
+    let refs = new WeakSet();
+    return (key, val) => {
+        if (typeof val === 'object' && val !== null) {
+            if (refs.has(val)) {
+                return '[Circular]';
+            }
+            refs.add(val);
+        }
+        return val;
+    }
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/console/dir_static
+// https://nodejs.org/api/util.html#utilinspectobject-options
+// https://github.com/nodejs/node/blob/main/lib/internal/util/inspect.js#L847
+// Get props or get props + non-enumerable props
+//     If showHidden is true, include symbols
+//     Otherwise filter enumerable properties only
+// Get type name
+// Format by type:
+//     Array
+//     Set
+//     Map
+//     TypedArray
+//     Map Iterator
+//     Set Iterator
+//     Object
+//     Arguments
+//     Function
+//     RegExp
+//     Date (toISOString)
+//     Error
+//     ArrayBuffer
+//     DataView
+//     Promise
+//     WeakSet
+//     WeakMap
+//     Module
+//     Primitives
+// Handle circular references
+// export function inspect (obj, { colors=false, depth=2, showHidden=false }={}) {
+//     let type = getType(obj);
+// }
+
+function format (str, ...args) {
+    str = types.toString(str);
+    return str.replace(constants.REGEX.format, (match, char) => {
+        // Handle escape
+        if (char === '%') {
+            return char;
+        }
+        // If no corresponding argument don't replace
+        if (!args.length) {
+            return match;
+        }
+        let val = args.shift();
+        let type = types.getType(val);
+        switch (char) {
+            case 's':
+                return types.toString(val);
+            case 'd':
+            case 'i':
+            case 'f':
+                if (type === constants.TYPES.BigInt) {
+                    return types.toString(val);
+                }
+                if (type === constants.TYPES.Symbol) {
+                    return NaN;
+                }
+            case 'd':
+                return Number(val);
+            case 'i':
+                return parseInt(val, 10);
+            case 'f':
+                return parseFloat(val);
+            case 'j':
+                return JSON.stringify(val, JSONReplacer(), 0);
+            // Not implemented yet
+            // Note: Full object including non-enumerable properties and proxies
+            case 'o':
+                return types.toString(val);
+            // Not implemented yet
+            // Note: Full object not including non-enumerable properties and proxies
+            case 'O':
+                return types.toString(val);
+            case 'c':
+                return '';
+            default:
+                return match;
+        }
+    });
+}
+
 exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
 exports.capitalize = capitalize;
@@ -324,6 +419,8 @@ exports.concat = concat;
 exports.defaults = defaults;
 exports.flat = flat;
 exports.flatCompact = flatCompact;
+exports.fmt = format;
+exports.format = format;
 exports.freeze = freeze;
 exports.fromPairs = fromPairs;
 exports.get = get;

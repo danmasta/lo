@@ -390,20 +390,23 @@ function toPath (str) {
 // Note: Supports all types including iterables and objects
 function toString (obj) {
     let type = getType(obj);
-    if (type === constants.TYPES.String) {
-        return obj;
-    }
-    if (!type.proto) {
-        return '';
-    }
-    if (type.proto.toString !== Object.prototype.toString) {
-        return type.proto.toString.call(obj);
-    }
-    if (type.iterable) {
-        return Array.from(obj).toString();
-    }
-    if (type === constants.TYPES.Object) {
-        return Object.entries(obj).toString();
+    switch (type) {
+        case constants.TYPES.String:
+            return obj;
+        case constants.TYPES.Object:
+            return Object.entries(obj).toString();
+        case constants.TYPES.Date:
+            return obj.toISOString();
+        default:
+            if (!type.proto) {
+                return '';
+            }
+            if (type.proto.toString !== Object.prototype.toString) {
+                return type.proto.toString.call(obj);
+            }
+            if (type.iterable) {
+                return Array.from(obj).toString();
+            }
     }
 }
 

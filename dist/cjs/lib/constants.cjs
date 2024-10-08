@@ -125,7 +125,8 @@ const typesByCtor = new Map([
 const REGEX = {
     path: /[\[\]\."']+/g,
     words: /[\W-_]+/g,
-    whitespace: /\s+/g
+    whitespace: /\s+/g,
+    format: /%([sdifjoOc%])/g
 };
 
 const PRIMITIVES = {
