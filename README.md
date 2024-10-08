@@ -109,7 +109,7 @@ Methods to iterate the properties of individual objects and iterables: `forIn`, 
 #### Iterate Collections
 Methods for iterating collections of objects: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate`.
 
-#### Iterate with forEach
+#### forEach
 Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
 
 #### Break Iteration Early
