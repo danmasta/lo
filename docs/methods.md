@@ -119,6 +119,8 @@
 * `importOrRequireFiles`
 * `importRequireOrRead`
 * `importRequireOrReadFiles`
+* `mkdirp`
+* `mkdirpSync`
 * `optsFromArgv`
 * `readFiles`
 * `readFilesSync`
