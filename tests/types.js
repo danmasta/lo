@@ -24,6 +24,7 @@ describe('Types', () => {
         expect(lo.getType(new fx.TestErrorTwo)).to.equal(TYPES.Error);
         expect(lo.getType(new fx.TestArray)).to.equal(TYPES.Array);
         expect(lo.getType(fx.readable)).to.equal(TYPES.Readable);
+        expect(lo.getType(fx.buff)).to.equal(TYPES.Buffer);
         expect(lo.getType(await import('../lib/types.js'))).to.equal(TYPES.Module);
         // Constructor functions should be type of Function
         expect(lo.getType(Promise)).to.equal(TYPES.Function);
@@ -88,6 +89,7 @@ describe('Types', () => {
         expect(lo.toString(true)).to.equal('true');
         expect(lo.toString(123)).to.equal('123');
         expect(lo.toString(BigInt(123))).to.equal('123');
+        expect(lo.toString(fx.buff)).to.equal('test');
     });
 
 });

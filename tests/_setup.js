@@ -1,6 +1,7 @@
 import { assert, expect, should } from 'chai';
 import lo from '../index.js';
 import { Readable } from 'stream';
+import { Buffer } from 'node:buffer';
 
 class TestClass {}
 class TestClassTwo extends TestClass {}
@@ -20,6 +21,7 @@ const obj3 = Object.create(obj1, { 3: {
     value: 3,
     enumerable: true
 }});
+const buff = Buffer.from('test');
 
 const fixtures = {
     TestClass,
@@ -38,7 +40,8 @@ const fixtures = {
     set,
     obj1,
     obj2,
-    obj3
+    obj3,
+    buff
 };
 
 beforeEach(() => {
