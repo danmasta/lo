@@ -253,6 +253,10 @@ const types = [
         t: 8,
         n: 'Unknown',
         x: [0, 0, 0]
+    },
+    {
+        n: 'URL',
+        x: [1, 0, 2]
     }
 ];
 
