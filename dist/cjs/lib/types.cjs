@@ -102,6 +102,9 @@ function getType (obj) {
             // Generator
             // AsyncGenerator
             if (type = constants.TYPES[obj[Symbol.toStringTag]]) {
+                if (type === constants.TYPES.Uint8Array && constants.TYPES.Buffer && constants.TYPES.Buffer.ctor.isBuffer(obj)) {
+                    return constants.TYPES.Buffer;
+                }
                 return type;
             }
             return getTypeFromProto(obj);

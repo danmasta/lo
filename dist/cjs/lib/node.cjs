@@ -310,6 +310,16 @@ function requireOrReadFilesSync (paths, args) {
     return readFilesSync(paths, { ...args, fn: requireOrReadSync });
 }
 
+function mkdirp (str, mode) {
+    let dir = resolve(types.toString(str));
+    return promises.mkdir(dir, { recursive: true, mode });
+}
+
+function mkdirpSync (str, mode) {
+    let dir = resolve(types.toString(str));
+    return node_fs.mkdirSync(dir, { recursive: true, mode });
+}
+
 // Parse argv
 // Accepts an array or string of arguments
 // Supports negation, camel casing, and type casting to native types
@@ -453,6 +463,8 @@ exports.isReadable = isReadable;
 exports.isStream = isStream;
 exports.isTransform = isTransform;
 exports.isWritable = isWritable;
+exports.mkdirp = mkdirp;
+exports.mkdirpSync = mkdirpSync;
 exports.optsFromArgv = optsFromArgv;
 exports.parseArgv = argv;
 exports.readFiles = readFiles;
