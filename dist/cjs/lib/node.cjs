@@ -332,7 +332,7 @@ function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
     let ref = res;
     function add (k, v) {
         if (camel) {
-            k = util.toCamel(k);
+            k = util.toCamelCase(k);
         }
         if (native) {
             v = types.toNativeType(v);

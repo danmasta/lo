@@ -124,9 +124,12 @@ const typesByCtor = new Map([
 
 const REGEX = {
     path: /[\[\]\."']+/g,
-    words: /[\W-_]+/g,
+    words: /[\W_-]+|(?<=\p{Ll})(?=\p{Lu})/gu,
     whitespace: /\s+/g,
-    format: /%([sdifjoOc%])/g
+    format: /%([sdifjoOc%])/g,
+    diacritics: /\p{Diacritic}/gu,
+    html: /([&<>"'])/g,
+    htmlEscaped: /&(amp|lt|gt|quot|#39);/g
 };
 
 const PRIMITIVES = {

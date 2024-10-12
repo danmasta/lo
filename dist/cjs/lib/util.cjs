@@ -272,24 +272,44 @@ function fromPairs (arr) {
     return res;
 }
 
+// Uppercase
 function toUpper (str) {
     return types.toString(str).toUpperCase();
 }
 
+// Lowercase
 function toLower (str) {
     return types.toString(str).toLowerCase();
 }
 
-function capitalize (str) {
+function toCase (str, head=str=>str, tail=str=>str) {
     str = types.toString(str);
     let char = str.codePointAt(0) ?? -1;
     if (char === -1) {
         return str;
     }
     let i = char > 0xFFFF ? 2 : 1;
-    return String.fromCodePoint(char).toUpperCase() + str.slice(i);
+    return head(String.fromCodePoint(char)) + tail(str.slice(i));
 }
 
+function capitalize (str) {
+    return toCase(str, toUpper, toLower);
+}
+
+function toUpperFirst (str) {
+    return toCase(str, toUpper);
+}
+
+function toLowerFirst (str) {
+    return toCase(str, toLower);
+}
+
+// https://tc39.es/ecma262/multipage/text-processing.html#table-binary-unicode-properties
+function deburr (str) {
+    return types.toString(str).normalize('NFD').replace(constants.REGEX.diacritics, '');
+}
+
+// // https://unicode.org/reports/tr44/#GC_Values_Table
 function words (str) {
     return split(str, constants.REGEX.words);
 }
@@ -298,22 +318,63 @@ function compound (str, fn=val=>val, sep='') {
     return join(iterate.map(words(str), fn), sep);
 }
 
-function toCamel (str) {
+// Uppercase, space separated
+function toUpperCase (str) {
+    return compound(str, toUpper, ' ');
+}
+
+// Lowercase, space separated
+function toLowerCase (str) {
+    return compound(str, toLower, ' ');
+}
+
+function toCamelCase (str) {
     return compound(str, (val, i) => {
         return i ? capitalize(val) : toLower(val);
     });
 }
 
-function toKebab (str) {
+function toKebabCase (str) {
     return compound(str, toLower, '-');
 }
 
-function toSnake (str) {
+function toSnakeCase (str) {
     return compound(str, toLower, '_');
 }
 
-function toPascal (str) {
+function toPascalCase (str) {
     return compound(str, capitalize);
+}
+
+function toStartCase (str) {
+    return compound(str, capitalize, ' ');
+}
+
+const htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    'amp': '&',
+    'lt': '<',
+    'gt': '>',
+    'quot': '"',
+    '#39': "'"
+};
+
+function escapeHTML (str) {
+    str = types.toString(str);
+    return str.replace(constants.REGEX.html, (match, char) => {
+        return htmlEscapes[char];
+    });
+}
+
+function unescapeHTML (str) {
+    str = types.toString(str);
+    return str.replace(constants.REGEX.htmlEscaped, (match, char) => {
+        return htmlEscapes[char];
+    });
 }
 
 // Note: Replaces circular references with '[Circular]'
@@ -416,7 +477,9 @@ exports.assign = assign;
 exports.capitalize = capitalize;
 exports.compact = compact;
 exports.concat = concat;
+exports.deburr = deburr;
 exports.defaults = defaults;
+exports.escapeHTML = escapeHTML;
 exports.flat = flat;
 exports.flatCompact = flatCompact;
 exports.fmt = format;
@@ -432,10 +495,17 @@ exports.merge = merge;
 exports.set = set;
 exports.setOwn = setOwn;
 exports.split = split;
-exports.toCamel = toCamel;
-exports.toKebab = toKebab;
+exports.toCamelCase = toCamelCase;
+exports.toKebabCase = toKebabCase;
 exports.toLower = toLower;
+exports.toLowerCase = toLowerCase;
+exports.toLowerFirst = toLowerFirst;
 exports.toPairs = toPairs;
-exports.toPascal = toPascal;
-exports.toSnake = toSnake;
+exports.toPascalCase = toPascalCase;
+exports.toSnakeCase = toSnakeCase;
+exports.toStartCase = toStartCase;
 exports.toUpper = toUpper;
+exports.toUpperCase = toUpperCase;
+exports.toUpperFirst = toUpperFirst;
+exports.unescapeHTML = unescapeHTML;
+exports.words = words;
