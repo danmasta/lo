@@ -96,15 +96,17 @@ function merge (res, ...args) {
 }
 
 // Recursively freeze an object to become immutable
-function freeze (obj, recurse=1, cache) {
-    // Prevent circular reference errors
-    cache = cache || new Set();
-    iterate.forOwn(obj, val => {
-        if ((types.isObject(val) || types.isArray(val)) && recurse && !cache.has(val)) {
-            cache.add(val);
-            freeze(val, recurse, cache);
-        }
-    });
+// Note: Circular references are ignored
+function freeze (obj, recurse=1, refs) {
+    if (recurse) {
+        refs = refs || new WeakSet();
+        iterate.forOwn(obj, val => {
+            if (typeof val === 'object' && val !== null && !refs.has(val)) {
+                refs.add(val);
+                freeze(val, recurse, refs);
+            }
+        });
+    }
     return Object.freeze(obj);
 }
 
