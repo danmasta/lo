@@ -101,6 +101,9 @@
 * `join`
 * `keys`
 * `merge`
+* `pad`
+* `padLeft`
+* `padRight`
 * `set`
 * `setOwn`
 * `split`
@@ -116,6 +119,9 @@
 * `toUpper`
 * `toUpperCase`
 * `toUpperFirst`
+* `trim`
+* `trimLeft`
+* `trimRight`
 * `unescapeHTML`
 * `words`
 #### Node
