@@ -1,3 +1,5 @@
+import { pad, padLeft, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
+
 describe('Util', () => {
 
     it('flat', () => {
@@ -34,6 +36,21 @@ describe('Util', () => {
         expect(lo.split(str, /[|]+/)).to.eql(['1','2','3']);
         expect(lo.split(str, '|', { limit: 1 })).to.eql(['1','2|3']);
         expect(lo.split(' 1 | 2 | 3 ', '|', { trim: true })).to.eql(['1','2','3']);
+    });
+
+    it('pad', () => {
+        let str = 'test';
+        expect(pad(str, 6)).to.equal(' test ');
+        expect(pad(str, 7)).to.equal(' test  ');
+        expect(padLeft(str, 6)).to.equal('  test');
+        expect(padRight(str, 6)).to.equal('test  ');
+    });
+
+    it('trim', () => {
+        let str = ' test ';
+        expect(trim(str)).to.equal('test');
+        expect(trimLeft(str)).to.equal('test ');
+        expect(trimRight(str)).to.equal(' test');
     });
 
 });
