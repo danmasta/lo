@@ -379,6 +379,35 @@ function unescapeHTML (str) {
     });
 }
 
+function pad (str, len=0, char) {
+    str = types.toString(str);
+    if (len <= str.length) {
+        return str;
+    }
+    let dif = len - str.length;
+    return str.padStart(str.length + Math.floor(dif / 2), char).padEnd(len, char);
+}
+
+function padLeft (str, len=0, char) {
+    return types.toString(str).padStart(len, char);
+}
+
+function padRight (str, len=0, char) {
+    return types.toString(str).padEnd(len, char);
+}
+
+function trim (str) {
+    return types.toString(str).trim();
+}
+
+function trimLeft (str) {
+    return types.toString(str).trimStart();
+}
+
+function trimRight (str) {
+    return types.toString(str).trimEnd();
+}
+
 // Note: Replaces circular references with '[Circular]'
 function JSONReplacer () {
     let refs = new WeakSet();
@@ -494,6 +523,9 @@ exports.has = has;
 exports.join = join;
 exports.keys = keys;
 exports.merge = merge;
+exports.pad = pad;
+exports.padLeft = padLeft;
+exports.padRight = padRight;
 exports.set = set;
 exports.setOwn = setOwn;
 exports.split = split;
@@ -509,5 +541,8 @@ exports.toStartCase = toStartCase;
 exports.toUpper = toUpper;
 exports.toUpperCase = toUpperCase;
 exports.toUpperFirst = toUpperFirst;
+exports.trim = trim;
+exports.trimLeft = trimLeft;
+exports.trimRight = trimRight;
 exports.unescapeHTML = unescapeHTML;
 exports.words = words;
