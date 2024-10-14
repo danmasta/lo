@@ -1,4 +1,4 @@
-import { pad, padLeft, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
+import { eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
 
 describe('Util', () => {
 
@@ -51,6 +51,39 @@ describe('Util', () => {
         expect(trim(str)).to.equal('test');
         expect(trimLeft(str)).to.equal('test ');
         expect(trimRight(str)).to.equal(' test');
+    });
+
+    it ('eachLine', () => {
+        let res = [];
+        eachLine('1\r\n2\r3\n4', val => {
+            res.push(val);
+        });
+        expect(res).to.eql(['1','2','3','4']);
+    });
+
+    it ('mapLine', () => {
+        let res = mapLine('1\n2\n3', val => {
+            return val*2;
+        });
+        expect(res).to.eql([2,4,6]);
+    });
+
+    it ('padLine', () => {
+        let str = '1\n2\n3';
+        expect(padLine(str, 2)).to.equal('1\n 2 \n 3 ');
+        expect(padLine(str, 2, { head: 1, inclusive: 0 })).to.equal(' 1 \n 2 \n 3 ');
+    });
+
+    it ('padLineLeft', () => {
+        let str = '1\n2\n3';
+        expect(padLineLeft(str, 2)).to.equal('1\n  2\n  3');
+        expect(padLineLeft(str, 2, { head: 1, char: '*' })).to.equal('**1\n**2\n**3');
+    });
+
+    it ('padLineRight', () => {
+        let str = '1\n2\n3';
+        expect(padLineRight(str, 2)).to.equal('1\n2  \n3  ');
+        expect(padLineRight(str, 2, { head: 1 })).to.equal('1  \n2  \n3  ');
     });
 
 });
