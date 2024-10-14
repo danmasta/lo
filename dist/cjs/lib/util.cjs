@@ -408,6 +408,46 @@ function trimRight (str) {
     return types.toString(str).trimEnd();
 }
 
+// Run an iterator fn for each line in str
+function eachLine (str, fn=constants.noop, inclusive=0) {
+    str = types.toString(str);
+    let match;
+    let regex = new RegExp(constants.REGEX.eol.source, 'g');
+    let i = 0;
+    let n = 0;
+    while ((match = regex.exec(str)) !== null) {
+        fn(str.slice(i, inclusive ? regex.lastIndex : match.index), n, match[0]);
+        n++;
+        i = regex.lastIndex;
+    }
+    // Handle remaining string from last match
+    fn(str.slice(i), n, '');
+}
+
+// Run an iterator fn for each line in str
+// Return an array of return values
+function mapLine (str, fn=constants.noop, inclusive=0) {
+    let res = [];
+    eachLine(str, (line, num, eol) => {
+        res.push(fn(line, num, eol));
+    }, inclusive);
+    return res;
+}
+
+// Because line lengths are variable, len param acts like an offset
+// count of chars to add per line, instead of an absolute length
+function padLineFn (fn) {
+    return function padLine (str, len=0, { char, head=0, inclusive=0 }={}) {
+        return join(mapLine(str, (line, num, eol) => {
+            return (num || head ? fn(line, line.length + len, char) : line) + (inclusive ? '' : eol);
+        }, inclusive), null);
+    }
+}
+
+const padLine = padLineFn(pad);
+const padLineLeft = padLineFn(padLeft);
+const padLineRight = padLineFn(padRight);
+
 // Note: Replaces circular references with '[Circular]'
 function JSONReplacer () {
     let refs = new WeakSet();
@@ -510,6 +550,7 @@ exports.compact = compact;
 exports.concat = concat;
 exports.deburr = deburr;
 exports.defaults = defaults;
+exports.eachLine = eachLine;
 exports.escapeHTML = escapeHTML;
 exports.flat = flat;
 exports.flatCompact = flatCompact;
@@ -522,9 +563,13 @@ exports.getOwn = getOwn;
 exports.has = has;
 exports.join = join;
 exports.keys = keys;
+exports.mapLine = mapLine;
 exports.merge = merge;
 exports.pad = pad;
 exports.padLeft = padLeft;
+exports.padLine = padLine;
+exports.padLineLeft = padLineLeft;
+exports.padLineRight = padLineRight;
 exports.padRight = padRight;
 exports.set = set;
 exports.setOwn = setOwn;

@@ -129,7 +129,8 @@ const REGEX = {
     format: /%([sdifjoOc%])/g,
     diacritics: /\p{Diacritic}/gu,
     html: /([&<>"'])/g,
-    htmlEscaped: /&(amp|lt|gt|quot|#39);/g
+    htmlEscaped: /&(amp|lt|gt|quot|#39);/g,
+    eol: /\r\n|\r|\n/g
 };
 
 const PRIMITIVES = {
