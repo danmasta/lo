@@ -87,6 +87,7 @@
 * `concat`
 * `deburr`
 * `defaults`
+* `eachLine`
 * `escapeHTML`
 * `flat`
 * `flatCompact`
@@ -100,9 +101,13 @@
 * `hasOwn`
 * `join`
 * `keys`
+* `mapLine`
 * `merge`
 * `pad`
 * `padLeft`
+* `padLine`
+* `padLineLeft`
+* `padLineRight`
 * `padRight`
 * `set`
 * `setOwn`
