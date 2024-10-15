@@ -1,4 +1,4 @@
-import { eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
+import { deburr, eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
 
 describe('Util', () => {
 
@@ -37,6 +37,12 @@ describe('Util', () => {
         expect(lo.split(str, '|', { limit: 1 })).to.eql(['1','2|3']);
         expect(lo.split(' 1 | 2 | 3 ', '|', { trim: true })).to.eql(['1','2','3']);
     });
+
+    it('deburr', () => {
+        expect(deburr('Açaí')).to.equal('Acai');
+        expect(deburr('Crème Brûlée')).to.equal('Creme Brulee');
+        expect(deburr('Thành phố Hồ Chí Minh')).to.equal('Thanh pho Ho Chi Minh');
+    })
 
     it('pad', () => {
         let str = 'test';
