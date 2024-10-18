@@ -42,7 +42,7 @@ describe('Util', () => {
         expect(deburr('Açaí')).to.equal('Acai');
         expect(deburr('Crème Brûlée')).to.equal('Creme Brulee');
         expect(deburr('Thành phố Hồ Chí Minh')).to.equal('Thanh pho Ho Chi Minh');
-    })
+    });
 
     it('pad', () => {
         let str = 'test';
