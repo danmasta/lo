@@ -1,4 +1,4 @@
-var stream = require('stream');
+var node_stream = require('node:stream');
 
 var typesNode = [
     {
@@ -7,32 +7,32 @@ var typesNode = [
     },
     {
         n: 'Stream',
-        c: stream.Stream,
+        c: node_stream.Stream,
         x: [1, 1, 2]
     },
     {
         n: 'Readable',
-        c: stream.Readable,
+        c: node_stream.Readable,
         x: [1, 1, 2]
     },
     {
         n: 'Writable',
-        c: stream.Writable,
+        c: node_stream.Writable,
         x: [1, 1, 2]
     },
     {
         n: 'Transform',
-        c: stream.Transform,
+        c: node_stream.Transform,
         x: [1, 1, 2]
     },
     {
         n: 'Duplex',
-        c: stream.Duplex,
+        c: node_stream.Duplex,
         x: [1, 1, 2]
     },
     {
         n: 'PassThrough',
-        c: stream.PassThrough,
+        c: node_stream.PassThrough,
         x: [1, 1, 2]
     }
 ];
