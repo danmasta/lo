@@ -1,4 +1,4 @@
-import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'stream';
+import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'node:stream';
 
 export default [
     {
