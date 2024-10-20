@@ -192,50 +192,88 @@ function join (obj, sep=',') {
 }
 
 // Split string on char
-// Limit sets the number of sub strings in result:
-// Any remaining matches are included in final sub string
-// Optionally trim results
-// Note: Empty strings are ignored
-// Note: Supports regex, global flag will be added if doesn't exist
-function split (str, char, { limit=Infinity, trim, inclusive=0 }={}) {
+// Note: Supports regex, adds global flag if it doesn't exist
+// Note: Quote handling only works for RegExps
+// If you enable quotes and pass a String for char it will be converted to RegExp
+// limit: Number matches to split on
+// trim: Trim whitespace from result strings
+// quotes: Ignore match if quoted
+// quote: Character to match as quote (", ', or auto detect)
+// extract: Remove quotes from result strings
+// compact: Remove empty strings from result
+function split (str, char, { limit=Infinity, trim, inclusive=0, quotes=0, quote, extract, compact=1 }={}) {
     str = types.toString(str);
-    // Handle split on each character
-    if (char === '') {
-        return str.split(char);
-    }
     let index = 0;
+    let m;
     let match;
     let sub = '';
     let res = [];
+    let quoted = 0;
+    let empty = !char || !!char.test?.('');
     let push = () => {
         if (trim) {
             sub = sub.trim();
         }
-        // Ignore empty strings
-        if (sub.length) {
+        if (extract && quote) {
+            if (sub.at(0) === quote && sub.at(-1) === quote) {
+                sub = sub.slice(1, -1);
+            }
+        }
+        if (sub || !compact) {
             res.push(sub);
         }
     };
+    if (quotes && types.isString(char)) {
+        char = new RegExp(char);
+    }
     if (types.isRegExp(char)) {
-        if (char.flags.indexOf('g') === -1) {
-            char = new RegExp(char.source, char.flags + 'g');
+        let { source, flags } = char;
+        if (quotes) {
+            source = `["']|` + source;
         }
-        while ((match = char.exec(str)) !== null) {
+        if (!flags.includes('g')) {
+            flags += 'g';
+        }
+        char = new RegExp(source, flags);
+        while ((match = char.exec(str)) !== null && ([m] = match)) {
+            if (quotes && m === '"' || m === "'") {
+                if (!quote) {
+                    quote = m;
+                }
+                if (m !== quote) {
+                    continue;
+                }
+                quoted = !quoted;
+                // Always need to continue from quotes
+                continue;
+            }
+            if (quotes && quoted) {
+                // Zero length
+                if (!m) {
+                    char.lastIndex++;
+                }
+                continue;
+            }
             if (!limit) {
                 break;
             }
-            if (match[0]) {
+            // Regular
+            if (m) {
                 sub = str.slice(index, match.index);
                 push();
                 index = char.lastIndex;
+            // Zero length
             } else {
-                // Handle empty match
+                if (empty) {
+                    match.index++;
+                }
                 if (index !== match.index) {
                     sub = str.slice(index, match.index);
                     push();
-                    // If match is zero length, lastIndex won't increment
-                    index = char.lastIndex++;
+                    index = match.index;
                 }
+                // If match is zero length, lastIndex wont't increment normally
+                char.lastIndex++;
             }
             limit--;
         }
@@ -244,13 +282,15 @@ function split (str, char, { limit=Infinity, trim, inclusive=0 }={}) {
             if (!limit) {
                 break;
             }
-            // Ignore empty match
-            if (index !== match) {
-                sub = str.slice(index, match);
-                push();
+            if (empty) {
+                if (match >= str.length){
+                    break;
+                }                match++;
             }
-            limit--;
+            sub = str.slice(index, match);
+            push();
             index = match + char.length;
+            limit--;
         }
     }
     if (index < str.length) {
@@ -311,7 +351,7 @@ function deburr (str) {
     return types.toString(str).normalize('NFD').replace(constants.REGEX.diacritics, '');
 }
 
-// // https://unicode.org/reports/tr44/#GC_Values_Table
+// https://unicode.org/reports/tr44/#GC_Values_Table
 function words (str) {
     return split(str, constants.REGEX.words);
 }
