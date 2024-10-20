@@ -1,10 +1,11 @@
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
+import { argv } from '../lib/node.js';
 
 describe('Node', () => {
 
     it('argv', () => {
-        let args = lo.argv('-abc -d=1 -e 1 -f100 --no-g - --test=1 --test 2 one two -- three four --test=fizz= --some-dir=/tmp');
+        let args = argv('-abc -d=1 -e 1 -f100 --no-g - --test=1 --test 2 one two -- three four --test=fizz= --some-dir=/tmp');
         expect(args).to.eql({
             _: ['one', 'two'],
             a: true,
@@ -21,6 +22,22 @@ describe('Node', () => {
                 test: 'fizz=',
                 'some-dir': '/tmp'
             }
+        });
+        expect(argv(`--test="space str" --param="test str"`)).to.eql({
+            _: [],
+            test: 'space str',
+            param: 'test str'
+        });
+        expect(argv(`-t 'space str' -p='test str'`)).to.eql({
+            _: [],
+            t: 'space str',
+            p: 'test str'
+        });
+        // Note: mixing case isn't supported
+        expect(argv(`-t "space str" -p='test str'`)).to.eql({
+            _: ["str'"],
+            t: 'space str',
+            p: "'test"
         });
     });
 
