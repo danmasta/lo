@@ -1,4 +1,4 @@
-import { deburr, eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, trim, trimLeft, trimRight } from '../lib/util.js';
+import { deburr, eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, split, trim, trimLeft, trimRight } from '../lib/util.js';
 
 describe('Util', () => {
 
@@ -31,11 +31,27 @@ describe('Util', () => {
     });
 
     it('split', () => {
-        let str = '1|2|3';
-        expect(lo.split(str, '|')).to.eql(['1','2','3']);
-        expect(lo.split(str, /[|]+/)).to.eql(['1','2','3']);
-        expect(lo.split(str, '|', { limit: 1 })).to.eql(['1','2|3']);
-        expect(lo.split(' 1 | 2 | 3 ', '|', { trim: true })).to.eql(['1','2','3']);
+        let str1 = '1|2|3';
+        let strz = 'zero length';
+        let strp = '--param "quoted match"';
+        expect(split(str1, '|')).to.eql(['1','2','3']);
+        expect(split(str1, /[|]+/)).to.eql(['1','2','3']);
+        expect(split(str1, '|', { limit: 1 })).to.eql(['1','2|3']);
+        expect(split(str1, /\|/, { limit: 1 })).to.eql(['1','2|3']);
+        expect(split(' 1 | 2 | 3 ', '|', { trim: true })).to.eql(['1','2','3']);
+        expect(split(strz, /\b/)).to.eql(['zero', ' ', 'length']);
+        expect(split(strz, /\b/, { trim: 1 })).to.eql(['zero', 'length']);
+        expect(split(strz, /\b/, { trim: 1, compact: 0 })).to.eql(['zero', '', 'length']);
+        expect(split(strp, /\s/, { quotes: 0 })).to.eql(['--param', '"quoted', 'match"']);
+        expect(split(strp, /\s/, { quotes: 1 })).to.eql(['--param', '"quoted match"']);
+        expect(split(strp, /\s/, { quotes: 1, quote: "'" })).to.eql(['--param', '"quoted', 'match"']);
+        expect(split(strp, /\s/, { quotes: 1, extract: 1 })).to.eql(['--param', 'quoted match']);
+        expect(split(strp, ' ', { quotes: 1, extract: 1 })).to.eql(['--param', 'quoted match']);
+        expect(split('split', '')).to.eql(['s','p','l','i','t']);
+        expect(split('split', /(?:)/)).to.eql(['s','p','l','i','t']);
+        expect(split('split', /.*/, { compact: 0 })).to.eql(['','']);
+        expect(split('split "chars"', '', { quotes :1 })).to.eql(['s','p','l','i','t',' ','"chars"']);
+        expect(split('split "chars"', '', { quotes: 1, extract: 1, trim: 1 })).to.eql(['s','p','l','i','t','chars']);
     });
 
     it('deburr', () => {
