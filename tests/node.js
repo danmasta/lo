@@ -1,6 +1,6 @@
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
-import { argv } from '../lib/node.js';
+import { argv } from '../lib/argv.js';
 
 describe('Node', () => {
 
