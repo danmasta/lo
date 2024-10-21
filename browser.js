@@ -1,23 +1,27 @@
-import { BREAK, noop, addTypes } from './lib/constants.js';
-import * as types from './lib/types.js';
+import * as lib from './lib/browser.js';
+import { addTypes, BREAK, noop, TYPES } from './lib/constants.js';
+import * as ip from './lib/ip.js';
 import * as iterate from './lib/iterate.js';
+import * as types from './lib/types.js';
 import * as util from './lib/util.js';
-import typesBrowser from './types/browser.js';
-import * as libBrowser from './lib/browser.js';
+import supplemental from './types/browser.js';
 
-addTypes(typesBrowser);
+addTypes(supplemental);
 
-export { BREAK, noop } from './lib/constants.js';
-export * from './lib/types.js';
-export * from './lib/iterate.js';
-export * from './lib/util.js';
 export * from './lib/browser.js';
+export { BREAK, noop, TYPES } from './lib/constants.js';
+export * from './lib/ip.js';
+export * from './lib/iterate.js';
+export * from './lib/types.js';
+export * from './lib/util.js';
 
 export default {
     BREAK,
     noop,
-    ...types,
+    TYPES,
+    ...ip,
     ...iterate,
-    ...util,
-    ...libBrowser
+    ...lib,
+    ...types,
+    ...util
 };
