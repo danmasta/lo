@@ -1,9 +1,9 @@
 const genFn = function*(){};
-const asyncGenFn = async function*(){};
-const iterator = Symbol.iterator;
-const constructor = 'constructor';
-const prototype = 'prototype';
-const getPrototypeOf = Object.getPrototypeOf;
+const genFnAsync = async function*(){};
+const iter = Symbol.iterator;
+const ctor = 'constructor';
+const proto = 'prototype';
+export const { hasOwn, isPrototypeOf, getPrototypeOf } = Object;
 
 const types = [
     {
@@ -165,25 +165,25 @@ const types = [
     },
     {
         n: 'Array Iterator',
-        c: Array[prototype][iterator],
-        p: getPrototypeOf(Array[prototype][iterator]()),
+        c: Array[proto][iter],
+        p: getPrototypeOf(Array[proto][iter]()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'String Iterator',
-        c: String[prototype][iterator],
-        p: getPrototypeOf(String[prototype][iterator]()),
+        c: String[proto][iter],
+        p: getPrototypeOf(String[proto][iter]()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'Map Iterator',
-        c: Map[prototype][iterator],
+        c: Map[proto][iter],
         p: getPrototypeOf(new Map().entries()),
         x: [0, 1, 1, 1]
     },
     {
         n: 'Set Iterator',
-        c: Set[prototype][iterator],
+        c: Set[proto][iter],
         p: getPrototypeOf(new Set().entries()),
         x: [0, 1, 1, 1]
     },
@@ -216,19 +216,19 @@ const types = [
     {
         t: 6,
         n: 'AsyncFunction',
-        c: (async()=>{})[constructor],
+        c: (async()=>{})[ctor],
         x: [1, 1, 2]
     },
     {
         t: 6,
         n: 'GeneratorFunction',
-        c: genFn[constructor],
+        c: genFn[ctor],
         x: [1, 1, 2]
     },
     {
         t: 6,
         n: 'AsyncGeneratorFunction',
-        c: asyncGenFn[constructor],
+        c: genFnAsync[ctor],
         x: [1, 1, 2]
     },
     {
@@ -237,7 +237,7 @@ const types = [
         // Note: Generator is a subclass of Iterator
         // Note: getPrototypeOf(generator) !== generator.constructor.prototype
         n: 'Generator',
-        c: genFn()[constructor],
+        c: genFn()[ctor],
         x: [0, 0, 0, 1]
     },
     {
@@ -246,47 +246,39 @@ const types = [
         // Note: AsyncGenerator is a subclass of AsyncIterator
         // Note: getPrototypeOf(asyncgenerator) !== asyncgenerator.constructor.prototype
         n: 'AsyncGenerator',
-        c: asyncGenFn()[constructor],
+        c: genFnAsync()[ctor],
         x: [0, 0, 0, 1]
     },
     {
         t: 8,
         n: 'Unknown',
+        c: undefined,
         x: [0, 0, 0]
     },
     {
         n: 'URL',
         x: [1, 0, 2]
-    }
-];
-
-// Node v22.x+
-if (typeof Iterator !== 'undefined') {
-    types.push({
+    },
+    {
+        // Node v22.x+
         n: 'Iterator',
         x: [0, 0, 0, 1],
         a: 1
-    });
-}
-
-// Not implemented yet:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator
-if (typeof AsyncIterator !== 'undefined') {
-    types.push({
+    },
+    {
+        // Not implemented yet:
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator
         n: 'AsyncIterator',
         x: [0, 0, 0, 1],
         a: 1
-    });
-}
-
-// Not available in all contexts:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
-if (typeof SharedArrayBuffer !== 'undefined') {
-    types.push({
+    },
+    {
+        // Not available in all contexts:
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
         n: 'SharedArrayBuffer',
         x: [1, 0, 2]
-    });
-}
+    }
+];
 
 export {
     types as default
