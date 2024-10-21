@@ -1,14 +1,12 @@
+import alias from '@rollup/plugin-alias';
 import resolve from '@rollup/plugin-node-resolve';
-import { glob } from 'glob';
 
 export default [
     {
-        input: glob.sync([
+        input: [
             'browser.js',
-            'index.js',
-            'lib/**/*.js',
-            'types/**/*.js'
-        ]),
+            'index.js'
+        ],
         output: {
             dir: 'dist/cjs',
             format: 'cjs',
@@ -20,7 +18,35 @@ export default [
             esModule: false
         },
         plugins: [
+            alias({
+                entries:{
+                    '#node:os': 'node:os',
+                    '#node:process': 'node:process',
+                    '#node:stream': 'node:stream',
+                    '#node:buffer': 'node:buffer'
+                }
+            }),
             resolve()
+        ]
+    },
+    {
+        input: [
+            'qjs.js'
+        ],
+        output: {
+            dir: 'dist/qjs',
+            format: 'esm',
+            sourcemap: false,
+            strict: false,
+            preserveModules: true,
+            exports: 'auto',
+            entryFileNames: '[name].js',
+            esModule: false
+        },
+        plugins: [
+            resolve({
+                exportConditions: ['qjs', 'default', 'import']
+            })
         ]
     }
 ];
