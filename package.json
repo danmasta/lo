@@ -17,19 +17,25 @@
   "files": [
     "browser.js",
     "index.js",
-    "dist/**/*",
-    "lib/**/*",
-    "types/**/*"
+    "qjs.js",
+    "dist/**",
+    "lib/**",
+    "polyfill/**",
+    "types/**"
   ],
   "exports": {
     ".": {
       "browser": "./browser.js",
+      "qjs": "./dist/qjs/qjs.js",
       "import": "./index.js",
       "require": "./dist/cjs/index.cjs"
     },
     "./browser": {
       "import": "./browser.js",
       "require": "./dist/cjs/browser.cjs"
+    },
+    "./qjs": {
+      "import": "./dist/qjs/qjs.js"
     },
     "./constants": {
       "import": "./lib/constants.js",
@@ -38,6 +44,12 @@
     "./errors": {
       "import": "./lib/errors.js",
       "require": "./dist/cjs/lib/errors.cjs"
+    }
+  },
+  "imports": {
+    "#node:*": {
+      "qjs": "./polyfill/qjs/*.js",
+      "default": "*"
     }
   },
   "scripts": {
@@ -55,6 +67,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "c8": "^9.1.0",
     "chai": "^5.1.0",
@@ -63,7 +76,6 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
-    "glob": "^10.3.12",
     "mocha": "^10.4.0",
     "rollup": "^4.17.2"
   }
