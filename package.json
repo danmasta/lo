@@ -9,7 +9,8 @@
     "util",
     "stdlib",
     "node",
-    "browser"
+    "browser",
+    "quickjs"
   ],
   "main": "index.js",
   "browser": "browser.js",
