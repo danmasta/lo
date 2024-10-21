@@ -1,14 +1,13 @@
+var node_os = require('node:os');
+var node_process = require('node:process');
 var node_fs = require('node:fs');
 var promises = require('node:fs/promises');
 var node_module = require('node:module');
-var node_os = require('node:os');
 var PATH = require('node:path');
-var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var errors = require('./errors.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
-var util = require('./util.cjs');
 
 // Note: Resolves relative to CWD
 // Note: Doesn't work with directory paths
@@ -40,29 +39,6 @@ function isDuplex (obj) {
 
 function isPassThrough (obj) {
     return types.getType(obj) === constants.TYPES.PassThrough;
-}
-
-// If a value was never set on process.env it will return typeof undefined
-// If a value was set on process.env that was typeof undefined it will become string 'undefined'
-function isNilEnv (val) {
-    return types.isNil(val) || val === 'undefined' || val === 'null';
-}
-
-// Getter/Setter for env vars
-// Returns native types for primitive values
-function env (key, val) {
-    switch (arguments.length) {
-        case 1:
-            return types.toNativeType(node_process.env[key]);
-        case 2:
-            let v = node_process.env[key];
-            if (isNilEnv(v)) {
-                return node_process.env[key] = val;
-            }
-            return types.toNativeType(v);
-        default:
-            return node_process.env;
-    }
 }
 
 // Resolve file path with support for home char or parent dir
@@ -320,147 +296,16 @@ function mkdirpSync (str, mode) {
     return node_fs.mkdirSync(dir, { recursive: true, mode });
 }
 
-// Parse argv
-// Accepts an array or string of arguments
-// Supports negation, camel casing, and type casting to native types
-// Note: Use quotes for param values with whitespace
-// Either quote style can be used, but it has to be consistent
-// Note: mixing quote style isn't supported
-function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
-    if (!types.isArray(arr)) {
-        arr = util.split(arr, constants.REGEX.whitespace, { trim: true, quotes: true, extract: true });
-    }
-    let res = { _: [] };
-    let skip = 0;
-    let ref = res;
-    function add (k, v) {
-        if (camel) {
-            k = util.toCamelCase(k);
-        }
-        if (native) {
-            v = types.toNativeType(v);
-        }
-        if (constants.hasOwn(ref, k)) {
-            if (!types.isArray(ref[k])) {
-                ref[k] = [ref[k]];
-            }
-            ref[k].push(v);
-        } else {
-            ref[k] = v;
-        }
-    }
-    function isOpt (str='') {
-        return str.startsWith('--') || str.startsWith('-');
-    }
-    function isAlphabetical (p) {
-        return (p >= 65 && p <= 90) || (p >= 97 && p <= 122);
-    }
-    iterate.each(arr, (arg, i, args) => {
-        if (skip) {
-            skip = 0;
-            return;
-        }
-        if (arg === '--') {
-            if (sub) {
-                ref = ref[sub] = { _: [] };
-            }
-            return;
-        }
-        if (arg === '-') {
-            ref['-'] = true;
-            return;
-        }
-        if (arg.startsWith('--')) {
-            let [k, v] = util.split(arg.slice(2), '=', { limit: 1, trim: true, quotes: true, extract: true });
-            if (v) {
-                add(k, v);
-            } else {
-                let next = args.at(i + 1);
-                if (next && !isOpt(next)) {
-                    skip = 1;
-                    add(k, next);
-                } else {
-                    if (negate && k.startsWith('no-')) {
-                        k = k.slice(3);
-                        add(k, false);
-                    } else {
-                        add(k, true);
-                    }
-                }
-            }
-            return;
-        }
-        if (arg.startsWith('-')) {
-            let [k, v] = util.split(arg.slice(1), '=', { limit: 1, trim: true, quotes: true, extract: true });
-            if (v) {
-                add(k, v);
-                return;
-            } else {
-                k = arg.slice(1, 2);
-                v = arg.slice(2);
-            }
-            if (v) {
-                if (!isAlphabetical(v.codePointAt(0))) {
-                    add(k, v);
-                } else {
-                    add(k, true);
-                    for (const char of v) {
-                        add(char, true);
-                    }
-                }
-            } else {
-                let next = args.at(i + 1);
-                if (next && !isOpt(next)) {
-                    skip = 1;
-                    add(k, next);
-                } else {
-                    add(k, true);
-                }
-            }
-            return;
-        }
-        if (arg) {
-            if (native) {
-                arg = types.toNativeType(arg);
-            }
-            ref._.push(arg);
-        }
-    });
-    return res;
-}
-
-// Return an options object from argv
-// Accepts an object of key/alias pairs to match values from
-function optsFromArgv (opts, { args=node_process.argv.slice(2), ...params }={}) {
-    let res = {};
-    let src = argv(args, params);
-    iterate.forOwn(opts, (alias, key) => {
-        res[key] = util.getOwn(src, alias) ?? src[key];
-    });
-    return res;
-}
-
-Object.defineProperty(exports, "ARGV", {
-    enumerable: true,
-    get: function () { return node_process.argv; }
-});
 Object.defineProperty(exports, "CWD", {
     enumerable: true,
     get: function () { return node_process.cwd; }
 });
-Object.defineProperty(exports, "ENV", {
-    enumerable: true,
-    get: function () { return node_process.env; }
-});
-exports.argv = argv;
-exports.env = env;
 exports.importOrRequire = importOrRequire;
 exports.importOrRequireFiles = importOrRequireFiles;
 exports.importRequireOrRead = importRequireOrRead;
 exports.importRequireOrReadFiles = importRequireOrReadFiles;
 exports.isBuffer = isBuffer;
 exports.isDuplex = isDuplex;
-exports.isNilEnv = isNilEnv;
 exports.isPassThrough = isPassThrough;
 exports.isReadable = isReadable;
 exports.isStream = isStream;
@@ -468,8 +313,6 @@ exports.isTransform = isTransform;
 exports.isWritable = isWritable;
 exports.mkdirp = mkdirp;
 exports.mkdirpSync = mkdirpSync;
-exports.optsFromArgv = optsFromArgv;
-exports.parseArgv = argv;
 exports.readFiles = readFiles;
 exports.readFilesSync = readFilesSync;
 exports.require = require$1;

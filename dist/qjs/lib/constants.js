@@ -1,4 +1,5 @@
-var base = require('../types/base.cjs');
+import types$1, { hasOwn } from '../types/base.js';
+export { getPrototypeOf, isPrototypeOf } from '../types/base.js';
 
 const noop = ()=>{};
 const BREAK = Symbol();
@@ -35,13 +36,13 @@ function genType (obj) {
     if (!obj.n || !obj.x) {
         throw new Error('Type malformed');
     }
-    if (!base.hasOwn(obj, 'c')) {
-        if (!base.hasOwn(G, obj.n)) {
+    if (!hasOwn(obj, 'c')) {
+        if (!hasOwn(G, obj.n)) {
             obj.k = 0;
         }
         obj.c = G[obj.n];
     }
-    if (!base.hasOwn(obj, 'p')) {
+    if (!hasOwn(obj, 'p')) {
         obj.p = obj.c?.prototype;
     }
     return {
@@ -104,7 +105,7 @@ function addTypes (types) {
 }
 
 // Initial types
-const TYPES = genTypes(base.default);
+const TYPES = genTypes(types$1);
 
 // Typeof
 const typesByType = new Map([
@@ -156,16 +157,4 @@ const PRIMITIVES = {
 // Add remaining types to cache refs
 addTypes(TYPES);
 
-exports.getPrototypeOf = base.getPrototypeOf;
-exports.hasOwn = base.hasOwn;
-exports.isPrototypeOf = base.isPrototypeOf;
-exports.BREAK = BREAK;
-exports.PRIMITIVES = PRIMITIVES;
-exports.REGEX = REGEX;
-exports.TYPES = TYPES;
-exports.addType = addType;
-exports.addTypes = addTypes;
-exports.noop = noop;
-exports.typesByCtor = typesByCtor;
-exports.typesByProto = typesByProto;
-exports.typesByType = typesByType;
+export { BREAK, PRIMITIVES, REGEX, TYPES, addType, addTypes, hasOwn, noop, typesByCtor, typesByProto, typesByType };

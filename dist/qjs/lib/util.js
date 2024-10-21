@@ -1,21 +1,21 @@
-var constants = require('./constants.cjs');
-var iterate = require('./iterate.cjs');
-var types = require('./types.cjs');
-var base = require('../types/base.cjs');
+import { REGEX, noop, TYPES } from './constants.js';
+import { each, eachNotNil, forOwn, everyNotNil, map } from './iterate.js';
+import { toArray, notNil, toObject, isBoolean, toPath, isNil, isObject, isArray, isNumeric, toString, isString, isRegExp, getType } from './types.js';
+import { hasOwn } from '../types/base.js';
 
 // Return a flat array
 function flat (...args) {
-    return types.toArray(...args).flat(Infinity);
+    return toArray(...args).flat(Infinity);
 }
 
 // Return a compact array (null and undefined removed)
 function compact (...args) {
-    return types.toArray(...args).filter(types.notNil);
+    return toArray(...args).filter(notNil);
 }
 
 // Return a flat and compact array
 function flatCompact (...args) {
-    return flat(...args).filter(types.notNil);
+    return flat(...args).filter(notNil);
 }
 
 function concat (...args) {
@@ -30,14 +30,14 @@ function concat (...args) {
 function defaults (...args) {
     args = compact(args);
     let acc = {};
-    let def = types.toObject(args.at(-1));
-    function iterate$1 (res, obj, def) {
-        iterate.forOwn(obj, (val, key) => {
-            if (base.hasOwn(def, key)) {
-                if (types.isObject(def[key])) {
-                    res[key] = iterate$1(types.toObject(res[key]), val, def[key]);
+    let def = toObject(args.at(-1));
+    function iterate (res, obj, def) {
+        forOwn(obj, (val, key) => {
+            if (hasOwn(def, key)) {
+                if (isObject(def[key])) {
+                    res[key] = iterate(toObject(res[key]), val, def[key]);
                 } else {
-                    if (!base.hasOwn(res, key) || (types.isNil(res[key]) && types.notNil(val))) {
+                    if (!hasOwn(res, key) || (isNil(res[key]) && notNil(val))) {
                         res[key] = val;
                     }
                 }
@@ -45,8 +45,8 @@ function defaults (...args) {
         });
         return res;
     }
-    iterate.each(args, obj => {
-        iterate$1(acc, obj, def);
+    each(args, obj => {
+        iterate(acc, obj, def);
     });
     return acc;
 }
@@ -55,14 +55,14 @@ function defaults (...args) {
 // Source properties that resolve to nil are ignored if res value already exists
 // Note: if res is not an object it is converted to one if possible
 function assign (res, ...args) {
-    res = types.toObject(res);
-    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
-    iterate.eachNotNil(args, src => {
-        iterate.forOwn(src, (val, key) => {
-            if (!base.hasOwn(res, key)) {
+    res = toObject(res);
+    let def = isBoolean(args.at(-1)) ? args.pop() : false;
+    eachNotNil(args, src => {
+        forOwn(src, (val, key) => {
+            if (!hasOwn(res, key)) {
                 res[key] = val;
             } else {
-                if (types.notNil(val) && (!def || types.isNil(res[key]))) {
+                if (notNil(val) && (!def || isNil(res[key]))) {
                     res[key] = val;
                 }
             }
@@ -76,17 +76,17 @@ function assign (res, ...args) {
 // Note: if res is not an object it is converted to one if possible
 // Note: arrays are not merged
 function merge (res, ...args) {
-    res = types.toObject(res);
-    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
-    iterate.eachNotNil(args, src => {
-        iterate.forOwn(src, (val, key) => {
-            if (!base.hasOwn(res, key)) {
+    res = toObject(res);
+    let def = isBoolean(args.at(-1)) ? args.pop() : false;
+    eachNotNil(args, src => {
+        forOwn(src, (val, key) => {
+            if (!hasOwn(res, key)) {
                 res[key] = val;
             } else {
-                if (types.isObject(res[key]) && types.isObject(val)) {
+                if (isObject(res[key]) && isObject(val)) {
                     res[key] = merge(res[key], val);
                 } else {
-                    if (types.notNil(val) && (!def || types.isNil(res[key]))) {
+                    if (notNil(val) && (!def || isNil(res[key]))) {
                         res[key] = val;
                     }
                 }
@@ -101,7 +101,7 @@ function merge (res, ...args) {
 function freeze (obj, recurse=1, refs) {
     if (recurse) {
         refs = refs || new WeakSet();
-        iterate.forOwn(obj, val => {
+        forOwn(obj, val => {
             if (typeof val === 'object' && val !== null && !refs.has(val)) {
                 refs.add(val);
                 freeze(val, recurse, refs);
@@ -112,21 +112,21 @@ function freeze (obj, recurse=1, refs) {
 }
 
 function getOwn (obj, key) {
-    if (types.notNil(obj) && base.hasOwn(obj, key)) {
+    if (notNil(obj) && hasOwn(obj, key)) {
         return obj[key];
     }
 }
 
 function setOwn (obj, key, val) {
-    if (types.notNil(obj)) {
+    if (notNil(obj)) {
         return obj[key] = val;
     }
 }
 
 function has (obj, path) {
-    if (types.notNil(obj)) {
-        return iterate.everyNotNil(types.toPath(path), key => {
-            if (base.hasOwn(obj, key)) {
+    if (notNil(obj)) {
+        return everyNotNil(toPath(path), key => {
+            if (hasOwn(obj, key)) {
                 obj = obj[key];
             } else {
                 return false;
@@ -137,15 +137,15 @@ function has (obj, path) {
 }
 
 function get (obj, path, def) {
-    if (types.notNil(obj)) {
-        let found = iterate.everyNotNil(types.toPath(path), key => {
-            if (!base.hasOwn(obj, key)) {
+    if (notNil(obj)) {
+        let found = everyNotNil(toPath(path), key => {
+            if (!hasOwn(obj, key)) {
                 return false;
             } else {
                 obj = obj[key];
             }
         });
-        if (!found || types.isNil(obj)) {
+        if (!found || isNil(obj)) {
             return def;
         }
         return obj;
@@ -154,23 +154,23 @@ function get (obj, path, def) {
 
 function set (obj, path, val) {
     let cur = obj;
-    if (types.isObject(obj) || types.isArray(obj)) {
-        iterate.each(types.toPath(path), (key, index, arr) => {
+    if (isObject(obj) || isArray(obj)) {
+        each(toPath(path), (key, index, arr) => {
             if (index === arr.length - 1) {
                 cur[key] = val;
             } else {
-                if (base.hasOwn(cur, key)) {
-                    if (types.isObject(cur[key])) {
+                if (hasOwn(cur, key)) {
+                    if (isObject(cur[key])) {
                         cur = cur[key];
                     } else {
-                        if (types.isNumeric(arr[index + 1])) {
-                            cur = cur[key] = types.isArray(cur[key]) ? cur[key] : [];
+                        if (isNumeric(arr[index + 1])) {
+                            cur = cur[key] = isArray(cur[key]) ? cur[key] : [];
                         } else {
                             cur = cur[key] = {};
                         }
                     }
                 } else {
-                    cur = cur[key] = types.isNumeric(arr[index + 1]) ? [] : {};
+                    cur = cur[key] = isNumeric(arr[index + 1]) ? [] : {};
                 }
             }
         });
@@ -179,15 +179,15 @@ function set (obj, path, val) {
 }
 
 function keys (obj) {
-    if (types.notNil(obj)) {
+    if (notNil(obj)) {
         return Object.keys(obj);
     }
     return [];
 }
 
 function join (obj, sep=',') {
-    if (types.notNil(obj)) {
-        return Array.prototype.join.call(obj, types.toString(sep));
+    if (notNil(obj)) {
+        return Array.prototype.join.call(obj, toString(sep));
     }
     return '';
 }
@@ -203,7 +203,7 @@ function join (obj, sep=',') {
 // extract: Remove quotes from result strings
 // compact: Remove empty strings from result
 function split (str, char, { limit=Infinity, trim, inclusive=0, quotes=0, quote, extract, compact=1 }={}) {
-    str = types.toString(str);
+    str = toString(str);
     let index = 0;
     let m;
     let match;
@@ -224,10 +224,10 @@ function split (str, char, { limit=Infinity, trim, inclusive=0, quotes=0, quote,
             res.push(sub);
         }
     };
-    if (quotes && types.isString(char)) {
+    if (quotes && isString(char)) {
         char = new RegExp(char);
     }
-    if (types.isRegExp(char)) {
+    if (isRegExp(char)) {
         let { source, flags } = char;
         if (quotes) {
             source = `["']|` + source;
@@ -302,14 +302,14 @@ function split (str, char, { limit=Infinity, trim, inclusive=0, quotes=0, quote,
 }
 
 function toPairs (obj) {
-    return iterate.map(obj, (val, key) => {
+    return map(obj, (val, key) => {
         return [key, val];
     }, 0);
 }
 
 function fromPairs (arr) {
     let res = {};
-    iterate.each(arr, pair => {
+    each(arr, pair => {
         res[pair[0]] = pair[1];
     });
     return res;
@@ -317,16 +317,16 @@ function fromPairs (arr) {
 
 // Uppercase
 function toUpper (str) {
-    return types.toString(str).toUpperCase();
+    return toString(str).toUpperCase();
 }
 
 // Lowercase
 function toLower (str) {
-    return types.toString(str).toLowerCase();
+    return toString(str).toLowerCase();
 }
 
 function toCase (str, head=str=>str, tail=str=>str) {
-    str = types.toString(str);
+    str = toString(str);
     let char = str.codePointAt(0) ?? -1;
     if (char === -1) {
         return str;
@@ -349,16 +349,16 @@ function toLowerFirst (str) {
 
 // https://tc39.es/ecma262/multipage/text-processing.html#table-binary-unicode-properties
 function deburr (str) {
-    return types.toString(str).normalize('NFD').replace(constants.REGEX.diacritics, '');
+    return toString(str).normalize('NFD').replace(REGEX.diacritics, '');
 }
 
 // https://unicode.org/reports/tr44/#GC_Values_Table
 function words (str) {
-    return split(str, constants.REGEX.words);
+    return split(str, REGEX.words);
 }
 
 function compound (str, fn=val=>val, sep='') {
-    return join(iterate.map(words(str), fn), sep);
+    return join(map(words(str), fn), sep);
 }
 
 // Uppercase, space separated
@@ -407,21 +407,21 @@ const htmlEscapes = {
 };
 
 function escapeHTML (str) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.html, (match, char) => {
+    str = toString(str);
+    return str.replace(REGEX.html, (match, char) => {
         return htmlEscapes[char];
     });
 }
 
 function unescapeHTML (str) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.htmlEscaped, (match, char) => {
+    str = toString(str);
+    return str.replace(REGEX.htmlEscaped, (match, char) => {
         return htmlEscapes[char];
     });
 }
 
 function pad (str, len=0, char) {
-    str = types.toString(str);
+    str = toString(str);
     if (len <= str.length) {
         return str;
     }
@@ -430,30 +430,30 @@ function pad (str, len=0, char) {
 }
 
 function padLeft (str, len=0, char) {
-    return types.toString(str).padStart(len, char);
+    return toString(str).padStart(len, char);
 }
 
 function padRight (str, len=0, char) {
-    return types.toString(str).padEnd(len, char);
+    return toString(str).padEnd(len, char);
 }
 
 function trim (str) {
-    return types.toString(str).trim();
+    return toString(str).trim();
 }
 
 function trimLeft (str) {
-    return types.toString(str).trimStart();
+    return toString(str).trimStart();
 }
 
 function trimRight (str) {
-    return types.toString(str).trimEnd();
+    return toString(str).trimEnd();
 }
 
 // Run an iterator fn for each line in str
-function eachLine (str, fn=constants.noop, inclusive=0) {
-    str = types.toString(str);
+function eachLine (str, fn=noop, inclusive=0) {
+    str = toString(str);
     let match;
-    let regex = new RegExp(constants.REGEX.eol.source, 'g');
+    let regex = new RegExp(REGEX.eol.source, 'g');
     let i = 0;
     let n = 0;
     while ((match = regex.exec(str)) !== null) {
@@ -467,7 +467,7 @@ function eachLine (str, fn=constants.noop, inclusive=0) {
 
 // Run an iterator fn for each line in str
 // Return an array of return values
-function mapLine (str, fn=constants.noop, inclusive=0) {
+function mapLine (str, fn=noop, inclusive=0) {
     let res = [];
     eachLine(str, (line, num, eol) => {
         res.push(fn(line, num, eol));
@@ -536,8 +536,8 @@ function JSONReplacer () {
 // }
 
 function format (str, ...args) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.fmt, (match, char) => {
+    str = toString(str);
+    return str.replace(REGEX.fmt, (match, char) => {
         // Handle escape
         if (char === '%') {
             return char;
@@ -547,17 +547,17 @@ function format (str, ...args) {
             return match;
         }
         let val = args.shift();
-        let type = types.getType(val);
+        let type = getType(val);
         switch (char) {
             case 's':
-                return types.toString(val);
+                return toString(val);
             case 'd':
             case 'i':
             case 'f':
-                if (type === constants.TYPES.BigInt) {
-                    return types.toString(val);
+                if (type === TYPES.BigInt) {
+                    return toString(val);
                 }
-                if (type === constants.TYPES.Symbol) {
+                if (type === TYPES.Symbol) {
                     return NaN;
                 }
             case 'd':
@@ -571,11 +571,11 @@ function format (str, ...args) {
             // Not implemented yet
             // Note: Full object including non-enumerable properties and proxies
             case 'o':
-                return types.toString(val);
+                return toString(val);
             // Not implemented yet
             // Note: Full object not including non-enumerable properties and proxies
             case 'O':
-                return types.toString(val);
+                return toString(val);
             case 'c':
                 return '';
             default:
@@ -584,51 +584,4 @@ function format (str, ...args) {
     });
 }
 
-exports.hasOwn = base.hasOwn;
-exports.assign = assign;
-exports.capitalize = capitalize;
-exports.compact = compact;
-exports.concat = concat;
-exports.deburr = deburr;
-exports.defaults = defaults;
-exports.eachLine = eachLine;
-exports.escapeHTML = escapeHTML;
-exports.flat = flat;
-exports.flatCompact = flatCompact;
-exports.fmt = format;
-exports.format = format;
-exports.freeze = freeze;
-exports.fromPairs = fromPairs;
-exports.get = get;
-exports.getOwn = getOwn;
-exports.has = has;
-exports.join = join;
-exports.keys = keys;
-exports.mapLine = mapLine;
-exports.merge = merge;
-exports.pad = pad;
-exports.padLeft = padLeft;
-exports.padLine = padLine;
-exports.padLineLeft = padLineLeft;
-exports.padLineRight = padLineRight;
-exports.padRight = padRight;
-exports.set = set;
-exports.setOwn = setOwn;
-exports.split = split;
-exports.toCamelCase = toCamelCase;
-exports.toKebabCase = toKebabCase;
-exports.toLower = toLower;
-exports.toLowerCase = toLowerCase;
-exports.toLowerFirst = toLowerFirst;
-exports.toPairs = toPairs;
-exports.toPascalCase = toPascalCase;
-exports.toSnakeCase = toSnakeCase;
-exports.toStartCase = toStartCase;
-exports.toUpper = toUpper;
-exports.toUpperCase = toUpperCase;
-exports.toUpperFirst = toUpperFirst;
-exports.trim = trim;
-exports.trimLeft = trimLeft;
-exports.trimRight = trimRight;
-exports.unescapeHTML = unescapeHTML;
-exports.words = words;
+export { assign, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };

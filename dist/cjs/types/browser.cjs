@@ -1,4 +1,4 @@
-var typesBrowser = [
+var supplemental = [
     {
         n: 'NodeList',
         x: [0, 0, 0, 1],
@@ -11,4 +11,4 @@ var typesBrowser = [
     }
 ];
 
-exports.default = typesBrowser;
+exports.default = supplemental;

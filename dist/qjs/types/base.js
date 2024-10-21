@@ -280,7 +280,4 @@ const types = [
     }
 ];
 
-exports.default = types;
-exports.getPrototypeOf = getPrototypeOf;
-exports.hasOwn = hasOwn;
-exports.isPrototypeOf = isPrototypeOf;
+export { types as default, getPrototypeOf, hasOwn, isPrototypeOf };

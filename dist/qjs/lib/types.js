@@ -1,5 +1,5 @@
-var constants = require('./constants.cjs');
-var base = require('../types/base.cjs');
+import { typesByProto, TYPES, typesByCtor, typesByType, noop, REGEX, PRIMITIVES } from './constants.js';
+import { getPrototypeOf, isPrototypeOf, hasOwn } from '../types/base.js';
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
 function toStringTag (obj) {
@@ -11,26 +11,26 @@ function toStringTag (obj) {
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
 function getTypeFromProto (obj, recurse=3) {
-    let proto = base.getPrototypeOf(obj);
-    let type = constants.typesByProto.get(proto);
+    let proto = getPrototypeOf(obj);
+    let type = typesByProto.get(proto);
     if (type) {
         // Classes that resolve to object type
-        if (type === constants.TYPES.Object && proto && obj.constructor !== type.ctor) {
-            return constants.TYPES.Unknown;
+        if (type === TYPES.Object && proto && obj.constructor !== type.ctor) {
+            return TYPES.Unknown;
         }
         return type;
     }
     if (recurse) {
         return getTypeFromProto(proto, --recurse);
     }
-    if (base.isPrototypeOf.call(Error.prototype, obj)) {
-        return constants.TYPES.Error;
+    if (isPrototypeOf.call(Error.prototype, obj)) {
+        return TYPES.Error;
     }
-    if (type = constants.TYPES[toStringTag(obj)]) {
+    if (type = TYPES[toStringTag(obj)]) {
         return type;
     }
     // Return unknown because undefined or null are technically known types
-    return constants.TYPES.Unknown;
+    return TYPES.Unknown;
 }
 
 // Get the type definition from a constructor function
@@ -38,14 +38,14 @@ function getTypeFromProto (obj, recurse=3) {
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
 function getTypeFromCtor (obj, recurse=3) {
-    let type = constants.typesByCtor.get(obj);
+    let type = typesByCtor.get(obj);
     if (type) {
         return type;
     }
-    let proto = base.getPrototypeOf(obj);
+    let proto = getPrototypeOf(obj);
     // If obj is a class, but not a subclass (or extends null), it's prototype will be Function.prototype
     if (proto === Function.prototype) {
-        return constants.TYPES.Function;
+        return TYPES.Function;
     }
     if (recurse) {
         // If obj is a subclass, the constructor prototype will be the parent class:
@@ -53,40 +53,40 @@ function getTypeFromCtor (obj, recurse=3) {
         return getTypeFromCtor(proto, --recurse);
     }
     // Because obj is a constructor function we need to check obj.prototype instead of obj itself
-    if (base.isPrototypeOf.call(Error.prototype, obj.prototype)) {
-        return constants.TYPES.Error;
+    if (isPrototypeOf.call(Error.prototype, obj.prototype)) {
+        return TYPES.Error;
     }
-    if (type = constants.TYPES[toStringTag(obj)]) {
+    if (type = TYPES[toStringTag(obj)]) {
         return type;
     }
     // Return unknown because undefined or null are technically known types
-    return constants.TYPES.Unknown;
+    return TYPES.Unknown;
 }
 
 // Get the object type definition
 // Uses typeof if possible otherwise checks the prototype
 function getType (obj) {
-    let type = constants.typesByType.get(typeof obj);
+    let type = typesByType.get(typeof obj);
     switch (type) {
-        case constants.TYPES.Function:
-            if (obj.constructor !== constants.TYPES.Function.ctor) {
+        case TYPES.Function:
+            if (obj.constructor !== TYPES.Function.ctor) {
                 return getTypeFromProto(obj);
             }
             return type;
-        case constants.TYPES.Number:
+        case TYPES.Number:
             if (Number.isNaN(obj)) {
-                return constants.TYPES.NaN;
+                return TYPES.NaN;
             }
             if (obj === Infinity || obj === -Infinity) {
-                return constants.TYPES.Infinity;
+                return TYPES.Infinity;
             }
             return type;
-        case constants.TYPES.Object:
+        case TYPES.Object:
             if (obj === null) {
-                return constants.TYPES.Null;
+                return TYPES.Null;
             }
             if (Array.isArray(obj)) {
-                return constants.TYPES.Array;
+                return TYPES.Array;
             }
             // Plain objects
             if (obj.constructor === type.ctor) {
@@ -102,9 +102,9 @@ function getType (obj) {
             // AsyncGeneratorFunction
             // Generator
             // AsyncGenerator
-            if (type = constants.TYPES[obj[Symbol.toStringTag]]) {
-                if (type === constants.TYPES.Uint8Array && constants.TYPES.Buffer && obj instanceof constants.TYPES.Buffer.ctor) {
-                    return constants.TYPES.Buffer;
+            if (type = TYPES[obj[Symbol.toStringTag]]) {
+                if (type === TYPES.Uint8Array && TYPES.Buffer && obj instanceof TYPES.Buffer.ctor) {
+                    return TYPES.Buffer;
                 }
                 return type;
             }
@@ -118,7 +118,7 @@ function getType (obj) {
 // returns toStringTag if type not found
 function getTypeStr (obj) {
     let type = getType(obj);
-    if (type === constants.TYPES.Unknown) {
+    if (type === TYPES.Unknown) {
         return toStringTag(obj);
     }
     return type.name;
@@ -133,7 +133,7 @@ function getCtorType (obj) {
 // returns toStringTag if type not found
 function getCtorTypeStr (obj) {
     let type = getCtorType(obj);
-    if (type === constants.TYPES.Unknown) {
+    if (type === TYPES.Unknown) {
         return toStringTag(obj);
     }
     return type.name;
@@ -194,32 +194,32 @@ function isEsmMode () {
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#module_namespace_object
 function isModule (obj) {
-    return getType(obj) === constants.TYPES.Module;
+    return getType(obj) === TYPES.Module;
 }
 
 function isObject (obj) {
-    return getType(obj) === constants.TYPES.Object;
+    return getType(obj) === TYPES.Object;
 }
 
 // Regular or async
 function isFunction (obj) {
-    return obj instanceof constants.TYPES.Function.ctor;
+    return obj instanceof TYPES.Function.ctor;
 }
 
 function isAsyncFunction (obj) {
-    return getType(obj) === constants.TYPES.AsyncFunction;
+    return getType(obj) === TYPES.AsyncFunction;
 }
 
 function isGeneratorFunction (obj) {
-    return getType(obj) === constants.TYPES.GeneratorFunction;
+    return getType(obj) === TYPES.GeneratorFunction;
 }
 
 function isArray (obj) {
-    return getType(obj) === constants.TYPES.Array;
+    return getType(obj) === TYPES.Array;
 }
 
 function isPromise (obj) {
-    return getType(obj) === constants.TYPES.Promise;
+    return getType(obj) === TYPES.Promise;
 }
 
 // Checks for forEach on prototype
@@ -285,19 +285,19 @@ function isCollection (obj) {
 }
 
 function isIterator (obj) {
-    return obj instanceof constants.TYPES.Iterator.ctor
+    return obj instanceof TYPES.Iterator.ctor
 }
 
 function isTypedArray (obj) {
-    return obj instanceof constants.TYPES.TypedArray.ctor;
+    return obj instanceof TYPES.TypedArray.ctor;
 }
 
 function isArrayBuffer (obj) {
-    return getType(obj) === constants.TYPES.ArrayBuffer;
+    return getType(obj) === TYPES.ArrayBuffer;
 }
 
 function isNumber (obj) {
-    return getType(obj) === constants.TYPES.Number;
+    return getType(obj) === TYPES.Number;
 }
 
 function isNumeric (obj) {
@@ -305,15 +305,15 @@ function isNumeric (obj) {
 }
 
 function isString (obj) {
-    return getType(obj) === constants.TYPES.String;
+    return getType(obj) === TYPES.String;
 }
 
 function isBoolean (obj) {
-    return getType(obj) === constants.TYPES.Boolean;
+    return getType(obj) === TYPES.Boolean;
 }
 
 function isRegExp (obj) {
-    return getType(obj) === constants.TYPES.RegExp;
+    return getType(obj) === TYPES.RegExp;
 }
 
 // Checks for @@asyncIterator
@@ -324,7 +324,7 @@ function isAsyncIterable (obj) {
 }
 
 function isError (obj) {
-    return getType(obj) === constants.TYPES.Error;
+    return getType(obj) === TYPES.Error;
 }
 
 function toArrayOrSelf (obj, self) {
@@ -352,13 +352,13 @@ function toArray (obj, ...args) {
 }
 
 function toFn (obj) {
-    return isFunction(obj) ? obj : constants.noop;
+    return isFunction(obj) ? obj : noop;
 }
 
 // Note: Only iterables that implement entries can be cast to an object
 function toObject (obj) {
     let type = getType(obj);
-    if (type === constants.TYPES.Object) {
+    if (type === TYPES.Object) {
         return obj;
     }
     if (type.entries) {
@@ -373,7 +373,7 @@ function toPath (str) {
     if (isArray(str)) {
         return str;
     }
-    let arr = toString(str).split(constants.REGEX.path);
+    let arr = toString(str).split(REGEX.path);
     if (!arr.at(0)) {
         arr.shift();
     }
@@ -387,11 +387,11 @@ function toPath (str) {
 function toString (obj) {
     let type = getType(obj);
     switch (type) {
-        case constants.TYPES.String:
+        case TYPES.String:
             return obj;
-        case constants.TYPES.Object:
+        case TYPES.Object:
             return Object.entries(obj).toString();
-        case constants.TYPES.Date:
+        case TYPES.Date:
             return obj.toISOString();
         default:
             if (!type.proto) {
@@ -410,8 +410,8 @@ function toString (obj) {
 // Note: Doesn't convert BigInt (Errors with floats and math operations)
 // Note: Doesn't convert Symbol
 function toNativeType (val) {
-    if (base.hasOwn(constants.PRIMITIVES, val)) {
-        return constants.PRIMITIVES[val];
+    if (hasOwn(PRIMITIVES, val)) {
+        return PRIMITIVES[val];
     }
     if (isNumeric(val)) {
         if (val > Number.MAX_SAFE_INTEGER || val < Number.MIN_SAFE_INTEGER) {
@@ -422,43 +422,4 @@ function toNativeType (val) {
     return val;
 }
 
-exports.getCtorType = getCtorType;
-exports.getCtorTypeStr = getCtorTypeStr;
-exports.getType = getType;
-exports.getTypeFromCtor = getTypeFromCtor;
-exports.getTypeFromProto = getTypeFromProto;
-exports.getTypeStr = getTypeStr;
-exports.hasEntries = hasEntries;
-exports.hasForEach = hasForEach;
-exports.isArray = isArray;
-exports.isArrayBuffer = isArrayBuffer;
-exports.isAsyncFunction = isAsyncFunction;
-exports.isAsyncIterable = isAsyncIterable;
-exports.isBoolean = isBoolean;
-exports.isCollection = isCollection;
-exports.isCtor = isCtor;
-exports.isError = isError;
-exports.isEsmMode = isEsmMode;
-exports.isFunction = isFunction;
-exports.isGeneratorFunction = isGeneratorFunction;
-exports.isIterable = isIterable;
-exports.isIterator = isIterator;
-exports.isModule = isModule;
-exports.isNil = isNil;
-exports.isNull = isNull;
-exports.isNumber = isNumber;
-exports.isNumeric = isNumeric;
-exports.isObject = isObject;
-exports.isPromise = isPromise;
-exports.isRegExp = isRegExp;
-exports.isString = isString;
-exports.isTypedArray = isTypedArray;
-exports.isUndefined = isUndefined;
-exports.notNil = notNil;
-exports.toArray = toArray;
-exports.toFn = toFn;
-exports.toNativeType = toNativeType;
-exports.toObject = toObject;
-exports.toPath = toPath;
-exports.toString = toString;
-exports.toType = toType;
+export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto, getTypeStr, hasEntries, hasForEach, isArray, isArrayBuffer, isAsyncFunction, isAsyncIterable, isBoolean, isCollection, isCtor, isError, isEsmMode, isFunction, isGeneratorFunction, isIterable, isIterator, isModule, isNil, isNull, isNumber, isNumeric, isObject, isPromise, isRegExp, isString, isTypedArray, isUndefined, notNil, toArray, toFn, toNativeType, toObject, toPath, toString, toType };

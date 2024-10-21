@@ -1,24 +1,56 @@
+var browser$1 = require('./lib/browser.cjs');
 var constants = require('./lib/constants.cjs');
-var types = require('./lib/types.cjs');
+var ip = require('./lib/ip.cjs');
 var iterate = require('./lib/iterate.cjs');
+var types = require('./lib/types.cjs');
 var util = require('./lib/util.cjs');
 var browser$2 = require('./types/browser.cjs');
-var browser$1 = require('./lib/browser.cjs');
+var base = require('./types/base.cjs');
 
 constants.addTypes(browser$2.default);
 
 var browser = {
     BREAK: constants.BREAK,
     noop: constants.noop,
-    ...types,
+    TYPES: constants.TYPES,
+    ...ip,
     ...iterate,
-    ...util,
-    ...browser$1
+    ...browser$1,
+    ...types,
+    ...util
 };
 
+exports.isElement = browser$1.isElement;
+exports.isNodeList = browser$1.isNodeList;
 exports.BREAK = constants.BREAK;
-exports.hasOwn = constants.hasOwn;
+exports.TYPES = constants.TYPES;
 exports.noop = constants.noop;
+exports.fromIp = ip.fromIp;
+exports.fromIp4 = ip.fromIp4;
+exports.fromIp6 = ip.fromIp6;
+exports.fromIp6Parts = ip.fromIp6Parts;
+exports.toIp = ip.toIp;
+exports.toIp4 = ip.toIp4;
+exports.toIp6 = ip.toIp6;
+exports.each = iterate.each;
+exports.eachNotNil = iterate.eachNotNil;
+exports.every = iterate.every;
+exports.everyNotNil = iterate.everyNotNil;
+exports.filter = iterate.filter;
+exports.filterNotNil = iterate.filterNotNil;
+exports.forEach = iterate.forEach;
+exports.forIn = iterate.forIn;
+exports.forOwn = iterate.forOwn;
+exports.iterate = iterate.iterate;
+exports.iterateF = iterate.iterateF;
+exports.map = iterate.map;
+exports.mapNotNil = iterate.mapNotNil;
+exports.remove = iterate.remove;
+exports.removeNotNil = iterate.removeNotNil;
+exports.some = iterate.some;
+exports.someNotNil = iterate.someNotNil;
+exports.tap = iterate.tap;
+exports.tapNotNil = iterate.tapNotNil;
 exports.getCtorType = types.getCtorType;
 exports.getCtorTypeStr = types.getCtorTypeStr;
 exports.getType = types.getType;
@@ -59,25 +91,6 @@ exports.toObject = types.toObject;
 exports.toPath = types.toPath;
 exports.toString = types.toString;
 exports.toType = types.toType;
-exports.each = iterate.each;
-exports.eachNotNil = iterate.eachNotNil;
-exports.every = iterate.every;
-exports.everyNotNil = iterate.everyNotNil;
-exports.filter = iterate.filter;
-exports.filterNotNil = iterate.filterNotNil;
-exports.forEach = iterate.forEach;
-exports.forIn = iterate.forIn;
-exports.forOwn = iterate.forOwn;
-exports.iterate = iterate.iterate;
-exports.iterateF = iterate.iterateF;
-exports.map = iterate.map;
-exports.mapNotNil = iterate.mapNotNil;
-exports.remove = iterate.remove;
-exports.removeNotNil = iterate.removeNotNil;
-exports.some = iterate.some;
-exports.someNotNil = iterate.someNotNil;
-exports.tap = iterate.tap;
-exports.tapNotNil = iterate.tapNotNil;
 exports.assign = util.assign;
 exports.capitalize = util.capitalize;
 exports.compact = util.compact;
@@ -125,6 +138,5 @@ exports.trimLeft = util.trimLeft;
 exports.trimRight = util.trimRight;
 exports.unescapeHTML = util.unescapeHTML;
 exports.words = util.words;
-exports.isElement = browser$1.isElement;
-exports.isNodeList = browser$1.isNodeList;
+exports.hasOwn = base.hasOwn;
 exports.default = browser;

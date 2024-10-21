@@ -1,27 +1,86 @@
+var argv = require('./lib/argv.cjs');
 var constants = require('./lib/constants.cjs');
-var types = require('./lib/types.cjs');
+var env = require('./lib/env.cjs');
+var ip = require('./lib/ip.cjs');
 var iterate = require('./lib/iterate.cjs');
+var node = require('./lib/node.cjs');
+var types = require('./lib/types.cjs');
 var util = require('./lib/util.cjs');
 var node$1 = require('./types/node.cjs');
-var node = require('./lib/node.cjs');
-var ip = require('./lib/ip.cjs');
 var node_process = require('node:process');
+var base = require('./types/base.cjs');
 
 constants.addTypes(node$1.default);
 
 var index = {
     BREAK: constants.BREAK,
     noop: constants.noop,
-    ...types,
+    TYPES: constants.TYPES,
+    ...argv,
+    ...env,
+    ...ip,
     ...iterate,
-    ...util,
     ...node,
-    ...ip
+    ...types,
+    ...util
 };
 
+exports.argv = argv.argv;
+exports.optsFromArgv = argv.optsFromArgv;
+exports.parseArgv = argv.argv;
 exports.BREAK = constants.BREAK;
-exports.hasOwn = constants.hasOwn;
+exports.TYPES = constants.TYPES;
 exports.noop = constants.noop;
+exports.env = env.env;
+exports.isNilEnv = env.isNilEnv;
+exports.fromIp = ip.fromIp;
+exports.fromIp4 = ip.fromIp4;
+exports.fromIp6 = ip.fromIp6;
+exports.fromIp6Parts = ip.fromIp6Parts;
+exports.toIp = ip.toIp;
+exports.toIp4 = ip.toIp4;
+exports.toIp6 = ip.toIp6;
+exports.each = iterate.each;
+exports.eachNotNil = iterate.eachNotNil;
+exports.every = iterate.every;
+exports.everyNotNil = iterate.everyNotNil;
+exports.filter = iterate.filter;
+exports.filterNotNil = iterate.filterNotNil;
+exports.forEach = iterate.forEach;
+exports.forIn = iterate.forIn;
+exports.forOwn = iterate.forOwn;
+exports.iterate = iterate.iterate;
+exports.iterateF = iterate.iterateF;
+exports.map = iterate.map;
+exports.mapNotNil = iterate.mapNotNil;
+exports.remove = iterate.remove;
+exports.removeNotNil = iterate.removeNotNil;
+exports.some = iterate.some;
+exports.someNotNil = iterate.someNotNil;
+exports.tap = iterate.tap;
+exports.tapNotNil = iterate.tapNotNil;
+exports.importOrRequire = node.importOrRequire;
+exports.importOrRequireFiles = node.importOrRequireFiles;
+exports.importRequireOrRead = node.importRequireOrRead;
+exports.importRequireOrReadFiles = node.importRequireOrReadFiles;
+exports.isBuffer = node.isBuffer;
+exports.isDuplex = node.isDuplex;
+exports.isPassThrough = node.isPassThrough;
+exports.isReadable = node.isReadable;
+exports.isStream = node.isStream;
+exports.isTransform = node.isTransform;
+exports.isWritable = node.isWritable;
+exports.mkdirp = node.mkdirp;
+exports.mkdirpSync = node.mkdirpSync;
+exports.readFiles = node.readFiles;
+exports.readFilesSync = node.readFilesSync;
+exports.require = node.require;
+exports.requireFiles = node.requireFiles;
+exports.requireOrReadFilesSync = node.requireOrReadFilesSync;
+exports.requireOrReadSync = node.requireOrReadSync;
+exports.resolve = node.resolve;
+exports.resolveIfExists = node.resolveIfExists;
+exports.resolveIfExistsSync = node.resolveIfExistsSync;
 exports.getCtorType = types.getCtorType;
 exports.getCtorTypeStr = types.getCtorTypeStr;
 exports.getType = types.getType;
@@ -62,25 +121,6 @@ exports.toObject = types.toObject;
 exports.toPath = types.toPath;
 exports.toString = types.toString;
 exports.toType = types.toType;
-exports.each = iterate.each;
-exports.eachNotNil = iterate.eachNotNil;
-exports.every = iterate.every;
-exports.everyNotNil = iterate.everyNotNil;
-exports.filter = iterate.filter;
-exports.filterNotNil = iterate.filterNotNil;
-exports.forEach = iterate.forEach;
-exports.forIn = iterate.forIn;
-exports.forOwn = iterate.forOwn;
-exports.iterate = iterate.iterate;
-exports.iterateF = iterate.iterateF;
-exports.map = iterate.map;
-exports.mapNotNil = iterate.mapNotNil;
-exports.remove = iterate.remove;
-exports.removeNotNil = iterate.removeNotNil;
-exports.some = iterate.some;
-exports.someNotNil = iterate.someNotNil;
-exports.tap = iterate.tap;
-exports.tapNotNil = iterate.tapNotNil;
 exports.assign = util.assign;
 exports.capitalize = util.capitalize;
 exports.compact = util.compact;
@@ -128,40 +168,6 @@ exports.trimLeft = util.trimLeft;
 exports.trimRight = util.trimRight;
 exports.unescapeHTML = util.unescapeHTML;
 exports.words = util.words;
-exports.argv = node.argv;
-exports.env = node.env;
-exports.importOrRequire = node.importOrRequire;
-exports.importOrRequireFiles = node.importOrRequireFiles;
-exports.importRequireOrRead = node.importRequireOrRead;
-exports.importRequireOrReadFiles = node.importRequireOrReadFiles;
-exports.isBuffer = node.isBuffer;
-exports.isDuplex = node.isDuplex;
-exports.isNilEnv = node.isNilEnv;
-exports.isPassThrough = node.isPassThrough;
-exports.isReadable = node.isReadable;
-exports.isStream = node.isStream;
-exports.isTransform = node.isTransform;
-exports.isWritable = node.isWritable;
-exports.mkdirp = node.mkdirp;
-exports.mkdirpSync = node.mkdirpSync;
-exports.optsFromArgv = node.optsFromArgv;
-exports.parseArgv = node.argv;
-exports.readFiles = node.readFiles;
-exports.readFilesSync = node.readFilesSync;
-exports.require = node.require;
-exports.requireFiles = node.requireFiles;
-exports.requireOrReadFilesSync = node.requireOrReadFilesSync;
-exports.requireOrReadSync = node.requireOrReadSync;
-exports.resolve = node.resolve;
-exports.resolveIfExists = node.resolveIfExists;
-exports.resolveIfExistsSync = node.resolveIfExistsSync;
-exports.fromIp = ip.fromIp;
-exports.fromIp4 = ip.fromIp4;
-exports.fromIp6 = ip.fromIp6;
-exports.fromIp6Parts = ip.fromIp6Parts;
-exports.toIp = ip.toIp;
-exports.toIp4 = ip.toIp4;
-exports.toIp6 = ip.toIp6;
 Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
@@ -174,4 +180,5 @@ Object.defineProperty(exports, "ENV", {
     enumerable: true,
     get: function () { return node_process.env; }
 });
+exports.hasOwn = base.hasOwn;
 exports.default = index;

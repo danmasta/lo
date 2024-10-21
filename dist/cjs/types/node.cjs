@@ -1,8 +1,10 @@
 var node_stream = require('node:stream');
+var node_buffer = require('node:buffer');
 
-var typesNode = [
+var supplemental = [
     {
         n: 'Buffer',
+        c: node_buffer.Buffer,
         x: [1, 1, 2, 1]
     },
     {
@@ -37,4 +39,4 @@ var typesNode = [
     }
 ];
 
-exports.default = typesNode;
+exports.default = supplemental;

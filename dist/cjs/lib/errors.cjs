@@ -18,14 +18,6 @@ class NotFoundError extends BaseError {
     static code = 'ERR_FILE_NOT_FOUND';
 }
 
-class NotResolvedError extends BaseError {
-    constructor (path) {
-        super('File or directory not resolved: %s', path);
-        this.path = path;
-    }
-    static code = 'ERR_FILE_NOT_RESOLVED';
-}
-
 class NotSupportedError extends BaseError {
     constructor (path) {
         super('File type not supported: %s', path);
@@ -50,6 +42,5 @@ exports.BaseError = BaseError;
 exports.Error = BaseError;
 exports.IpError = IpError;
 exports.NotFoundError = NotFoundError;
-exports.NotResolvedError = NotResolvedError;
 exports.NotSupportedError = NotSupportedError;
 exports.RequireAsyncError = RequireAsyncError;
