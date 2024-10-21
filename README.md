@@ -9,6 +9,7 @@ Lightweight, modern utility library for node and browser
 * Treeshakeable by default
 * Support for all iterable types
 * Support for [async](#async-iteration) iterables and async iterator functions
+* Support for [quickjs](https://bellard.org/quickjs/)
 * 0 dependencies
 
 ## About
