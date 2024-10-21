@@ -1,8 +1,10 @@
-import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'node:stream';
+import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '#node:stream';
+import { Buffer } from '#node:buffer';
 
 export default [
     {
         n: 'Buffer',
+        c: Buffer,
         x: [1, 1, 2, 1]
     },
     {
