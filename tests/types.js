@@ -1,4 +1,5 @@
 import { TYPES } from '../lib/constants.js';
+import { env } from 'node:process';
 
 describe('Types', () => {
 
@@ -26,6 +27,7 @@ describe('Types', () => {
         expect(lo.getType(fx.readable)).to.equal(TYPES.Readable);
         expect(lo.getType(fx.buff)).to.equal(TYPES.Buffer);
         expect(lo.getType(await import('../lib/types.js'))).to.equal(TYPES.Module);
+        expect(lo.getType(env)).to.equal(TYPES.Env);
         // Constructor functions should be type of Function
         expect(lo.getType(Promise)).to.equal(TYPES.Function);
         expect(lo.getType(Boolean)).to.equal(TYPES.Function);
