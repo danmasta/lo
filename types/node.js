@@ -1,5 +1,6 @@
 import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '#node:stream';
 import { Buffer } from '#node:buffer';
+import { env } from '#node:process';
 
 export default [
     {
@@ -35,6 +36,11 @@ export default [
     {
         n: 'PassThrough',
         c: PassThrough,
+        x: [1, 1, 2]
+    },
+    {
+        n: 'Env',
+        c: env.constructor,
         x: [1, 1, 2]
     }
 ];
