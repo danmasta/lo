@@ -18,11 +18,11 @@ I wanted a lighter weight, modern utility library. I had written a bunch of meth
 ## Usage
 Add lo as a dependency for your app and install via npm
 ```bash
-npm install lo@github:danmasta/lo --save
+npm install lo@danmasta/lo --save
 ```
-Install a specific version
+Install a specific [version](https://github.com/danmasta/lo/tags)
 ```bash
-npm install lo@github:danmasta/lo#v0.0.1 --save
+npm install lo@danmasta/lo#v0.0.1 --save
 ```
 Import or require the package in your app
 ```js
