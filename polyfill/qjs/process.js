@@ -1,4 +1,4 @@
-import { eachLine, fmt, split } from '../../lib/util.js';
+import { fmt, split } from '../../lib/util.js';
 
 export const env = std.getenviron();
 export const pid = os.getpid();
