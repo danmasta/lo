@@ -3,7 +3,7 @@ const genFnAsync = async function*(){};
 const iter = Symbol.iterator;
 const ctor = 'constructor';
 const proto = 'prototype';
-export const { hasOwn, isPrototypeOf, getPrototypeOf } = Object;
+const { hasOwn, isPrototypeOf, getPrototypeOf } = Object;
 
 const types = [
     {
@@ -281,5 +281,5 @@ const types = [
 ];
 
 export {
-    types as default
+    types as default, hasOwn, isPrototypeOf, getPrototypeOf
 };
