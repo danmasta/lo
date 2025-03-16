@@ -6,3 +6,12 @@ export class Writable extends Stream {};
 export class Duplex extends Stream {};
 export class Transform extends Duplex {};
 export class PassThrough extends Transform {};
+
+export default {
+    Stream,
+    Readable,
+    Writable,
+    Duplex,
+    Transform,
+    PassThrough
+};
