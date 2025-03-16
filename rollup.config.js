@@ -1,5 +1,8 @@
-import alias from '@rollup/plugin-alias';
-import resolve from '@rollup/plugin-node-resolve';
+import pluginAlias from '@rollup/plugin-alias';
+import pluginNodeResolve from '@rollup/plugin-node-resolve';
+import { resolve } from 'node:path';
+
+let root = import.meta.dirname;
 
 export default [
     {
@@ -18,15 +21,7 @@ export default [
             esModule: false
         },
         plugins: [
-            alias({
-                entries:{
-                    '#node:os': 'node:os',
-                    '#node:process': 'node:process',
-                    '#node:stream': 'node:stream',
-                    '#node:buffer': 'node:buffer'
-                }
-            }),
-            resolve()
+            pluginNodeResolve()
         ]
     },
     {
@@ -39,12 +34,17 @@ export default [
             sourcemap: false,
             strict: false,
             preserveModules: true,
-            exports: 'auto',
+            exports: 'named',
             entryFileNames: '[name].js',
             esModule: false
         },
         plugins: [
-            resolve({
+            pluginAlias({
+                entries: [
+                    { find: /^node:(.+)$/, replacement: resolve(root, './polyfill/qjs/$1.js') }
+                ]
+            }),
+            pluginNodeResolve({
                 exportConditions: ['qjs', 'default', 'import']
             })
         ]
