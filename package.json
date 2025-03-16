@@ -47,12 +47,6 @@
       "require": "./dist/cjs/lib/errors.cjs"
     }
   },
-  "imports": {
-    "#node:*": {
-      "qjs": "./polyfill/qjs/*.js",
-      "default": "*"
-    }
-  },
   "scripts": {
     "test": "make test",
     "coverage": "make coverage",
