@@ -117,7 +117,12 @@ function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
 // Accepts an object of key/alias pairs to match values from
 function optsFromArgv (opts, { args=node_process.argv.slice(2), ...params }={}) {
     let res = {};
-    let src = argv(args, params);
+    let src;
+    if (types.isObject(args)) {
+        src = args;
+    } else {
+        src = argv(args, params);
+    }
     iterate.forOwn(opts, (alias, key) => {
         res[key] = util.getOwn(src, alias) ?? src[key];
     });

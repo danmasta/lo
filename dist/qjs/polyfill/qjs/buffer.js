@@ -1,0 +1,3 @@
+class Buffer {}
+
+export { Buffer };

@@ -1,48 +1,48 @@
-var node_stream = require('node:stream');
-var node_buffer = require('node:buffer');
-var node_process = require('node:process');
+import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '../polyfill/qjs/stream.js';
+import { Buffer } from '../polyfill/qjs/buffer.js';
+import { env } from '../polyfill/qjs/process.js';
 
 var supplemental = [
     {
         n: 'Buffer',
-        c: node_buffer.Buffer,
+        c: Buffer,
         x: [1, 1, 2, 1]
     },
     {
         n: 'Stream',
-        c: node_stream.Stream,
+        c: Stream,
         x: [1, 1, 2]
     },
     {
         n: 'Readable',
-        c: node_stream.Readable,
+        c: Readable,
         x: [1, 1, 2]
     },
     {
         n: 'Writable',
-        c: node_stream.Writable,
+        c: Writable,
         x: [1, 1, 2]
     },
     {
         n: 'Transform',
-        c: node_stream.Transform,
+        c: Transform,
         x: [1, 1, 2]
     },
     {
         n: 'Duplex',
-        c: node_stream.Duplex,
+        c: Duplex,
         x: [1, 1, 2]
     },
     {
         n: 'PassThrough',
-        c: node_stream.PassThrough,
+        c: PassThrough,
         x: [1, 1, 2]
     },
     {
         n: 'Env',
-        c: node_process.env.constructor,
+        c: env.constructor,
         x: [1, 1, 2]
     }
 ];
 
-exports.default = supplemental;
+export { supplemental as default };

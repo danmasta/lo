@@ -1,7 +1,7 @@
 import { argv as argv$1 } from '../polyfill/qjs/process.js';
 import { REGEX } from './constants.js';
 import { each, forOwn } from './iterate.js';
-import { isArray, toNativeType } from './types.js';
+import { isArray, toNativeType, isObject } from './types.js';
 import { split, toCamelCase, getOwn } from './util.js';
 import { hasOwn } from '../types/base.js';
 
@@ -117,7 +117,12 @@ function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
 // Accepts an object of key/alias pairs to match values from
 function optsFromArgv (opts, { args=argv$1.slice(2), ...params }={}) {
     let res = {};
-    let src = argv(args, params);
+    let src;
+    if (isObject(args)) {
+        src = args;
+    } else {
+        src = argv(args, params);
+    }
     forOwn(opts, (alias, key) => {
         res[key] = getOwn(src, alias) ?? src[key];
     });

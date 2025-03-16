@@ -79,7 +79,7 @@ async function iterateA (iter, fn, col=1, type, iterA, fnA) {
                     break;
                 }
             }
-        } else if (!col && type === constants.TYPES.Object) {
+        } else if (!col && type.type === constants.TYPES.Object.type) {
             for (const [key, val] of Object.entries(iter)) {
                 if (await fn(val, key, iter) === constants.BREAK) {
                     break;
@@ -116,7 +116,7 @@ function iterate (iter, fn, col=1, type) {
                     break;
                 }
             }
-        } else if (!col && type === constants.TYPES.Object) {
+        } else if (!col && type.type === constants.TYPES.Object.type) {
             for (const [key, val] of Object.entries(iter)) {
                 if (fn(val, key, iter) === constants.BREAK) {
                     break;
