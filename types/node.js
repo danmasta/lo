@@ -1,6 +1,6 @@
-import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '#node:stream';
-import { Buffer } from '#node:buffer';
-import { env } from '#node:process';
+import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'node:stream';
+import { Buffer } from 'node:buffer';
+import { env } from 'node:process';
 
 export default [
     {
