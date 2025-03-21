@@ -82,6 +82,8 @@
 ## Util
 #### Base
 * `assign`
+* `assignDefaults`
+* `assignIn`
 * `capitalize`
 * `compact`
 * `concat`
@@ -103,6 +105,8 @@
 * `keys`
 * `mapLine`
 * `merge`
+* `mergeDefaults`
+* `mergeIn`
 * `pad`
 * `padLeft`
 * `padLine`
