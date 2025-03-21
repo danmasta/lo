@@ -10,7 +10,7 @@ var base = require('../types/base.cjs');
 // Supports negation, camel casing, and type casting to native types
 // Note: Use quotes for param values with whitespace
 // Note: Either quote style can be used, but mixing quote styles isn't supported
-function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
+function parseArgv (arr=node_process.argv.slice(2), { negate=1, camel=0, native=1, sub='sub' }={}) {
     if (!types.isArray(arr)) {
         arr = util.split(arr, constants.REGEX.whitespace, { trim: true, quotes: true, extract: true });
     }
@@ -115,13 +115,13 @@ function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
 
 // Return an options object from argv
 // Accepts an object of key/alias pairs to match values from
-function optsFromArgv (opts, { args=node_process.argv.slice(2), ...params }={}) {
+function optsFromArgv (opts, { argv=node_process.argv.slice(2), ...params }={}) {
     let res = {};
     let src;
-    if (types.isObject(args)) {
-        src = args;
+    if (types.isObject(argv)) {
+        src = argv;
     } else {
-        src = argv(args, params);
+        src = parseArgv(argv, params);
     }
     iterate.forOwn(opts, (alias, key) => {
         res[key] = util.getOwn(src, alias) ?? src[key];
@@ -133,6 +133,6 @@ Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
 });
-exports.argv = argv;
+exports.argv = parseArgv;
 exports.optsFromArgv = optsFromArgv;
-exports.parseArgv = argv;
+exports.parseArgv = parseArgv;

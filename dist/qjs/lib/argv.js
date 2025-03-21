@@ -1,4 +1,4 @@
-import { argv as argv$1 } from '../polyfill/qjs/process.js';
+import { argv } from '../polyfill/qjs/process.js';
 import { REGEX } from './constants.js';
 import { each, forOwn } from './iterate.js';
 import { isArray, toNativeType, isObject } from './types.js';
@@ -10,7 +10,7 @@ import { hasOwn } from '../types/base.js';
 // Supports negation, camel casing, and type casting to native types
 // Note: Use quotes for param values with whitespace
 // Note: Either quote style can be used, but mixing quote styles isn't supported
-function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
+function parseArgv (arr=argv.slice(2), { negate=1, camel=0, native=1, sub='sub' }={}) {
     if (!isArray(arr)) {
         arr = split(arr, REGEX.whitespace, { trim: true, quotes: true, extract: true });
     }
@@ -115,13 +115,13 @@ function argv (arr, { negate=1, camel=0, native=1, sub='sub' }={}) {
 
 // Return an options object from argv
 // Accepts an object of key/alias pairs to match values from
-function optsFromArgv (opts, { args=argv$1.slice(2), ...params }={}) {
+function optsFromArgv (opts, { argv: argv$1=argv.slice(2), ...params }={}) {
     let res = {};
     let src;
-    if (isObject(args)) {
-        src = args;
+    if (isObject(argv$1)) {
+        src = argv$1;
     } else {
-        src = argv(args, params);
+        src = parseArgv(argv$1, params);
     }
     forOwn(opts, (alias, key) => {
         res[key] = getOwn(src, alias) ?? src[key];
@@ -129,4 +129,4 @@ function optsFromArgv (opts, { args=argv$1.slice(2), ...params }={}) {
     return res;
 }
 
-export { argv$1 as ARGV, argv, optsFromArgv, argv as parseArgv };
+export { argv as ARGV, parseArgv as argv, optsFromArgv, parseArgv };

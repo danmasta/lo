@@ -25,9 +25,9 @@ var index = {
     ...util
 };
 
-exports.argv = argv.argv;
+exports.argv = argv.parseArgv;
 exports.optsFromArgv = argv.optsFromArgv;
-exports.parseArgv = argv.argv;
+exports.parseArgv = argv.parseArgv;
 exports.BREAK = constants.BREAK;
 exports.TYPES = constants.TYPES;
 exports.noop = constants.noop;
