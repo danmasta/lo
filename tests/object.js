@@ -1,26 +1,48 @@
+import { assign, assignDefaults, assignIn, defaults, merge, mergeDefaults, mergeIn } from '../lib/util.js';
+
 describe('Object', () => {
 
     it('defaults', () => {
-        expect(lo.defaults({1:2,2:3}, fx.obj1)).to.eql({1:2});
-        expect(lo.defaults({1:null,2:{2:3}}, fx.obj2)).to.eql({1:1,2:{2:3}});
+        expect(defaults({1:2,2:3}, fx.obj1)).to.eql({1:2});
+        expect(defaults({1:null,2:{2:3}}, fx.obj2)).to.eql({1:1,2:{2:3}});
     });
 
     it('assign', () => {
-        expect(lo.assign({ 1: 1 }, { 1: 2 })).to.eql({ 1: 2 });
-        expect(lo.assign({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
-        expect(lo.assign({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
-        expect(lo.assign({ 1: null }, { 1: undefined })).to.eql({ 1: null });
-        expect(lo.assign({ 1: 1 }, { 1: 2 }, true)).to.eql({ 1: 1 });
-        expect(lo.assign({ 1: 1, 2: null }, { 1: 2, 2: 2 }, true)).to.eql({ 1: 1, 2: 2 });
+        expect(assign({ 1: 1 }, { 1: 2 })).to.eql({ 1: 2 });
+        expect(assign({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
+        expect(assign({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
+        expect(assign({ 1: null }, { 1: undefined })).to.eql({ 1: null });
+    });
+
+    it('assignDefaults', () => {
+        expect(assignDefaults({ 1: 1 }, { 1: 2 })).to.eql({ 1: 1 });
+        expect(assignDefaults({ 1: 1, 2: null }, { 1: 2, 2: 2 })).to.eql({ 1: 1, 2: 2 });
+    });
+
+    it('assignIn', () => {
+        let obj = Object.create({
+            inherit: 1
+        });
+        expect(assignIn({}, { 1: 1 }, obj)).to.eql({ 1: 1, inherit: 1 });
     });
 
     it('merge', () => {
-        expect(lo.merge({ 1: 1 }, { 1: 2 })).to.eql({ 1: 2 });
-        expect(lo.merge({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
-        expect(lo.merge({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
-        expect(lo.merge({ 1: null }, { 1: undefined })).to.eql({ 1: null });
-        expect(lo.merge({ 1: 1 }, { 1: 2 }, true)).to.eql({ 1: 1 });
-        expect(lo.merge({ 1: 1, 2: null }, { 1: 2, 2: 2 }, true)).to.eql({ 1: 1, 2: 2 });
+        expect(merge({ 1: 1 }, { 1: 2 })).to.eql({ 1: 2 });
+        expect(merge({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
+        expect(merge({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
+        expect(merge({ 1: null }, { 1: undefined })).to.eql({ 1: null });
+    });
+
+    it('mergeDefaults', () => {
+        expect(mergeDefaults({ 1: 1 }, { 1: 2 })).to.eql({ 1: 1 });
+        expect(mergeDefaults({ 1: 1, 2: null }, { 1: 2, 2: 2 })).to.eql({ 1: 1, 2: 2 });
+    });
+
+    it('mergeIn', () => {
+        let obj = Object.create({
+            inherit: 1
+        });
+        expect(mergeIn({ 2: { 3: 1 }}, { 1: 1, 2: { 3: 3 } }, obj)).to.eql({ 1: 1, 2: { 3: 3 }, inherit: 1 });
     });
 
     it('freeze', () => {
