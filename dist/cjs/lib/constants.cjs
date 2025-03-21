@@ -2,6 +2,7 @@ var base = require('../types/base.cjs');
 
 const noop = ()=>{};
 const BREAK = Symbol();
+const CLONE = Symbol();
 const G = globalThis;
 
 const types = {
@@ -160,6 +161,7 @@ exports.getPrototypeOf = base.getPrototypeOf;
 exports.hasOwn = base.hasOwn;
 exports.isPrototypeOf = base.isPrototypeOf;
 exports.BREAK = BREAK;
+exports.CLONE = CLONE;
 exports.PRIMITIVES = PRIMITIVES;
 exports.REGEX = REGEX;
 exports.TYPES = TYPES;

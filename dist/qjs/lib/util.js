@@ -1,6 +1,6 @@
-import { REGEX, noop, TYPES } from './constants.js';
-import { each, eachNotNil, forOwn, everyNotNil, map } from './iterate.js';
-import { toArray, notNil, toObject, isBoolean, toPath, isNil, isObject, isArray, isNumeric, toString, isString, isRegExp, getType } from './types.js';
+import { CLONE, REGEX, noop, TYPES } from './constants.js';
+import { each, forOwn, forIn, everyNotNil, map } from './iterate.js';
+import { toArray, notNil, toObject, isObject, isNil, toPath, isArray, isNumeric, toString, isString, isRegExp, getType } from './types.js';
 import { hasOwn } from '../types/base.js';
 
 // Return a flat array
@@ -29,71 +29,96 @@ function concat (...args) {
 // Definition must be an object or iterable that implements entries
 function defaults (...args) {
     args = compact(args);
-    let acc = {};
+    let res = {};
     let def = toObject(args.at(-1));
-    function iterate (res, obj, def) {
+    function iterate (acc, obj, def) {
         forOwn(obj, (val, key) => {
             if (hasOwn(def, key)) {
                 if (isObject(def[key])) {
-                    res[key] = iterate(toObject(res[key]), val, def[key]);
+                    acc[key] = iterate(toObject(acc[key]), val, def[key]);
                 } else {
-                    if (!hasOwn(res, key) || (isNil(res[key]) && notNil(val))) {
-                        res[key] = val;
+                    if (!hasOwn(acc, key) || (isNil(acc[key]) && notNil(val))) {
+                        acc[key] = val;
                     }
                 }
             }
         });
-        return res;
+        return acc;
     }
     each(args, obj => {
-        iterate(acc, obj, def);
+        iterate(res, obj, def);
     });
-    return acc;
+    return res;
+}
+
+// Assign values from multiple sources to res with options
+// Note: Useful for composing other assign/merge methods
+// defaults: Whether or not to overwrite existing values
+// recurse: Depth of nested objects to recurse, -1 or Infinity traverse any depth
+// clone: If true, return a new shallow cloned object
+// iter: Function to use for iterating properties
+function assignWithOpts ({ defaults=0, recurse=0, clone=0, iter=forOwn }={}, res, ...args) {
+    res = toObject(res);
+    if (clone && !res[CLONE]) {
+        args.unshift(res);
+        res = { [CLONE]: true };
+    }
+    each(args, src => {
+        iter(src, (val, key) => {
+            if (!hasOwn(res, key)) {
+                if (clone && isObject(val)) {
+                    res[key] = assignWithOpts({ defaults, recurse: -1, clone, iter }, val);
+                } else {
+                    res[key] = val;
+                }
+            } else {
+                let o = isObject(val);
+                if (recurse && o && isObject(res[key])) {
+                    res[key] = assignWithOpts({ defaults, recurse: recurse -1, clone, iter }, res[key], val);
+                } else {
+                    if (notNil(val) && (!defaults || isNil(res[key]))) {
+                        if (clone && o) {
+                            res[key] = assignWithOpts({ defaults, recurse, clone, iter }, val);
+                        } else {
+                            res[key] = val;
+                        }
+                    }
+                }
+            }
+        });
+    });
+    return res;
 }
 
 // Assign values from multiple sources to res
 // Source properties that resolve to nil are ignored if res value already exists
-// Note: if res is not an object it is converted to one if possible
-function assign (res, ...args) {
-    res = toObject(res);
-    let def = isBoolean(args.at(-1)) ? args.pop() : false;
-    eachNotNil(args, src => {
-        forOwn(src, (val, key) => {
-            if (!hasOwn(res, key)) {
-                res[key] = val;
-            } else {
-                if (notNil(val) && (!def || isNil(res[key]))) {
-                    res[key] = val;
-                }
-            }
-        });
-    });
-    return res;
+// Note: If res is not an object it is converted to one if possible
+function assign (...args) {
+    return assignWithOpts(undefined, ...args);
+}
+
+function assignDefaults (...args) {
+    return assignWithOpts({ defaults: 1 }, ...args);
+}
+
+function assignIn (...args) {
+    return assignWithOpts({ iter: forIn }, ...args);
 }
 
 // Recursively assign values from multiple sources to res
 // Source properties that resolve to nil are ignored if res value already exists
-// Note: if res is not an object it is converted to one if possible
-// Note: arrays are not merged
-function merge (res, ...args) {
-    res = toObject(res);
-    let def = isBoolean(args.at(-1)) ? args.pop() : false;
-    eachNotNil(args, src => {
-        forOwn(src, (val, key) => {
-            if (!hasOwn(res, key)) {
-                res[key] = val;
-            } else {
-                if (isObject(res[key]) && isObject(val)) {
-                    res[key] = merge(res[key], val);
-                } else {
-                    if (notNil(val) && (!def || isNil(res[key]))) {
-                        res[key] = val;
-                    }
-                }
-            }
-        });
-    });
-    return res;
+// Note: If res is not an object it is converted to one if possible
+// Note: Arrays are not merged
+function merge (...args) {
+    return assignWithOpts({ recurse: -1 }, ...args);
+}
+
+function mergeDefaults (...args) {
+    return assignWithOpts({ defaults: 1, recurse: -1 }, ...args);
+}
+
+function mergeIn (...args) {
+    return assignWithOpts({ recurse: -1, iter: forIn }, ...args);
 }
 
 // Recursively freeze an object to become immutable
@@ -584,4 +609,4 @@ function format (str, ...args) {
     });
 }
 
-export { assign, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
+export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };

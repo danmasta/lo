@@ -3,6 +3,7 @@ export { getPrototypeOf, isPrototypeOf } from '../types/base.js';
 
 const noop = ()=>{};
 const BREAK = Symbol();
+const CLONE = Symbol();
 const G = globalThis;
 
 const types = {
@@ -157,4 +158,4 @@ const PRIMITIVES = {
 // Add remaining types to cache refs
 addTypes(TYPES);
 
-export { BREAK, PRIMITIVES, REGEX, TYPES, addType, addTypes, hasOwn, noop, typesByCtor, typesByProto, typesByType };
+export { BREAK, CLONE, PRIMITIVES, REGEX, TYPES, addType, addTypes, hasOwn, noop, typesByCtor, typesByProto, typesByType };

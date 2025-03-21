@@ -29,71 +29,96 @@ function concat (...args) {
 // Definition must be an object or iterable that implements entries
 function defaults (...args) {
     args = compact(args);
-    let acc = {};
+    let res = {};
     let def = types.toObject(args.at(-1));
-    function iterate$1 (res, obj, def) {
+    function iterate$1 (acc, obj, def) {
         iterate.forOwn(obj, (val, key) => {
             if (base.hasOwn(def, key)) {
                 if (types.isObject(def[key])) {
-                    res[key] = iterate$1(types.toObject(res[key]), val, def[key]);
+                    acc[key] = iterate$1(types.toObject(acc[key]), val, def[key]);
                 } else {
-                    if (!base.hasOwn(res, key) || (types.isNil(res[key]) && types.notNil(val))) {
-                        res[key] = val;
+                    if (!base.hasOwn(acc, key) || (types.isNil(acc[key]) && types.notNil(val))) {
+                        acc[key] = val;
                     }
                 }
             }
         });
-        return res;
+        return acc;
     }
     iterate.each(args, obj => {
-        iterate$1(acc, obj, def);
+        iterate$1(res, obj, def);
     });
-    return acc;
+    return res;
+}
+
+// Assign values from multiple sources to res with options
+// Note: Useful for composing other assign/merge methods
+// defaults: Whether or not to overwrite existing values
+// recurse: Depth of nested objects to recurse, -1 or Infinity traverse any depth
+// clone: If true, return a new shallow cloned object
+// iter: Function to use for iterating properties
+function assignWithOpts ({ defaults=0, recurse=0, clone=0, iter=iterate.forOwn }={}, res, ...args) {
+    res = types.toObject(res);
+    if (clone && !res[constants.CLONE]) {
+        args.unshift(res);
+        res = { [constants.CLONE]: true };
+    }
+    iterate.each(args, src => {
+        iter(src, (val, key) => {
+            if (!base.hasOwn(res, key)) {
+                if (clone && types.isObject(val)) {
+                    res[key] = assignWithOpts({ defaults, recurse: -1, clone, iter }, val);
+                } else {
+                    res[key] = val;
+                }
+            } else {
+                let o = types.isObject(val);
+                if (recurse && o && types.isObject(res[key])) {
+                    res[key] = assignWithOpts({ defaults, recurse: recurse -1, clone, iter }, res[key], val);
+                } else {
+                    if (types.notNil(val) && (!defaults || types.isNil(res[key]))) {
+                        if (clone && o) {
+                            res[key] = assignWithOpts({ defaults, recurse, clone, iter }, val);
+                        } else {
+                            res[key] = val;
+                        }
+                    }
+                }
+            }
+        });
+    });
+    return res;
 }
 
 // Assign values from multiple sources to res
 // Source properties that resolve to nil are ignored if res value already exists
-// Note: if res is not an object it is converted to one if possible
-function assign (res, ...args) {
-    res = types.toObject(res);
-    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
-    iterate.eachNotNil(args, src => {
-        iterate.forOwn(src, (val, key) => {
-            if (!base.hasOwn(res, key)) {
-                res[key] = val;
-            } else {
-                if (types.notNil(val) && (!def || types.isNil(res[key]))) {
-                    res[key] = val;
-                }
-            }
-        });
-    });
-    return res;
+// Note: If res is not an object it is converted to one if possible
+function assign (...args) {
+    return assignWithOpts(undefined, ...args);
+}
+
+function assignDefaults (...args) {
+    return assignWithOpts({ defaults: 1 }, ...args);
+}
+
+function assignIn (...args) {
+    return assignWithOpts({ iter: iterate.forIn }, ...args);
 }
 
 // Recursively assign values from multiple sources to res
 // Source properties that resolve to nil are ignored if res value already exists
-// Note: if res is not an object it is converted to one if possible
-// Note: arrays are not merged
-function merge (res, ...args) {
-    res = types.toObject(res);
-    let def = types.isBoolean(args.at(-1)) ? args.pop() : false;
-    iterate.eachNotNil(args, src => {
-        iterate.forOwn(src, (val, key) => {
-            if (!base.hasOwn(res, key)) {
-                res[key] = val;
-            } else {
-                if (types.isObject(res[key]) && types.isObject(val)) {
-                    res[key] = merge(res[key], val);
-                } else {
-                    if (types.notNil(val) && (!def || types.isNil(res[key]))) {
-                        res[key] = val;
-                    }
-                }
-            }
-        });
-    });
-    return res;
+// Note: If res is not an object it is converted to one if possible
+// Note: Arrays are not merged
+function merge (...args) {
+    return assignWithOpts({ recurse: -1 }, ...args);
+}
+
+function mergeDefaults (...args) {
+    return assignWithOpts({ defaults: 1, recurse: -1 }, ...args);
+}
+
+function mergeIn (...args) {
+    return assignWithOpts({ recurse: -1, iter: iterate.forIn }, ...args);
 }
 
 // Recursively freeze an object to become immutable
@@ -586,6 +611,9 @@ function format (str, ...args) {
 
 exports.hasOwn = base.hasOwn;
 exports.assign = assign;
+exports.assignDefaults = assignDefaults;
+exports.assignIn = assignIn;
+exports.assignWithOpts = assignWithOpts;
 exports.capitalize = capitalize;
 exports.compact = compact;
 exports.concat = concat;
@@ -606,6 +634,8 @@ exports.join = join;
 exports.keys = keys;
 exports.mapLine = mapLine;
 exports.merge = merge;
+exports.mergeDefaults = mergeDefaults;
+exports.mergeIn = mergeIn;
 exports.pad = pad;
 exports.padLeft = padLeft;
 exports.padLine = padLine;
