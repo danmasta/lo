@@ -1,6 +1,7 @@
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { optsFromArgv, parseArgv } from '../lib/argv.js';
+import { env } from '../lib/env.js';
 
 describe('Node', () => {
 
@@ -42,15 +43,15 @@ describe('Node', () => {
     });
 
     it('env', () => {
-        expect(lo.env('TEST1')).to.be.undefined;
-        lo.env('TEST2', 100);
-        expect(lo.env('TEST2')).to.equal(100);
-        lo.env('TEST3', null);
-        expect(lo.env('TEST3')).to.be.null;
-        lo.env('TEST3', undefined);
-        expect(lo.env('TEST3')).to.be.undefined;
-        lo.env('TEST3', 100);
-        expect(lo.env('TEST3')).to.equal(100);
+        expect(env('TEST1')).to.be.undefined;
+        env('TEST2', 100);
+        expect(env('TEST2')).to.equal(100);
+        env('TEST3', null);
+        expect(env('TEST3')).to.be.null;
+        env('TEST3', undefined);
+        expect(env('TEST3')).to.be.undefined;
+        env('TEST3', 100);
+        expect(env('TEST3')).to.equal(100);
     });
 
     it('optsFromArgv', () => {
