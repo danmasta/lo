@@ -1,6 +1,11 @@
 ## Constants
+#### Base
 * `BREAK`
+* `CLONE`
 * `noop`
+#### Node
+* `ARGV`
+* `ENV`
 
 ## Iteration
 #### Individual objects
@@ -146,6 +151,7 @@
 * `mkdirp`
 * `mkdirpSync`
 * `optsFromArgv`
+* `parseArgv`
 * `readFiles`
 * `readFilesSync`
 * `require`
