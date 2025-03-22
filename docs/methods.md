@@ -3,6 +3,7 @@
 * `BREAK`
 * `CLONE`
 * `noop`
+* `TYPES`
 #### Node
 * `ARGV`
 * `ENV`
