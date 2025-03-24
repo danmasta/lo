@@ -1,4 +1,5 @@
-class EventEmitter {};
+import { EventEmitter } from './events.js';
+
 export class Stream extends EventEmitter {};
 export class Readable extends Stream {};
 export class Writable extends Stream {};
