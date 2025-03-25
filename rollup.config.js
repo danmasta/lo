@@ -26,7 +26,15 @@ export default [
     },
     {
         input: [
-            'qjs.js'
+            'qjs.js',
+            'polyfill/qjs/buffer.js',
+            'polyfill/qjs/events.js',
+            'polyfill/qjs/fs.js',
+            'polyfill/qjs/module.js',
+            'polyfill/qjs/os.js',
+            'polyfill/qjs/path.js',
+            'polyfill/qjs/process.js',
+            'polyfill/qjs/stream.js'
         ],
         output: {
             dir: 'dist/qjs',
@@ -38,6 +46,10 @@ export default [
             entryFileNames: '[name].js',
             esModule: false
         },
+        external: [
+            'qjs:os',
+            'qjs:std'
+        ],
         plugins: [
             pluginAlias({
                 entries: [
