@@ -1,3 +1,5 @@
+import * as os from 'qjs:os';
+import * as std from 'qjs:std';
 import { isArrayBuffer, isTypedArray, toString } from '../../lib/types.js';
 import { fmt, split } from '../../lib/util.js';
 import { Duplex } from './stream.js';
