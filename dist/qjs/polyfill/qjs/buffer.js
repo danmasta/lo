@@ -1,3 +1,3 @@
-class Buffer {}
+class Buffer {}var buffer = { Buffer };
 
-export { Buffer };
+export { Buffer, buffer as default };

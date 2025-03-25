@@ -1,3 +1,5 @@
+import * as os from 'qjs:os';
+import * as std from 'qjs:std';
 import { isTypedArray, isArrayBuffer, toString } from '../../lib/types.js';
 import { format } from '../../lib/util.js';
 import { getProcInfo } from './process.js';
@@ -391,4 +393,19 @@ const promises = {
     constants
 };
 
-export { access, accessSync, appendFile, appendFileSync, close, closeSync, constants, mkdir, mkdirSync, open, openSync, promises, read, readFile, readFileSync, readSync, readdir, readdirSync, stat, statSync, writeFile, writeFileSync };
+var fs = {
+    statSync,
+    accessSync,
+    mkdirSync,
+    openSync,
+    readSync,
+    closeSync,
+    readdirSync,
+    appendFileSync,
+    readFileSync,
+    writeFileSync,
+    promises,
+    constants
+};
+
+export { access, accessSync, appendFile, appendFileSync, close, closeSync, constants, fs as default, mkdir, mkdirSync, open, openSync, promises, read, readFile, readFileSync, readSync, readdir, readdirSync, stat, statSync, writeFile, writeFileSync };

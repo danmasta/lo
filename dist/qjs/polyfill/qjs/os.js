@@ -4,4 +4,8 @@ function homedir () {
     return env.HOME;
 }
 
-export { homedir };
+var os = {
+    homedir
+};
+
+export { os as default, homedir };

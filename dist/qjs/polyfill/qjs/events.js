@@ -66,4 +66,13 @@ class EventEmitter {
 
 }
 
-export { EventEmitter };
+function once () {
+
+}
+
+var events = {
+    EventEmitter,
+    once
+};
+
+export { EventEmitter, events as default, once };

@@ -6,4 +6,8 @@ function createRequire (base) {
     }
 }
 
-export { createRequire };
+var module = {
+    createRequire
+};
+
+export { createRequire, module as default };

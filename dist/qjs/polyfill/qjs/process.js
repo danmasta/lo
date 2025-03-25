@@ -1,4 +1,6 @@
-import '../../lib/constants.js';
+import * as os from 'qjs:os';
+import * as std from 'qjs:std';
+import { isTypedArray, isArrayBuffer, toString } from '../../lib/types.js';
 import { format, split } from '../../lib/util.js';
 import { Duplex } from './stream.js';
 
@@ -56,6 +58,20 @@ function getProcInfo () {
 }
 
 getProcInfo();
+
+function getuid () {
+    return uid;
+}
+
+function getgid () {
+    return gid;
+}
+
+function getgroups () {
+    return groups;
+}
+
+const nextTick = queueMicrotask;
 
 // Note: All 3 stdio streams in node are Duplex streams, except
 // stdin can be Readable if fd 0 is a file
@@ -128,6 +144,62 @@ class Stdin extends Duplex {
 
 }
 
-new Stdin();
+class Stdout extends Duplex {
 
-export { argv, cwd, env, getProcInfo, pid };
+    stdio = std.out;
+
+    write (chunk, enc, cb) {
+        // Write only accepts ArrayBuffer
+        if (isTypedArray(chunk) || isArrayBuffer(chunk)) {
+            this.stdio.write(chunk.buffer || chunk, 0, chunk.byteLength);
+        } else {
+            this.stdio.puts(toString(chunk));
+        }
+    }
+
+    // Note: Can't end stdio streams
+    end (chunk, enc, cb) {
+
+    }
+
+}
+
+class Stderr extends Duplex {
+
+    stdio = std.err;
+
+    write (chunk, enc, cb) {
+        // Write only accepts ArrayBuffer
+        if (isTypedArray(chunk) || isArrayBuffer(chunk)) {
+            this.stdio.write(chunk.buffer || chunk, 0, chunk.byteLength);
+        } else {
+            this.stdio.puts(toString(chunk));
+        }
+    }
+
+    // Note: Can't end stdio streams
+    end (chunk, enc, cb) {
+
+    }
+
+}
+
+const stdin = new Stdin();
+const stdout = new Stdout();
+const stderr = new Stderr();
+
+var process = {
+    env,
+    pid,
+    argv,
+    cwd,
+    getuid,
+    getgid,
+    getgroups,
+    nextTick,
+    stdin,
+    stdout,
+    stderr
+};
+
+export { argv, cwd, process as default, env, getProcInfo, getgid, getgroups, getuid, nextTick, pid, stderr, stdin, stdout };

@@ -1,9 +1,10 @@
-import { split } from '../../lib/util.js';
+import { platform } from 'qjs:os';
 import { each } from '../../lib/iterate.js';
+import { split } from '../../lib/util.js';
 import { cwd } from './process.js';
 
 // Values: linux, darwin, win32, js
-const win32 = os.platform === 'win32';
+const win32 = platform === 'win32';
 const sep = win32 ? '\\' : '/';
 const regex = /[\\/]+/g;
 
