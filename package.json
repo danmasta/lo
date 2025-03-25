@@ -39,10 +39,12 @@
       "import": "./dist/qjs/qjs.js"
     },
     "./constants": {
+      "qjs": "./dist/qjs/lib/constants.js",
       "import": "./lib/constants.js",
       "require": "./dist/cjs/lib/constants.cjs"
     },
     "./errors": {
+      "qjs": "./dist/qjs/lib/errors.js",
       "import": "./lib/errors.js",
       "require": "./dist/cjs/lib/errors.cjs"
     }
