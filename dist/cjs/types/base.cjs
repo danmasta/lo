@@ -1,3 +1,4 @@
+const asyncFn = async ()=>{};
 const genFn = function*(){};
 const genFnAsync = async function*(){};
 const iter = Symbol.iterator;
@@ -216,7 +217,7 @@ const types = [
     {
         t: 6,
         n: 'AsyncFunction',
-        c: (async()=>{})[ctor],
+        c: asyncFn[ctor],
         x: [1, 1, 2]
     },
     {
