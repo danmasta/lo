@@ -298,4 +298,12 @@ function mkdirpSync (str, mode) {
     return mkdirSync(dir, { recursive: true, mode });
 }
 
-export { cwd as CWD, importOrRequire, importOrRequireFiles, importRequireOrRead, importRequireOrReadFiles, isBuffer, isDuplex, isPassThrough, isReadable, isStream, isTransform, isWritable, mkdirp, mkdirpSync, readFiles, readFilesSync, require, requireFiles, requireOrReadFilesSync, requireOrReadSync, resolve, resolveIfExists, resolveIfExistsSync };
+async function readJson (str, encoding='utf8') {
+    return JSON.parse(await readFile(resolve(str), { encoding }));
+}
+
+function readJsonSync (str, encoding='utf8') {
+    return JSON.parse(readFileSync(resolve(str), { encoding }));
+}
+
+export { cwd as CWD, importOrRequire, importOrRequireFiles, importRequireOrRead, importRequireOrReadFiles, isBuffer, isDuplex, isPassThrough, isReadable, isStream, isTransform, isWritable, mkdirp, mkdirpSync, readFiles, readFilesSync, readJson, readJsonSync, require, requireFiles, requireOrReadFilesSync, requireOrReadSync, resolve, resolveIfExists, resolveIfExistsSync };

@@ -298,6 +298,14 @@ function mkdirpSync (str, mode) {
     return node_fs.mkdirSync(dir, { recursive: true, mode });
 }
 
+async function readJson (str, encoding='utf8') {
+    return JSON.parse(await readFile(resolve(str), { encoding }));
+}
+
+function readJsonSync (str, encoding='utf8') {
+    return JSON.parse(node_fs.readFileSync(resolve(str), { encoding }));
+}
+
 Object.defineProperty(exports, "CWD", {
     enumerable: true,
     get: function () { return node_process.cwd; }
@@ -317,6 +325,8 @@ exports.mkdirp = mkdirp;
 exports.mkdirpSync = mkdirpSync;
 exports.readFiles = readFiles;
 exports.readFilesSync = readFilesSync;
+exports.readJson = readJson;
+exports.readJsonSync = readJsonSync;
 exports.require = require$1;
 exports.requireFiles = requireFiles;
 exports.requireOrReadFilesSync = requireOrReadFilesSync;

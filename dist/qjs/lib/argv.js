@@ -1,3 +1,4 @@
+import { statSync } from '../polyfill/qjs/fs.js';
 import { argv } from '../polyfill/qjs/process.js';
 import { REGEX } from './constants.js';
 import { each, forOwn } from './iterate.js';
@@ -129,4 +130,25 @@ function optsFromArgv (opts, { argv: argv$1=argv.slice(2), ...params }={}) {
     return res;
 }
 
-export { argv as ARGV, parseArgv as argv, optsFromArgv, parseArgv };
+const isQJS = (typeof argv0 !== 'undefined');
+
+// Normalize argv pos args based on environment
+// Node: [argv0, file path, ...]
+// Qjs script: [argv0, file path, ...]
+// Qjs standalone: [argv0, ...]
+function getArgv (opts) {
+    let argv$1 = parseArgv(argv.slice(isQJS ? 1 : 2), opts);
+    let _ = argv$1._;
+    if (isQJS && _[0]) {
+        try {
+            if (statSync(_[0]).isFile()) {
+                _.shift();
+            }
+        } catch (err) {
+            return argv$1;
+        }
+    }
+    return argv$1;
+}
+
+export { argv as ARGV, parseArgv as argv, getArgv, isQJS, optsFromArgv, parseArgv };

@@ -26,6 +26,8 @@ var index = {
 };
 
 exports.argv = argv.parseArgv;
+exports.getArgv = argv.getArgv;
+exports.isQJS = argv.isQJS;
 exports.optsFromArgv = argv.optsFromArgv;
 exports.parseArgv = argv.parseArgv;
 exports.BREAK = constants.BREAK;
@@ -74,6 +76,8 @@ exports.mkdirp = node.mkdirp;
 exports.mkdirpSync = node.mkdirpSync;
 exports.readFiles = node.readFiles;
 exports.readFilesSync = node.readFilesSync;
+exports.readJson = node.readJson;
+exports.readJsonSync = node.readJsonSync;
 exports.require = node.require;
 exports.requireFiles = node.requireFiles;
 exports.requireOrReadFilesSync = node.requireOrReadFilesSync;

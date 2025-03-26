@@ -1,3 +1,4 @@
+var node_fs = require('node:fs');
 var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var iterate = require('./iterate.cjs');
@@ -129,10 +130,33 @@ function optsFromArgv (opts, { argv=node_process.argv.slice(2), ...params }={}) 
     return res;
 }
 
+const isQJS = (typeof argv0 !== 'undefined');
+
+// Normalize argv pos args based on environment
+// Node: [argv0, file path, ...]
+// Qjs script: [argv0, file path, ...]
+// Qjs standalone: [argv0, ...]
+function getArgv (opts) {
+    let argv = parseArgv(node_process.argv.slice(isQJS ? 1 : 2), opts);
+    let _ = argv._;
+    if (isQJS && _[0]) {
+        try {
+            if (node_fs.statSync(_[0]).isFile()) {
+                _.shift();
+            }
+        } catch (err) {
+            return argv;
+        }
+    }
+    return argv;
+}
+
 Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
 });
 exports.argv = parseArgv;
+exports.getArgv = getArgv;
+exports.isQJS = isQJS;
 exports.optsFromArgv = optsFromArgv;
 exports.parseArgv = parseArgv;

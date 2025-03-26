@@ -1,5 +1,5 @@
 import * as argv from './lib/argv.js';
-export { parseArgv as argv, optsFromArgv, parseArgv } from './lib/argv.js';
+export { parseArgv as argv, getArgv, isQJS, optsFromArgv, parseArgv } from './lib/argv.js';
 import { addTypes, BREAK, noop, TYPES } from './lib/constants.js';
 import * as env from './lib/env.js';
 export { env, isNilEnv } from './lib/env.js';
@@ -8,7 +8,7 @@ export { fromIp, fromIp4, fromIp6, fromIp6Parts, toIp, toIp4, toIp6 } from './li
 import * as iterate from './lib/iterate.js';
 export { each, eachNotNil, every, everyNotNil, filter, filterNotNil, forEach, forIn, forOwn, iterate, iterateF, map, mapNotNil, remove, removeNotNil, some, someNotNil, tap, tapNotNil } from './lib/iterate.js';
 import * as node from './lib/node.js';
-export { importOrRequire, importOrRequireFiles, importRequireOrRead, importRequireOrReadFiles, isBuffer, isDuplex, isPassThrough, isReadable, isStream, isTransform, isWritable, mkdirp, mkdirpSync, readFiles, readFilesSync, require, requireFiles, requireOrReadFilesSync, requireOrReadSync, resolve, resolveIfExists, resolveIfExistsSync } from './lib/node.js';
+export { importOrRequire, importOrRequireFiles, importRequireOrRead, importRequireOrReadFiles, isBuffer, isDuplex, isPassThrough, isReadable, isStream, isTransform, isWritable, mkdirp, mkdirpSync, readFiles, readFilesSync, readJson, readJsonSync, require, requireFiles, requireOrReadFilesSync, requireOrReadSync, resolve, resolveIfExists, resolveIfExistsSync } from './lib/node.js';
 import * as types from './lib/types.js';
 export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto, getTypeStr, hasEntries, hasForEach, isArray, isArrayBuffer, isAsyncFunction, isAsyncIterable, isBoolean, isCollection, isCtor, isError, isEsmMode, isFunction, isGeneratorFunction, isIterable, isIterator, isModule, isNil, isNull, isNumber, isNumeric, isObject, isPromise, isRegExp, isString, isTypedArray, isUndefined, notNil, toArray, toFn, toNativeType, toObject, toPath, toString, toType } from './lib/types.js';
 import * as util from './lib/util.js';
