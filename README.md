@@ -84,6 +84,7 @@ let obj = { 1: true, 2: false };
 each(obj, (val, key) => {
     console.log(key, val);
 });
+
 // 0 { 1: true, 2: false }
 ```
 Each iterator function has the following signature:
@@ -99,6 +100,7 @@ let obj = { 1: true, 2: false };
 each(obj, (val, key) => {
     console.log(key, val);
 }, false);
+
 // 1 true
 // 2 false
 ```
@@ -123,6 +125,7 @@ let arr = [1, 2, 3, 4];
 map(arr, val => {
     return val % 3 === 0 ? BREAK : val*2;
 });
+
 // [2, 4]
 ```
 
@@ -136,6 +139,7 @@ let arr = [1, undefined, 2, 3, null];
 map(arr, val => {
     return val % 3 === 0 ? undefined : val;
 });
+
 // [1, 2]
 ```
 *Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
@@ -154,6 +158,7 @@ async function* list () {
 await map(list(), async val => {
     return await val*2;
 });
+
 // [2, 4, 6]
 ```
 
