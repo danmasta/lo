@@ -136,19 +136,19 @@ const isQJS = (typeof argv0 !== 'undefined');
 // Node: [argv0, file path, ...]
 // Qjs script: [argv0, file path, ...]
 // Qjs standalone: [argv0, ...]
-function getArgv (opts) {
-    let argv$1 = parseArgv(argv.slice(isQJS ? 1 : 2), opts);
-    let _ = argv$1._;
-    if (isQJS && _[0]) {
+function getArgv (arr=argv.slice(isQJS ? 1 : 2), opts) {
+    let argv = parseArgv(arr, opts);
+    let pos = argv._;
+    if (isQJS && pos[0]) {
         try {
-            if (statSync(_[0]).isFile()) {
-                _.shift();
+            if (statSync(pos[0]).isFile()) {
+                pos.shift();
             }
         } catch (err) {
-            return argv$1;
+            return argv;
         }
     }
-    return argv$1;
+    return argv;
 }
 
 export { argv as ARGV, parseArgv as argv, getArgv, isQJS, optsFromArgv, parseArgv };
