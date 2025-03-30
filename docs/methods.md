@@ -145,6 +145,7 @@
 * `fromIp`
 * `fromIp4`
 * `fromIp6`
+* `getArgv`
 * `importOrRequire`
 * `importOrRequireFiles`
 * `importRequireOrRead`
@@ -155,6 +156,8 @@
 * `parseArgv`
 * `readFiles`
 * `readFilesSync`
+* `readJson`
+* `readJsonSync`
 * `require`
 * `requireFiles`
 * `requireOrReadSync`
