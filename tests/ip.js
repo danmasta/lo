@@ -22,13 +22,22 @@ let ip4 = {
     view6: new DataView(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 1]).buffer)
 };
 
+// ipv4-mapped ipv6
+let mapped = {
+    short: '::ffff:172.17.0.1',
+    long: '0000:0000:0000:0000:0000:ffff:172.17.0.1',
+    uint16: new Uint16Array([0, 0, 0, 0, 0, 65535, 44049, 1]),
+    uint8: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 172, 17, 0, 1]),
+    view: new DataView(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 172, 17, 0, 1]).buffer)
+};
+
 describe('Ip', () => {
 
     it('convert byte array to ip string', () => {
         // ip6
         expect(toIp(ip6.uint16)).to.equal(ip6.short);
         expect(toIp6(ip6.uint16)).to.equal(ip6.short);
-        expect(toIp6(ip6.uint16, 1)).to.equal(ip6.long);
+        expect(toIp6(ip6.uint16, 0, true)).to.equal(ip6.long);
         expect(toIp(fromIp('::1'))).to.equal('::1');
         expect(toIp(fromIp('1::'))).to.equal('1::');
         expect(toIp(ip6.viewMixed)).to.equal('1:2:3:4:5:6:4d4d:5858');
@@ -37,8 +46,15 @@ describe('Ip', () => {
         expect(toIp(ip4.arr)).to.equal(ip4.short);
         expect(toIp4(ip4.arr)).to.equal(ip4.short);
         expect(toIp6(ip4.uint16)).to.equal(ip4.short6);
-        expect(toIp6(ip4.uint16, 1)).to.equal(ip4.long);
+        expect(toIp6(ip4.uint16, 0, true)).to.equal(ip4.long);
         expect(toIp(fromIp(ip4.short))).to.equal(ip4.short);
+        // mapped
+        expect(toIp(mapped.uint16)).to.equal(mapped.short);
+        expect(toIp(mapped.uint8)).to.equal(mapped.short);
+        expect(toIp6(mapped.uint16)).to.equal(mapped.short);
+        expect(toIp6(mapped.uint8)).to.equal(mapped.short);
+        expect(toIp6(mapped.uint16, 0, true)).to.equal(mapped.long);
+        expect(toIp(fromIp(mapped.short))).to.equal(mapped.short);
     });
 
     it('convert ip string to byte array', () => {
@@ -55,7 +71,13 @@ describe('Ip', () => {
         expect(fromIp(ip4.short6)).to.eql(ip4.view6);
         expect(fromIp4(ip4.short)).to.eql(ip4.view);
         expect(fromIp(ip4.long)).to.eql(ip4.view6);
-        expect(fromIp(toIp6(ip4.uint16, 1))).to.eql(ip4.view6);
+        expect(fromIp(toIp6(ip4.uint16, 0, true))).to.eql(ip4.view6);
+        // mapped
+        expect(fromIp(mapped.short)).to.eql(mapped.view);
+        expect(fromIp(mapped.long)).to.eql(mapped.view);
+        expect(fromIp(toIp(mapped.uint16))).to.eql(mapped.view);
+        expect(fromIp(toIp(mapped.uint8))).to.eql(mapped.view);
+        expect(fromIp(toIp(mapped.view))).to.eql(mapped.view);
     });
 
 });
