@@ -9,26 +9,26 @@ import { getType } from './types.js';
 // Note: Using TypedArrays doesn't work because they default to the endianness
 // of the system, which is most likely little-endian (x86, arm)
 // Ip addresses should be big-endian (network order) (RFC 1700)
-function toIpView (buf, size=16) {
+function toIpView (buf, offset, size=16) {
     let type = getType(buf);
     switch (type) {
         case TYPES.ArrayBuffer:
-            return new DataView(buf, 0, size);
+            return new DataView(buf, offset ?? 0, size);
         case TYPES.DataView:
-            return buf;
+            return new DataView(buf.buffer, offset ?? buf.byteOffset, size);
         // Byte arrays don't have endianness
         case TYPES.Uint8Array:
         case TYPES.Buffer:
-            return new DataView(buf.buffer, buf.byteOffset, size);
+            return new DataView(buf.buffer, offset ?? buf.byteOffset, size);
         // Convert to big-endian
         case TYPES.Uint16Array: {
             let res = new DataView(new ArrayBuffer(size));
-            for (let i = 0; i < size/2; i++) {
-                res.setUint16(i*2, buf[i]);
+            for (let i = 0; i < size / 2; i++) {
+                res.setUint16(i * 2, buf[i]);
             }
             return res;
         }
-        // Array, Iterable
+        // Array or Iterable
         default: {
             try {
                 let res = new DataView(new ArrayBuffer(size));
@@ -36,7 +36,7 @@ function toIpView (buf, size=16) {
                     if (size === 4) {
                         res.setUint8(i, int);
                     } else {
-                        res.setUint16(i*2, int);
+                        res.setUint16(i * 2, int);
                     }
                 });
                 return res;
@@ -48,8 +48,8 @@ function toIpView (buf, size=16) {
 }
 
 // Byte array to ipv4 string
-function toIp4 (buf) {
-    buf = toIpView(buf, 4);
+function toIp4 (buf, offset) {
+    buf = toIpView(buf, offset, 4);
     let res = [];
     for (let i = 0; i < 4; i++) {
         res.push(buf.getUint8(i));
@@ -59,12 +59,14 @@ function toIp4 (buf) {
 
 // Byte array to ipv6 string
 // Supports long and short style
-function toIp6 (buf, long=0) {
-    buf = toIpView(buf, 16);
-    let ref;
-    let res = [ref=[], []];
+function toIp6 (buf, offset, long=0) {
+    buf = toIpView(buf, offset, 16);
+    let res = [[], []];
+    let ref = res[0];
+    let mask = 0;
+    let int;
     for (let i = 0; i < 8; i++) {
-        let int = buf.getUint16(i*2);
+        int = buf.getUint16(i * 2);
         if (int === 0) {
             if (long) {
                 ref.push('0000');
@@ -77,6 +79,13 @@ function toIp6 (buf, long=0) {
             } else {
                 ref.push(int.toString(16));
             }
+            // Ipv4-mapped ipv6
+            // https://datatracker.ietf.org/doc/html/rfc4291#section-2.5.5.2
+            if (i === 5 && mask === 0 && int === 65535) {
+                ref.push(toIp4(buf, buf.byteOffset + 12));
+                break;
+            }
+            mask |= int;
         }
     }
     if (ref === res[1]) {
@@ -89,14 +98,14 @@ function toIp6 (buf, long=0) {
 // Byte array to ip string
 // Supports ipv4 and ipv6
 // Supports long and short style
-function toIp (buf, long=0) {
+function toIp (buf, offset, long=0) {
     switch (buf?.byteLength ?? buf?.length ?? buf?.size) {
         case 2:
         case 4:
-            return toIp4(buf);
+            return toIp4(buf, offset);
         case 8:
         case 16:
-            return toIp6(buf, long);
+            return toIp6(buf, offset, long);
         default:
             throw new IpError('Invalid ip length');
     }
@@ -119,8 +128,8 @@ function fromIp6Parts (start=[], end=[], ip4) {
     let len = start.length;
     let max = ip4 ? 6 : 8;
     let dif = max - end.length;
+    let int;
     for (let i = 0; i < max; i++) {
-        let int;
         if (i < len) {
             int = parseInt(start.shift(), 16);
         } else if (i >= len && i < dif) {
@@ -128,7 +137,7 @@ function fromIp6Parts (start=[], end=[], ip4) {
         } else {
             int = parseInt(end.shift(), 16);
         }
-        res.setUint16(i*2, int);
+        res.setUint16(i * 2, int);
     }
     if (ip4) {
         res.setUint32(12, fromIp4(ip4).getUint32());

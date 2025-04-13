@@ -155,7 +155,7 @@ function importOrRequire (str, ext) {
             }
         case '.json':
             if (isEsmMode()) {
-                return import(str, { assert: { type: 'json' } });
+                return import(str, { with: { type: 'json' } });
             } else {
                 return REQUIRE(str);
             }
