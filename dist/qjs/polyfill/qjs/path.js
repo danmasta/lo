@@ -3,9 +3,10 @@ import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
 import { cwd } from './process.js';
 
-// Values: linux, darwin, win32, js
+// Note: linux, darwin, win32, or js
 const win32 = platform === 'win32';
 const sep = win32 ? '\\' : '/';
+const delimiter = win32 ? ';' : ':';
 const regex = /[\\/]+/g;
 
 function isAbsolute (path='') {
@@ -44,11 +45,12 @@ function getParts (...paths) {
 
 function getPartsWithCwd (...paths) {
     paths.unshift(cwd());
-    return getParts(paths);
+    return getParts(...paths);
 }
 
 // Not implemented yet
-function relative () {
+// Returns the relative path of from to to based on CWD
+function relative (from, to) {
 
 }
 
@@ -56,50 +58,74 @@ function dirname (path) {
     return parse(path).dir;
 }
 
-function basename (path) {
-    return parse(path).base;
+function basename (path, ext) {
+    let obj = parse(path);
+    if (ext && obj.ext === ext) {
+        return obj.name;
+    }
+    return obj.base;
 }
 
 function extname (path) {
     return parse(path).ext;
 }
 
+// Normalize path, resolve '..' and '.' segments
 function normalize (path='') {
-    let parts = getParts(path);
-    let root = '';
+    if (!path) {
+        return '.';
+    }
+    let [root, parts] = getParts(path);
     let res = [];
-    each(parts, (str, i) => {
-        if (!i && isRoot(str)) {
-            root = str;
-        } else {
-            if (str === '..') {
-                if (!root || res.length) {
-                    res.push(str);
-                } else {
+    each(parts, str => {
+        switch (str) {
+            case '.':
+                if (!root && parts.length === 1) {
+                    res.push('.');
+                }
+                break;
+            case '..':
+                if (root || (res.length && res.at(-1) !== '..')) {
                     res.pop();
-                }
-            } else {
-                if (str !== '.') {
+                } else {
                     res.push(str);
                 }
-            }
+                break;
+            default:
+                res.push(str);
         }
     });
     return root + res.join(sep);
 }
 
+// Join all path segments with sep and normalize
 function join (...paths) {
-    return paths.join(sep).replace(regex, sep);
+    return normalize(paths.join(sep));
 }
 
+// Resolve sequence of paths or segments to absolute path
 function resolve (...paths) {
-    getPartsWithCwd(...paths);
+    let [root, parts] = getPartsWithCwd(...paths);
+    let res = [];
+    each(parts, str => {
+        switch (str) {
+            case '.':
+                break;
+            case '..':
+                res.pop();
+                break;
+            default:
+                res.push(str);
+        }
+    });
+    return root + res.join(sep);
 }
 
-function parse (path) {
-    let [root, arr] = getParts(path);
-    let base = arr.pop();
-    let dir = root + root ? sep : '' + arr.join(sep);
+// Parse path string to path object of significant parts
+function parse (path='') {
+    let [root, parts] = getParts(path);
+    let base = parts.pop();
+    let dir = root + parts.join(sep);
     let name = '';
     let ext = '';
     let i = base.lastIndexOf('.');
@@ -112,12 +138,20 @@ function parse (path) {
     return { root, dir, base, name, ext };
 }
 
+// Returns a path string from a path object (parse)
 function format ({ root='', dir='', base='', name='', ext='' }={}) {
-    return root + dir + base + name + ext;
+    if (!base) {
+        base = name + (ext[0] === '.' ? '' : '.') + ext;
+    }
+    if (!dir) {
+        dir = root;
+    }
+    return dir + sep + base;
 }
 
 var PATH = {
     sep,
+    delimiter,
     isAbsolute,
     relative,
     dirname,
@@ -130,4 +164,4 @@ var PATH = {
     format
 };
 
-export { basename, PATH as default, dirname, extname, format, getParts, isAbsolute, join, normalize, parse, regex, relative, resolve, sep, win32 };
+export { basename, PATH as default, delimiter, dirname, extname, format, getParts, getPartsWithCwd, isAbsolute, join, normalize, parse, regex, relative, resolve, sep, win32 };
