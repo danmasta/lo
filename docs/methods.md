@@ -49,7 +49,7 @@
 * `isCollection`
 * `isCtor`
 * `isError`
-* `isEsmMode`
+* `isEsm`
 * `isFunction`
 * `isGeneratorFunction`
 * `isIterable`
