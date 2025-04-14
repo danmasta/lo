@@ -25,22 +25,22 @@ function isRoot (str='') {
 
 export function getParts (...paths) {
     let root = '';
-    let arr = [];
+    let parts = [];
     each(paths, path => {
         let abs = isAbsolute(path);
-        let parts = split(path, regex);
+        let arr = split(path, regex);
         if (abs) {
-            if (win32 && isRoot(parts[0])) {
-                root = parts.shift();
+            if (win32 && isRoot(arr[0])) {
+                root = arr.shift();
             } else {
                 root = sep;
             }
-            arr = parts;
+            parts = arr;
         } else {
-            arr.push(...parts);
+            parts.push(...arr);
         }
     });
-    return [root, arr];
+    return [root, parts];
 }
 
 export function getPartsWithCwd (...paths) {
@@ -58,10 +58,10 @@ export function dirname (path) {
     return parse(path).dir;
 }
 
-export function basename (path, ext) {
+export function basename (path, suf='') {
     let obj = parse(path);
-    if (ext && obj.ext === ext) {
-        return obj.name;
+    if (suf && obj.base.endsWith(suf)) {
+        return obj.base.slice(0, -suf.length);
     }
     return obj.base;
 }
@@ -70,7 +70,7 @@ export function extname (path) {
     return parse(path).ext;
 }
 
-// Normalize path, resolve '..' and '.' segments
+// Normalize path, resolve '.' and '..' segments
 export function normalize (path='') {
     if (!path) {
         return '.';
@@ -85,7 +85,7 @@ export function normalize (path='') {
                 }
                 break;
             case '..':
-                if (root || (res.length && res.at(-1) !== '..')) {
+                if (root || res.length && res.at(-1) !== '..') {
                     res.pop();
                 } else {
                     res.push(str);
