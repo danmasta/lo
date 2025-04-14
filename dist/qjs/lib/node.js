@@ -6,7 +6,7 @@ import { cwd } from '../polyfill/qjs/process.js';
 import { TYPES } from './constants.js';
 import { NotFoundError, NotSupportedError, RequireAsyncError } from './errors.js';
 import { someNotNil, mapNotNil } from './iterate.js';
-import { getType, isEsmMode, toString } from './types.js';
+import { getType, isEsm, toString } from './types.js';
 
 const { access, mkdir, readFile } = promises;
 const { F_OK } = constants;
@@ -141,7 +141,7 @@ function importOrRequire (str, ext) {
     ext = ext ?? PATH.extname(str);
     switch (ext) {
         case '.js':
-            if (isEsmMode()) {
+            if (isEsm()) {
                 return import(str);
             } else {
                 try {
@@ -154,7 +154,7 @@ function importOrRequire (str, ext) {
                 }
             }
         case '.json':
-            if (isEsmMode()) {
+            if (isEsm()) {
                 return import(str, { with: { type: 'json' } });
             } else {
                 return REQUIRE(str);

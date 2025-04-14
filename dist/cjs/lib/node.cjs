@@ -141,7 +141,7 @@ function importOrRequire (str, ext) {
     ext = ext ?? PATH.extname(str);
     switch (ext) {
         case '.js':
-            if (types.isEsmMode()) {
+            if (types.isEsm()) {
                 return import(str);
             } else {
                 try {
@@ -154,7 +154,7 @@ function importOrRequire (str, ext) {
                 }
             }
         case '.json':
-            if (types.isEsmMode()) {
+            if (types.isEsm()) {
                 return import(str);
             } else {
                 return REQUIRE(str);

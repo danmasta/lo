@@ -187,8 +187,8 @@ function isUndefined (obj) {
     return obj === undefined;
 }
 
-// Test if running in esm or cjs mode
-function isEsmMode () {
+// Test if running in an esm or cjs context
+function isEsm () {
     return typeof module === 'undefined';
 }
 
@@ -438,7 +438,7 @@ exports.isBoolean = isBoolean;
 exports.isCollection = isCollection;
 exports.isCtor = isCtor;
 exports.isError = isError;
-exports.isEsmMode = isEsmMode;
+exports.isEsm = isEsm;
 exports.isFunction = isFunction;
 exports.isGeneratorFunction = isGeneratorFunction;
 exports.isIterable = isIterable;
