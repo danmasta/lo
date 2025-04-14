@@ -53,7 +53,7 @@ export default [
         plugins: [
             pluginAlias({
                 entries: [
-                    { find: /^node:(.+)$/, replacement: resolve(root, './polyfill/qjs/$1.js') }
+                    { find: /^node:(.+)$/, replacement: resolve(root, 'polyfill/qjs/$1.js') }
                 ]
             }),
             pluginNodeResolve({
