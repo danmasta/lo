@@ -3,9 +3,10 @@ import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
 import { cwd } from './process.js';
 
-// Values: linux, darwin, win32, js
+// Note: linux, darwin, win32, or js
 export const win32 = platform === 'win32';
 export const sep = win32 ? '\\' : '/';
+export const delimiter = win32 ? ';' : ':';
 export const regex = /[\\/]+/g;
 
 export function isAbsolute (path='') {
@@ -42,13 +43,14 @@ export function getParts (...paths) {
     return [root, arr];
 }
 
-function getPartsWithCwd (...paths) {
+export function getPartsWithCwd (...paths) {
     paths.unshift(cwd());
-    return getParts(paths);
+    return getParts(...paths);
 }
 
 // Not implemented yet
-export function relative () {
+// Returns the relative path of from to to based on CWD
+export function relative (from, to) {
 
 }
 
@@ -56,50 +58,74 @@ export function dirname (path) {
     return parse(path).dir;
 }
 
-export function basename (path) {
-    return parse(path).base;
+export function basename (path, ext) {
+    let obj = parse(path);
+    if (ext && obj.ext === ext) {
+        return obj.name;
+    }
+    return obj.base;
 }
 
 export function extname (path) {
     return parse(path).ext;
 }
 
+// Normalize path, resolve '..' and '.' segments
 export function normalize (path='') {
-    let parts = getParts(path);
-    let root = '';
+    if (!path) {
+        return '.';
+    }
+    let [root, parts] = getParts(path);
     let res = [];
-    each(parts, (str, i) => {
-        if (!i && isRoot(str)) {
-            root = str;
-        } else {
-            if (str === '..') {
-                if (!root || res.length) {
-                    res.push(str)
-                } else {
-                    res.pop();
+    each(parts, str => {
+        switch (str) {
+            case '.':
+                if (!root && parts.length === 1) {
+                    res.push('.');
                 }
-            } else {
-                if (str !== '.') {
+                break;
+            case '..':
+                if (root || (res.length && res.at(-1) !== '..')) {
+                    res.pop();
+                } else {
                     res.push(str);
                 }
-            }
+                break;
+            default:
+                res.push(str);
         }
     });
     return root + res.join(sep);
 }
 
+// Join all path segments with sep and normalize
 export function join (...paths) {
-    return paths.join(sep).replace(regex, sep);
+    return normalize(paths.join(sep));
 }
 
+// Resolve sequence of paths or segments to absolute path
 export function resolve (...paths) {
-    let [root, arr] = getPartsWithCwd(...paths);
+    let [root, parts] = getPartsWithCwd(...paths);
+    let res = [];
+    each(parts, str => {
+        switch (str) {
+            case '.':
+                break;
+            case '..':
+                res.pop();
+                break;
+            default:
+                res.push(str);
+        }
+    });
+    return root + res.join(sep);
 }
 
-export function parse (path) {
-    let [root, arr] = getParts(path);
-    let base = arr.pop();
-    let dir = root + root ? sep : '' + arr.join(sep);
+// Parse path string to path object of significant parts
+export function parse (path='') {
+    let [root, parts] = getParts(path);
+    let base = parts.pop();
+    let dir = root + parts.join(sep);
     let name = '';
     let ext = '';
     let i = base.lastIndexOf('.');
@@ -112,12 +138,20 @@ export function parse (path) {
     return { root, dir, base, name, ext };
 }
 
+// Returns a path string from a path object (parse)
 export function format ({ root='', dir='', base='', name='', ext='' }={}) {
-    return root + dir + base + name + ext;
+    if (!base) {
+        base = name + (ext[0] === '.' ? '' : '.') + ext;
+    }
+    if (!dir) {
+        dir = root;
+    }
+    return dir + sep + base;
 }
 
 export default {
     sep,
+    delimiter,
     isAbsolute,
     relative,
     dirname,
