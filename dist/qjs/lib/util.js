@@ -418,6 +418,14 @@ function toStartCase (str) {
     return compound(str, capitalize, ' ');
 }
 
+function replace (str, ptn, rpl) {
+    str = toString(str);
+    if (ptn) {
+        return str.replace(ptn, rpl ?? '$&');
+    }
+    return str;
+}
+
 const htmlEscapes = {
     '&': '&amp;',
     '<': '&lt;',
@@ -432,15 +440,13 @@ const htmlEscapes = {
 };
 
 function escapeHTML (str) {
-    str = toString(str);
-    return str.replace(REGEX.html, (match, char) => {
+    return replace(str, REGEX.html, (match, char) => {
         return htmlEscapes[char];
     });
 }
 
 function unescapeHTML (str) {
-    str = toString(str);
-    return str.replace(REGEX.htmlEscaped, (match, char) => {
+    return replace(str, REGEX.htmlEscaped, (match, char) => {
         return htmlEscapes[char];
     });
 }
@@ -561,8 +567,7 @@ function JSONReplacer () {
 // }
 
 function format (str, ...args) {
-    str = toString(str);
-    return str.replace(REGEX.fmt, (match, char) => {
+    let res = replace(str, REGEX.fmt, (match, char) => {
         // Handle escape
         if (char === '%') {
             return char;
@@ -607,6 +612,10 @@ function format (str, ...args) {
                 return match;
         }
     });
+    if (!args.length) {
+        return res;
+    }
+    return join([res, ...map(args, val => toString(val))], ' ');
 }
 
-export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
+export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };

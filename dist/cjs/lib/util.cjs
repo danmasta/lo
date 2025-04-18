@@ -418,6 +418,14 @@ function toStartCase (str) {
     return compound(str, capitalize, ' ');
 }
 
+function replace (str, ptn, rpl) {
+    str = types.toString(str);
+    if (ptn) {
+        return str.replace(ptn, rpl ?? '$&');
+    }
+    return str;
+}
+
 const htmlEscapes = {
     '&': '&amp;',
     '<': '&lt;',
@@ -432,15 +440,13 @@ const htmlEscapes = {
 };
 
 function escapeHTML (str) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.html, (match, char) => {
+    return replace(str, constants.REGEX.html, (match, char) => {
         return htmlEscapes[char];
     });
 }
 
 function unescapeHTML (str) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.htmlEscaped, (match, char) => {
+    return replace(str, constants.REGEX.htmlEscaped, (match, char) => {
         return htmlEscapes[char];
     });
 }
@@ -561,8 +567,7 @@ function JSONReplacer () {
 // }
 
 function format (str, ...args) {
-    str = types.toString(str);
-    return str.replace(constants.REGEX.fmt, (match, char) => {
+    let res = replace(str, constants.REGEX.fmt, (match, char) => {
         // Handle escape
         if (char === '%') {
             return char;
@@ -607,6 +612,10 @@ function format (str, ...args) {
                 return match;
         }
     });
+    if (!args.length) {
+        return res;
+    }
+    return join([res, ...iterate.map(args, val => types.toString(val))], ' ');
 }
 
 exports.hasOwn = base.hasOwn;
@@ -642,6 +651,7 @@ exports.padLine = padLine;
 exports.padLineLeft = padLineLeft;
 exports.padLineRight = padLineRight;
 exports.padRight = padRight;
+exports.replace = replace;
 exports.set = set;
 exports.setOwn = setOwn;
 exports.split = split;

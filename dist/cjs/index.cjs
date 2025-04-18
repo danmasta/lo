@@ -157,6 +157,7 @@ exports.padLine = util.padLine;
 exports.padLineLeft = util.padLineLeft;
 exports.padLineRight = util.padLineRight;
 exports.padRight = util.padRight;
+exports.replace = util.replace;
 exports.set = util.set;
 exports.setOwn = util.setOwn;
 exports.split = util.split;
