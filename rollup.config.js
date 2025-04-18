@@ -28,6 +28,7 @@ export default [
         input: [
             'qjs.js',
             'polyfill/qjs/buffer.js',
+            'polyfill/qjs/console.js',
             'polyfill/qjs/events.js',
             'polyfill/qjs/fs.js',
             'polyfill/qjs/module.js',
