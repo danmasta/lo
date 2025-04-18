@@ -1,10 +1,7 @@
-import { platform } from 'qjs:os';
 import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
-import { cwd } from './process.js';
+import { cwd, win32 } from './process.js';
 
-// Note: linux, darwin, win32, or js
-export const win32 = platform === 'win32';
 export const sep = win32 ? '\\' : '/';
 export const delimiter = win32 ? ';' : ':';
 export const regex = /[\\/]+/g;

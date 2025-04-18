@@ -5,6 +5,7 @@ import { isArrayBuffer, isTypedArray, toString } from '../../lib/types.js';
 import { fmt, split } from '../../lib/util.js';
 import { Duplex } from './stream.js';
 
+export const win32 = os.platform === 'win32';
 export const env = std.getenviron();
 export const pid = os.getpid();
 export const argv = [argv0, ...scriptArgs];
@@ -224,6 +225,7 @@ export const stdout = new Stdout();
 export const stderr = new Stderr();
 
 export default {
+    win32,
     env,
     pid,
     argv,
