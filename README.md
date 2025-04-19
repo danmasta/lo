@@ -162,7 +162,7 @@ await map(list(), async val => {
 // [2, 4, 6]
 ```
 
-## QuickJS
+### QuickJS
 [QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with quickjs and includes some node api [polyfills](polyfill/qjs) to help compile tooling and clis written with node into standalone binaries.
 
 While this project doesn't intend to provide complete polyfills for the entire node api, it does include some of the more common ones:
