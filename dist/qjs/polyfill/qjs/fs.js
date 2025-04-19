@@ -217,11 +217,11 @@ function accessSync (path, mode=F_OK) {
     }
     let mask;
     if (stat.uid === uid) {
-        mask = rwx[u][mode];
+        mask = rwx.u[mode];
     } else if (stat.gid in groups) {
-        mask = rwx[g][mode];
+        mask = rwx.g[mode];
     } else {
-        mask = rwx[o][mode];
+        mask = rwx.o[mode];
     }
     if ((stat.mode & mask) === mask) {
         return;
