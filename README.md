@@ -174,7 +174,7 @@ While this project doesn't intend to provide complete polyfills for the entire n
 * `path`
 * `process`
 
-To use them in you own project, you can point your bundler to the `polyfill/qjs` directory for any of the supported node polyfills. If you want to explicity import the qjs version of this library, you can do that too:
+To use them in you own project, you can point your bundler at the `polyfill/qjs` directory for any of the supported node polyfills. If you want to explicity import the qjs version of this library, you can do that too:
 ```js
 import lo from 'lo/qjs';
 ```
