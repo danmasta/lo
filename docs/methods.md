@@ -119,6 +119,7 @@
 * `padLineLeft`
 * `padLineRight`
 * `padRight`
+* `replace`
 * `set`
 * `setOwn`
 * `split`
