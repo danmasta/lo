@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "author": "Daniel Smith <dannmasta@gmail.com>",
-  "description": "Lightweight, modern utility library for node and browser",
+  "description": "Lightweight, modern utility library for node, browser, and quickjs",
   "license": "Apache-2.0",
   "keywords": [
     "util",
