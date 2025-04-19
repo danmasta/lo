@@ -1,5 +1,5 @@
 # Lo
-Lightweight, modern utility library for node and browser
+Lightweight, modern utility library for node, browser, and quickjs
 
 #### Features:
 * Easy to use
@@ -9,7 +9,7 @@ Lightweight, modern utility library for node and browser
 * Treeshakeable by default
 * Support for all iterable types
 * Support for [async](#async-iteration) iterables and async iterator functions
-* Support for [quickjs](https://bellard.org/quickjs/)
+* Support for [quickjs](#quickjs)
 * 0 dependencies
 
 ## About
@@ -79,13 +79,13 @@ This means if you pass a single object instead of a [collection type](#collectio
 ```js
 import { each } from 'lo';
 
-let obj = { 1: true, 2: false };
+let obj = { a: true, b: false };
 
 each(obj, (val, key) => {
     console.log(key, val);
 });
 
-// 0 { 1: true, 2: false }
+// 0 { a: true, b: false }
 ```
 Each iterator function has the following signature:
 ```js
@@ -95,14 +95,14 @@ Where `collection` is `true` by default. If you want to use an iterator method t
 ```js
 import { each } from 'lo';
 
-let obj = { 1: true, 2: false };
+let obj = { a: true, b: false };
 
 each(obj, (val, key) => {
     console.log(key, val);
 }, false);
 
-// 1 true
-// 2 false
+// a true
+// b false
 ```
 *Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, `Iterator`, and `Generator`.*
 
@@ -123,7 +123,7 @@ import { map, BREAK } from 'lo';
 let arr = [1, 2, 3, 4];
 
 map(arr, val => {
-    return val % 3 === 0 ? BREAK : val*2;
+    return val % 3 === 0 ? BREAK : val * 2;
 });
 
 // [2, 4]
@@ -156,16 +156,33 @@ async function* list () {
 }
 
 await map(list(), async val => {
-    return await val*2;
+    return await val * 2;
 });
 
 // [2, 4, 6]
 ```
 
-### Methods
-A list of methods and some documentation can be found [here](docs/methods.md)
+## QuickJS
+[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with quickjs and includes some node api [polyfills](polyfill/qjs) to help compile tooling and clis written with node into standalone binaries.
 
-## Examples
+While this project doesn't intend to provide complete polyfills for the entire node api, it does include some of the more common ones:
+* `console`
+* `events`
+* `fs`
+* `module`
+* `os`
+* `path`
+* `process`
+
+To use them in you own project, you can point your bundler to the `polyfill/qjs` directory for any of the supported node polyfills. If you want to explicity import the qjs version of this library, you can do that too:
+```js
+import lo from 'lo/qjs';
+```
+
+*You can find an example project that exposes a node api, cli, and standalone binary built using this package [here](https://github.com/danmasta/envstr).*
+
+## Documentation
+A list of methods and some documentation can be found [here](docs/methods.md)
 
 ## Testing
 Tests are currently run using mocha and chai. To execute tests run `make test`. To generate unit test coverage reports run `make coverage`
