@@ -1,11 +1,11 @@
-import { fmt } from '../../lib/util.js';
 import { stderr, stdout, win32 } from './process.js';
+import { format } from './util.js';
 
 const eol = win32 ? '\r\n' : '\n';
 
 function logFn (stdio) {
     return function log (msg, ...args) {
-        stdio.write(fmt(msg, ...args) + eol);
+        stdio.write(format(msg, ...args) + eol);
     }
 }
 
