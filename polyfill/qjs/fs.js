@@ -52,12 +52,13 @@ export const constants = {
     S_IROTH: 4,   // Read others
     S_IWOTH: 2,   // Write others
     S_IXOTH: 1,   // Execute others
-    // Node flags
+    // Node access mode flags
     // https://nodejs.org/api/fs.html#file-access-constants
     F_OK: 0, // File visible to the calling process (doesn't specify rwx permissions)
     R_OK: 4, // File can be read by the calling process
     W_OK: 2, // File can be written by the calling process
     X_OK: 1, // File can be executed by the calling process
+    // Posix seek flags (qjs)
     SEEK_SET: 0,
     SEEK_CUR: 1,
     SEEK_END: 2
