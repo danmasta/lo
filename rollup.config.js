@@ -35,7 +35,8 @@ export default [
             'polyfill/qjs/os.js',
             'polyfill/qjs/path.js',
             'polyfill/qjs/process.js',
-            'polyfill/qjs/stream.js'
+            'polyfill/qjs/stream.js',
+            'polyfill/qjs/util.js'
         ],
         output: {
             dir: 'dist/qjs',
