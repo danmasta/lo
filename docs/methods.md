@@ -101,6 +101,8 @@
 * `flatCompact`
 * `fmt`
 * `format`
+* `formatter`
+* `formatWithOpts`
 * `freeze`
 * `fromPairs`
 * `get`
