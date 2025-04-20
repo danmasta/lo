@@ -1,5 +1,5 @@
-import { format } from '../../lib/util.js';
 import { stdout, stderr, win32 } from './process.js';
+import { format } from './util.js';
 
 const eol = win32 ? '\r\n' : '\n';
 

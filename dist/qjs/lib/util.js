@@ -534,39 +534,8 @@ function JSONReplacer () {
     }
 }
 
-// https://developer.mozilla.org/en-US/docs/Web/API/console/dir_static
-// https://nodejs.org/api/util.html#utilinspectobject-options
-// https://github.com/nodejs/node/blob/main/lib/internal/util/inspect.js#L847
-// Get props or get props + non-enumerable props
-//     If showHidden is true, include symbols
-//     Otherwise filter enumerable properties only
-// Get type name
-// Format by type:
-//     Array
-//     Set
-//     Map
-//     TypedArray
-//     Map Iterator
-//     Set Iterator
-//     Object
-//     Arguments
-//     Function
-//     RegExp
-//     Date (toISOString)
-//     Error
-//     ArrayBuffer
-//     DataView
-//     Promise
-//     WeakSet
-//     WeakMap
-//     Module
-//     Primitives
-// Handle circular references
-// export function inspect (obj, { colors=false, depth=2, showHidden=false }={}) {
-//     let type = getType(obj);
-// }
-
-function format (str, ...args) {
+// Format string with optional inspect options
+function formatWithOpts ({ inspectArgs=false, inspect=toString, ...opts }={}, str, ...args) {
     let res = replace(str, REGEX.fmt, (match, char) => {
         // Handle escape
         if (char === '%') {
@@ -598,24 +567,31 @@ function format (str, ...args) {
                 return parseFloat(val);
             case 'j':
                 return JSON.stringify(val, JSONReplacer(), 0);
-            // Not implemented yet
             // Note: Full object including non-enumerable properties and proxies
             case 'o':
-                return toString(val);
-            // Not implemented yet
-            // Note: Full object not including non-enumerable properties and proxies
+                return inspect(val, { ...opts, showHidden: true, showProxy: true, depth: 4 });
+            // Note: Full object excluding non-enumerable properties and proxies
             case 'O':
-                return toString(val);
+                return inspect(val, { ...opts, showHidden: false });
             case 'c':
                 return '';
             default:
                 return match;
         }
     });
-    if (!args.length) {
-        return res;
+    if (args.length && inspectArgs) {
+        return join([res, ...map(args, val => inspect(val, opts))], ' ');
     }
-    return join([res, ...map(args, val => toString(val))], ' ');
+    return res;
 }
 
-export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
+// Return a format fn with pre-defined inspect options
+function formatter (opts) {
+    return function format (...args) {
+        return formatWithOpts(opts, ...args);
+    }
+}
+
+const format = formatter();
+
+export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, formatWithOpts, formatter, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
