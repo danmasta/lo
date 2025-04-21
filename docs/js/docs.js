@@ -1,3 +1,3 @@
 import * as lo from '../../browser.js';
 
-window.lo = window._ = lo;
+globalThis.lo = globalThis._ = lo;
