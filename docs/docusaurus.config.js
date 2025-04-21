@@ -1,3 +1,4 @@
+// https://docusaurus.io/docs/api/docusaurus-config
 export default {
     title: 'Lo',
     tagline: 'Lightweight, modern utility library for node, browser, and quickjs',
@@ -24,12 +25,14 @@ export default {
                 },
                 blog: false,
                 theme: {
-                    customCss: 'src/css/custom.css'
+                    customCss: 'css/docs.css'
                 }
             }
         ]
     ],
+    // https://docusaurus.io/docs/api/themes/configuration
     themeConfig: {
+        defaultMode: 'dark',
         image: 'img/docusaurus-social-card.jpg',
         navbar: {
             title: 'Lo',
@@ -48,7 +51,7 @@ export default {
             ]
         },
         footer: {
-            style: 'dark',
+            style: undefined,
             links: [
                 {
                     title: 'Docs',
@@ -87,6 +90,10 @@ export default {
                 }
             ],
             copyright: `Copyright © ${new Date().getFullYear()} Daniel Smith`
+        },
+        tableOfContents: {
+            minHeadingLevel: 2,
+            maxHeadingLevel: 4
         },
         prism: {
         }

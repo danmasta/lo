@@ -3,19 +3,21 @@ sidebar_position: 4
 ---
 # API Reference
 
-## Constants
+## **Constants**
 ### `BREAK`
 ### `CLONE`
 ### `noop`
 ### `TYPES`
-## Constants (node)
+
+## **Constants** *`node`*
 ### `ARGV`
 ### `ENV`
 
-## Iterate Properties
+## **Iterate** *`properties`*
 ### `forIn`
 ### `forOwn`
-## Iterate Collections
+
+## **Iterate** *`collections`*
 ### `each`
 ### `eachNotNil`
 ### `every`
@@ -34,7 +36,7 @@ sidebar_position: 4
 ### `tap`
 ### `tapNotNil`
 
-## Types
+## **Types**
 ### `getCtorType`
 ### `getCtorTypeStr`
 ### `getType`
@@ -75,7 +77,8 @@ sidebar_position: 4
 ### `toPath`
 ### `toString`
 ### `toType`
-## Types (node)
+
+## **Types** *`node`*
 ### `isBuffer`
 ### `isDuplex`
 ### `isPassThrough`
@@ -83,11 +86,12 @@ sidebar_position: 4
 ### `isStream`
 ### `isTransform`
 ### `isWritable`
-## Types (browser)
+
+## **Types** *`browser`*
 ### `isElement`
 ### `isNodeList`
 
-## Util
+## **Util**
 ### `assign`
 ### `assignDefaults`
 ### `assignIn`
@@ -143,7 +147,8 @@ sidebar_position: 4
 ### `trimRight`
 ### `unescapeHTML`
 ### `words`
-## Util (node)
+
+## **Util** *`node`*
 ### `argv`
 ### `env`
 ### `fromIp`
@@ -172,4 +177,5 @@ sidebar_position: 4
 ### `toIp`
 ### `toIp4`
 ### `toIp6`
-## Util (browser)
+
+## **Util** *`browser`*
