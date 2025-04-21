@@ -4,8 +4,11 @@ on:
     branches:
       - master
     paths:
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
+      - docs/**
+      - lib/**
+      - types/**
+      - .github/workflows/docs.yml
+      - browser.js
 jobs:
   build:
     name: Build

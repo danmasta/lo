@@ -30,6 +30,11 @@ export default {
             }
         ]
     ],
+    // Add custom js to page
+    // https://docusaurus.io/docs/advanced/client#client-modules
+    clientModules: [
+        'js/docs.js'
+    ],
     // https://docusaurus.io/docs/api/themes/configuration
     themeConfig: {
         defaultMode: 'dark',
