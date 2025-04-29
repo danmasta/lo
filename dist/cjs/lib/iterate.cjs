@@ -2,43 +2,43 @@ var constants = require('./constants.cjs');
 var types = require('./types.cjs');
 
 // Async alias
-async function forInA (iter, fn) {
-    for (const key in iter) {
-        if (await fn(iter[key], key, iter) === constants.BREAK) {
+async function forInA (obj, fn) {
+    for (const key in obj) {
+        if (await fn(obj[key], key, obj) === constants.BREAK) {
             break;
         }    }
-    return iter;
+    return obj;
 }
 
-// Run an iterator fn for each own and inherited enumerable property in iter
+// Run an iterator fn for each own and inherited enumerable property in obj
 // Note: Can break iteration early by returning BREAK symbol
-function forIn (iter, fn) {
+function forIn (obj, fn) {
     if (types.isAsyncFunction(fn)) {
-        return forInA(iter, fn);
+        return forInA(obj, fn);
     }
     fn = types.toFn(fn);
-    for (const key in iter) {
-        if (fn(iter[key], key, iter) === constants.BREAK) {
+    for (const key in obj) {
+        if (fn(obj[key], key, obj) === constants.BREAK) {
             break;
         }    }
-    return iter;
+    return obj;
 }
 
-// Run an iterator fn for each item in iter
+// Run an iterator fn for each own enumerable property in obj
 // Note: Can break iteration early by returning BREAK symbol
-function forOwn (iter, fn) {
-    return compose(iter, fn, 0);
+function forOwn (obj, fn) {
+    return compose(obj, fn, 0);
 }
 
-// Run an iterator fn for each item in iter
-// Defers to forEach method
+// Run an iterator fn for each item in obj
+// Defers to object's own forEach method if exists
 // Note: Can break iteration early by returning BREAK symbol
-function forEach (iter, fn) {
+function forEach (obj, fn) {
     fn = types.toFn(fn);
-    if (types.hasForEach(iter)) {
+    if (types.hasForEach(obj)) {
         try {
-            iter.forEach((val, idx, iter) => {
-                if (fn(val, idx, iter) === constants.BREAK) {
+            obj.forEach((val, idx, obj) => {
+                if (fn(val, idx, obj) === constants.BREAK) {
                     throw constants.BREAK;
                 }
             });
@@ -48,97 +48,97 @@ function forEach (iter, fn) {
             }
         }
     } else {
-        fn(iter, 0, iter);
+        fn(obj, 0, obj);
     }
 }
 
 // Async alias
-async function iterateA (iter, fn, col=1, type, iterA, fnA) {
-    if (types.notNil(iter)) {
-        if (col && !type.collection) {
-            await fn(iter, 0, iter);
+async function iterateA (obj, fn, col=1, type, iter, iterA, fnA) {
+    if (types.notNil(obj)) {
+        if (col && !type.collection && !type.object) {
+            await fn(obj, 0, obj);
         } else {
             if (iterA) {
                 let index = 0;
-                for await (const val of iter) {
-                    if (await fn(val, index++, iter) === constants.BREAK) {
+                for await (const val of obj) {
+                    if (await fn(val, index++, obj) === constants.BREAK) {
                         break;
                     }
                 }
             } else if (type.entries) {
-                for (const [key, val] of iter.entries()) {
-                    if (await fn(val, key, iter) === constants.BREAK) {
+                for (const [key, val] of obj.entries()) {
+                    if (await fn(val, key, obj) === constants.BREAK) {
                         break;
                     }
                 }
-            } else if (type.iterable) {
+            } else if (iter) {
                 let index = 0;
-                for (const val of iter) {
-                    if (await fn(val, index++, iter) === constants.BREAK) {
+                for (const val of obj) {
+                    if (await fn(val, index++, obj) === constants.BREAK) {
                         break;
                     }
                 }
-            } else if (!col && type.type === constants.TYPES.Object.type) {
-                for (const [key, val] of Object.entries(iter)) {
-                    if (await fn(val, key, iter) === constants.BREAK) {
+            } else if (!col && type.object) {
+                for (const [key, val] of Object.entries(obj)) {
+                    if (await fn(val, key, obj) === constants.BREAK) {
                         break;
                     }
                 }
             } else {
-                await fn(iter, 0, iter);
+                await fn(obj, 0, obj);
             }
         }
     }
-    return iter;
+    return obj;
 }
 
-// Run an iterator fn for each item in iter
-// Iterates as collection, can disable by setting col to false
+// Run an iterator fn for each item in obj
+// Iterates as collection by default, can disable by passing col=false
 // Note: Can break iteration early by returning BREAK symbol
-function iterate (iter, fn, col=1, type) {
-    if (types.notNil(iter)) {
-        if (col && !type.collection) {
-            fn(iter, 0, iter);
+function iterate (obj, fn, col=1, type, iter) {
+    if (types.notNil(obj)) {
+        if (col && !type.collection && !type.object) {
+            fn(obj, 0, obj);
         } else {
             if (type.entries) {
-                for (const [key, val] of iter.entries()) {
-                    if (fn(val, key, iter) === constants.BREAK) {
+                for (const [key, val] of obj.entries()) {
+                    if (fn(val, key, obj) === constants.BREAK) {
                         break;
                     }
                 }
-            } else if (type.iterable) {
+            } else if (iter) {
                 let index = 0;
-                for (const val of iter) {
-                    if (fn(val, index++, iter) === constants.BREAK) {
+                for (const val of obj) {
+                    if (fn(val, index++, obj) === constants.BREAK) {
                         break;
                     }
                 }
-            } else if (!col && type.type === constants.TYPES.Object.type) {
-                for (const [key, val] of Object.entries(iter)) {
-                    if (fn(val, key, iter) === constants.BREAK) {
+            } else if (!col && type.object) {
+                for (const [key, val] of Object.entries(obj)) {
+                    if (fn(val, key, obj) === constants.BREAK) {
                         break;
                     }
                 }
             } else {
-                fn(iter, 0, iter);
+                fn(obj, 0, obj);
             }
         }
     }
-    return iter;
+    return obj;
 }
 
 // Async alias
-async function iterateFA (iter, fn, col, retFn, res, valFltr, retFltr, type, iterA, fnA) {
-    await iterateA(iter, async (val, key, iter) => {
+async function iterateFA (obj, fn, col, retFn, res, valFltr, retFltr, type, iter, iterA, fnA) {
+    await iterateA(obj, async (val, key, obj) => {
         let ret;
         if (valFltr) {
             if (valFltr(val)) {
-                ret = await fn(val, key, iter);
+                ret = await fn(val, key, obj);
             } else {
                 return;
             }
         } else {
-            ret = await fn(val, key, iter);
+            ret = await fn(val, key, obj);
         }
         if (ret === constants.BREAK) {
             return ret;
@@ -152,26 +152,26 @@ async function iterateFA (iter, fn, col, retFn, res, valFltr, retFltr, type, ite
         } else {
             return retFn ? retFn(res, ret, val, key) : ret;
         }
-    }, col, type, iterA);
+    }, col, type, iter, iterA);
     return types.isFunction(res) ? res() : res;
 }
 
-// Run an iterator fn for each item in iter with filters
+// Run an iterator fn for each item in obj with filters
 // Accepts optional return function, return value, value filter, and return value filter
 // Note: Useful for composing other types of iteration methods
 // Note: Return function and filter functions are not validated
 // Note: Can break iteration early by returning BREAK symbol
-function iterateF (iter, fn, col, retFn, res, valFltr, retFltr, type) {
-    iterate(iter, (val, key, iter) => {
+function iterateF (obj, fn, col, retFn, res, valFltr, retFltr, type, iter) {
+    iterate(obj, (val, key, obj) => {
         let ret;
         if (valFltr) {
             if (valFltr(val)) {
-                ret = fn(val, key, iter);
+                ret = fn(val, key, obj);
             } else {
                 return;
             }
         } else {
-            ret = fn(val, key, iter);
+            ret = fn(val, key, obj);
         }
         if (ret === constants.BREAK) {
             return ret;
@@ -185,46 +185,68 @@ function iterateF (iter, fn, col, retFn, res, valFltr, retFltr, type) {
         } else {
             return retFn ? retFn(res, ret, val, key) : ret;
         }
-    }, col, type);
+    }, col, type, iter);
     return types.isFunction(res) ? res() : res;
 }
 
-// Compose iteration method
-// Checks type info
-// Returns sync or async based on iterable and iterator fn types
-function compose (iter, fn, col=1) {
-    let type = types.getType(iter);
-    let iterA = type.async || types.isAsyncIterable(iter);
-    let fnA = types.isAsyncFunction(fn);
-    fn = types.toFn(fn);
-    if (iterA || fnA) {
-        return iterateA(iter, fn, col, type, iterA);
+// Determine whether to iterate sync or async
+function isAsync (iter, iterA, fnA) {
+    if (iterA) {
+        if (fnA) {
+            return true;
+        } else {
+            if (iter) {
+                return false;
+            }
+        }
+        return true;
     }
-    return iterate(iter, fn, col, type);
+    if (fnA) {
+        return true;
+    }
+    return false;
+}
+
+// Compose iteration method
+// Note: Checks type info
+// Returns sync or async based on obj and fn types
+function compose (obj, fn, col=1) {
+    let type = types.getType(obj);
+    let iter = types.isIterable(obj);
+    let iterA = types.isAsyncIterable(obj);
+    let fnA = types.isAsyncFunction(fn);
+    let async = isAsync(iter, iterA, fnA);
+    fn = types.toFn(fn);
+    if (async) {
+        return iterateA(obj, fn, col, type, iter, iterA);
+    }
+    return iterate(obj, fn, col, type, iter);
 }
 
 // Compose iteration method with filters
-// Checks type info
-// Returns sync or async based on iterable and iterator fn types
-function composeF (iter, fn, col=1, retFn, res, valFltr, retFltr) {
-    let type = types.getType(iter);
-    let iterA = type.async || types.isAsyncIterable(iter);
+// Note: Checks type info
+// Returns sync or async based on obj and fn types
+function composeF (obj, fn, col=1, retFn, res, valFltr, retFltr) {
+    let type = types.getType(obj);
+    let iter = types.isIterable(obj);
+    let iterA = types.isAsyncIterable(obj);
     let fnA = types.isAsyncFunction(fn);
+    let async = isAsync(iter, iterA, fnA);
     fn = types.toFn(fn);
-    if (iterA || fnA) {
-        return iterateFA(iter, fn, col, retFn, res, valFltr, retFltr, type, iterA);
+    if (async) {
+        return iterateFA(obj, fn, col, retFn, res, valFltr, retFltr, type, iter, iterA);
     }
-    return iterateF(iter, fn, col, retFn, res, valFltr, retFltr, type);
+    return iterateF(obj, fn, col, retFn, res, valFltr, retFltr, type, iter);
 }
 
-// Run an iterator fn for each item in iter
-function each (iter, fn, col) {
-    return compose(iter, fn, col);
+// Run an iterator fn for each item in obj
+function each (obj, fn, col) {
+    return compose(obj, fn, col);
 }
 
 // Alias for each (ignores null and undefined)
-function eachNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, undefined, iter, types.notNil);
+function eachNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, undefined, obj, types.notNil);
 }
 
 function mapFn (res, ret) {
@@ -232,30 +254,30 @@ function mapFn (res, ret) {
 }
 
 // Return a new array of return values from iterator fn
-function map (iter, fn, col) {
-    return composeF(iter, fn, col, mapFn, []);
+function map (obj, fn, col) {
+    return composeF(obj, fn, col, mapFn, []);
 }
 
 // Alias for map (ignores null and undefined)
-function mapNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, mapFn, [], types.notNil, types.notNil);
+function mapNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, mapFn, [], types.notNil, types.notNil);
 }
 
 function tapFn (res, ret, val) {
     res.push(val);
 }
 
-// Run an iterator fn for each item in iter, return new array with original values
-function tap (iter, fn, col) {
-    return composeF(iter, fn, col, tapFn, []);
+// Run an iterator fn for each item in obj, return new array with original values
+function tap (obj, fn, col) {
+    return composeF(obj, fn, col, tapFn, []);
 }
 
 // Alias for tap (ignores null and undefined)
-function tapNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, tapFn, [], types.notNil);
+function tapNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, tapFn, [], types.notNil);
 }
 
-// Getter/setter for response values that can't be passed by reference
+// Getter/Setter for response values that can't be passed by reference
 function resFn (res) {
     return val => {
         if (types.notNil(val)) {
@@ -273,14 +295,14 @@ function someFn (res, ret) {
     }
 }
 
-// Return true if iterator fn returns truthy for any item in iter
-function some (iter, fn, col) {
-    return composeF(iter, fn, col, someFn, resFn(false));
+// Return true if iterator fn returns truthy for any item in obj
+function some (obj, fn, col) {
+    return composeF(obj, fn, col, someFn, resFn(false));
 }
 
 // Alias for some (ignores null and undefined)
-function someNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, someFn, resFn(false), types.notNil, types.notNil);
+function someNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, someFn, resFn(false), types.notNil, types.notNil);
 }
 
 function everyFn (res, ret) {
@@ -290,14 +312,14 @@ function everyFn (res, ret) {
     }
 }
 
-// Return true if iterator fn returns truthy for all items in iter
-function every (iter, fn, col) {
-    return composeF(iter, fn, col, everyFn, resFn(true));
+// Return true if iterator fn returns truthy for all items in obj
+function every (obj, fn, col) {
+    return composeF(obj, fn, col, everyFn, resFn(true));
 }
 
 // Alias for every (ignores null and undefined)
-function everyNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, everyFn, resFn(true), types.notNil, types.notNil);
+function everyNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, everyFn, resFn(true), types.notNil, types.notNil);
 }
 
 function filterFn (res, ret, val) {
@@ -307,13 +329,13 @@ function filterFn (res, ret, val) {
 }
 
 // Return new array with items that iterator fn returns truthy for
-function filter (iter, fn, col) {
-    return composeF(iter, fn, col, filterFn, []);
+function filter (obj, fn, col) {
+    return composeF(obj, fn, col, filterFn, []);
 }
 
 // Alias for filter (ignores null and undefined)
-function filterNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, filterFn, [], types.notNil, types.notNil);
+function filterNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, filterFn, [], types.notNil, types.notNil);
 }
 
 function removeFn (res, ret, val) {
@@ -323,13 +345,13 @@ function removeFn (res, ret, val) {
 }
 
 // Return new array with items that iterator fn returns falsy for
-function remove (iter, fn, col) {
-    return composeF(iter, fn, col, removeFn, []);
+function remove (obj, fn, col) {
+    return composeF(obj, fn, col, removeFn, []);
 }
 
 // Alias for remove (ignores null and undefined)
-function removeNotNil (iter, fn, col) {
-    return composeF(iter, fn, col, removeFn, [], types.notNil, types.notNil);
+function removeNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, removeFn, [], types.notNil, types.notNil);
 }
 
 exports.each = each;

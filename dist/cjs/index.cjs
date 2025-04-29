@@ -13,6 +13,8 @@ var base = require('./types/base.cjs');
 constants.addTypes(node$1.default);
 
 var index = {
+    addType: constants.addType,
+    addTypes: constants.addTypes,
     BREAK: constants.BREAK,
     noop: constants.noop,
     TYPES: constants.TYPES,
@@ -32,6 +34,8 @@ exports.optsFromArgv = argv.optsFromArgv;
 exports.parseArgv = argv.parseArgv;
 exports.BREAK = constants.BREAK;
 exports.TYPES = constants.TYPES;
+exports.addType = constants.addType;
+exports.addTypes = constants.addTypes;
 exports.noop = constants.noop;
 exports.env = env.env;
 exports.isNilEnv = env.isNilEnv;

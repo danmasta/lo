@@ -1,6 +1,6 @@
 import * as argv from './lib/argv.js';
 export { parseArgv as argv, getArgv, isQJS, optsFromArgv, parseArgv } from './lib/argv.js';
-import { addTypes, BREAK, noop, TYPES } from './lib/constants.js';
+import { addTypes, addType, BREAK, noop, TYPES } from './lib/constants.js';
 import * as env from './lib/env.js';
 export { env, isNilEnv } from './lib/env.js';
 import * as ip from './lib/ip.js';
@@ -20,6 +20,8 @@ export { hasOwn } from './types/base.js';
 addTypes(supplemental);
 
 var qjs = {
+    addType,
+    addTypes,
     BREAK,
     noop,
     TYPES,
@@ -32,4 +34,4 @@ var qjs = {
     ...util
 };
 
-export { BREAK, TYPES, qjs as default, noop };
+export { BREAK, TYPES, addType, addTypes, qjs as default, noop };

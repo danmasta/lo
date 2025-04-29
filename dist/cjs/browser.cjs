@@ -10,6 +10,8 @@ var base = require('./types/base.cjs');
 constants.addTypes(browser$2.default);
 
 var browser = {
+    addType: constants.addType,
+    addTypes: constants.addTypes,
     BREAK: constants.BREAK,
     noop: constants.noop,
     TYPES: constants.TYPES,
@@ -24,6 +26,8 @@ exports.isElement = browser$1.isElement;
 exports.isNodeList = browser$1.isNodeList;
 exports.BREAK = constants.BREAK;
 exports.TYPES = constants.TYPES;
+exports.addType = constants.addType;
+exports.addTypes = constants.addTypes;
 exports.noop = constants.noop;
 exports.fromIp = ip.fromIp;
 exports.fromIp4 = ip.fromIp4;
