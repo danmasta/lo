@@ -33,6 +33,8 @@
 
 ## Types
 #### Base
+* `addType`
+* `addTypes`
 * `getCtorType`
 * `getCtorTypeStr`
 * `getType`

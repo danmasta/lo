@@ -37,6 +37,8 @@ sidebar_position: 4
 ### `tapNotNil`
 
 ## **Types**
+### `addType`
+### `addTypes`
 ### `getCtorType`
 ### `getCtorTypeStr`
 ### `getType`
