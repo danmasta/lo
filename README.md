@@ -182,7 +182,7 @@ import lo from 'lo/qjs';
 *You can find an example project that exposes a node api, cli, and standalone binary built using this package [here](https://github.com/danmasta/envstr).*
 
 ## Documentation
-A list of methods and some documentation can be found [here](docs/methods.md)
+A list of methods and some documentation can be found [here](https://danmasta.github.io/lo/)
 
 ## Testing
 Tests are currently run using mocha and chai. To execute tests run `make test`. To generate unit test coverage reports run `make coverage`
