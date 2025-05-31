@@ -4,7 +4,6 @@ var constants = require('./constants.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
 var util = require('./util.cjs');
-var base = require('../types/base.cjs');
 
 // Parse argv
 // Accepts an array or string of arguments
@@ -25,7 +24,7 @@ function parseArgv (arr=node_process.argv.slice(2), { negate=1, camel=0, native=
         if (native) {
             v = types.toNativeType(v);
         }
-        if (base.hasOwn(ref, k)) {
+        if (constants.hasOwn(ref, k)) {
             if (!types.isArray(ref[k])) {
                 ref[k] = [ref[k]];
             }

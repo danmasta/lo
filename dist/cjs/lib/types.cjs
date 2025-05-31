@@ -1,5 +1,4 @@
 var constants = require('./constants.cjs');
-var base = require('../types/base.cjs');
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
 function toStringTag (obj) {
@@ -10,26 +9,30 @@ function toStringTag (obj) {
 // Will recurse 3 levels to check parent proto if recurse not explicitly false
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
-function getTypeFromProto (obj, recurse=3) {
-    let proto = base.getPrototypeOf(obj);
+function getTypeFromProto (obj, { recurse=3, of, add=1, ref=obj }={}) {
+    let proto = constants.getPrototypeOf(obj);
     let type = constants.typesByProto.get(proto);
     if (type) {
-        // Classes that resolve to object type
-        if (type === constants.TYPES.Object && proto && obj.constructor !== type.ctor) {
-            return constants.TYPES.Unknown;
-        }
         return type;
     }
-    if (recurse) {
-        return getTypeFromProto(proto, --recurse);
+    // Unknown class or subclass that resolves to object type
+    if (proto && of === constants.TYPES.Object && add) {
+        return constants.addType({
+            c: ref.constructor,
+            x: [1, 0, 2, 0]
+        });
     }
-    if (base.isPrototypeOf.call(Error.prototype, obj)) {
+    if (recurse) {
+        recurse--;
+        return getTypeFromProto(proto, { recurse, of, add, ref });
+    }
+    if (constants.isPrototypeOf.call(Error.prototype, obj)) {
         return constants.TYPES.Error;
     }
     if (type = constants.TYPES[toStringTag(obj)]) {
         return type;
     }
-    // Return unknown because undefined or null are technically known types
+    // Return unknown because null and undefined are technically known types
     return constants.TYPES.Unknown;
 }
 
@@ -37,29 +40,38 @@ function getTypeFromProto (obj, recurse=3) {
 // Will recurse 3 levels to check parent class if recurse not explicitly false
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
-function getTypeFromCtor (obj, recurse=3) {
+function getTypeFromCtor (obj, { recurse=3, of, add=1, ref=obj }={}) {
     let type = constants.typesByCtor.get(obj);
     if (type) {
         return type;
     }
-    let proto = base.getPrototypeOf(obj);
-    // If obj is a class, but not a subclass (or extends null), it's prototype will be Function.prototype
-    if (proto === Function.prototype) {
+    let proto = constants.getPrototypeOf(obj);
+    // Unknown class or subclass
+    if (isClass(obj) && (proto === constants.TYPES.Function.proto || isClass(proto)) && add) {
+        return constants.addType({
+            c: ref,
+            x: [1, 0, 2, 0]
+        });
+    }
+    // If obj is a constructor fn or class (but not a subclass or extends null)
+    // It's prototype will be Function.prototype
+    if (proto === constants.TYPES.Function.proto) {
         return constants.TYPES.Function;
     }
     if (recurse) {
         // If obj is a subclass, the constructor prototype will be the parent class:
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends
-        return getTypeFromCtor(proto, --recurse);
+        recurse--;
+        return getTypeFromCtor(proto, { recurse, of, add, ref });
     }
-    // Because obj is a constructor function we need to check obj.prototype instead of obj itself
-    if (base.isPrototypeOf.call(Error.prototype, obj.prototype)) {
+    // Because obj is a constructor fn we need to check obj.prototype
+    if (constants.isPrototypeOf.call(Error.prototype, obj.prototype)) {
         return constants.TYPES.Error;
     }
     if (type = constants.TYPES[toStringTag(obj)]) {
         return type;
     }
-    // Return unknown because undefined or null are technically known types
+    // Return unknown because null and undefined are technically known types
     return constants.TYPES.Unknown;
 }
 
@@ -108,7 +120,7 @@ function getType (obj) {
                 }
                 return type;
             }
-            return getTypeFromProto(obj);
+            return getTypeFromProto(obj, { of: constants.TYPES.Object });
         default:
             return type;
     }
@@ -169,6 +181,10 @@ function isCtor (Fn) {
         }
         return true;
     }
+}
+
+function isClass (obj) {
+    return isFunction(obj) && constants.getOwnPropertyDescriptor(obj, 'prototype').writable === false;
 }
 
 function isNil (obj) {
@@ -324,7 +340,7 @@ function isAsyncIterable (obj) {
 }
 
 function isError (obj) {
-    return getType(obj) === constants.TYPES.Error;
+    return obj instanceof constants.TYPES.Error.ctor
 }
 
 function toArrayOrSelf (obj, self) {
@@ -410,7 +426,7 @@ function toString (obj) {
 // Note: Doesn't convert BigInt (Errors with floats and math operations)
 // Note: Doesn't convert Symbol
 function toNativeType (val) {
-    if (base.hasOwn(constants.PRIMITIVES, val)) {
+    if (constants.hasOwn(constants.PRIMITIVES, val)) {
         return constants.PRIMITIVES[val];
     }
     if (isNumeric(val)) {
@@ -435,6 +451,7 @@ exports.isArrayBuffer = isArrayBuffer;
 exports.isAsyncFunction = isAsyncFunction;
 exports.isAsyncIterable = isAsyncIterable;
 exports.isBoolean = isBoolean;
+exports.isClass = isClass;
 exports.isCollection = isCollection;
 exports.isCtor = isCtor;
 exports.isError = isError;

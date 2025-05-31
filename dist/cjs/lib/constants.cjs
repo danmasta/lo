@@ -1,9 +1,10 @@
 var base = require('../types/base.cjs');
 
+const { entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, isPrototypeOf } = Object;
 const noop = ()=>{};
 const BREAK = Symbol();
 const CLONE = Symbol();
-const G = globalThis;
+const Global = globalThis;
 
 const types = {
     0: 'undefined',
@@ -36,35 +37,39 @@ const types = {
 // };
 // x = [construct, call, create, collection]
 function genType (obj) {
-    if (!obj.n || !obj.x) {
+    let known, { n: name, c: ctor, p: proto, x, t: type=7, a: abstract } = obj;
+    if (!name && ctor) {
+        name = ctor.name;
+    }
+    if (!name || !x) {
         throw new Error('Type malformed');
     }
-    if (!base.hasOwn(obj, 'c')) {
-        if (!base.hasOwn(G, obj.n)) {
-            obj.k = 0;
+    // Not known if constructor unset and not found in global
+    if (!hasOwn(obj, 'c')) {
+        if (!hasOwn(Global, name)) {
+            known = 0;
         }
-        obj.c = G[obj.n];
+        ctor = Global[name];
     }
-    if (!base.hasOwn(obj, 'p')) {
-        obj.p = obj.c?.prototype;
+    if (!hasOwn(obj, 'p')) {
+        proto = ctor?.prototype;
     }
-    let t = obj.t ?? 7;
     return {
-        type: types[t],
-        name: obj.n,
-        ctor: obj.c,
-        proto: obj.p,
-        construct: !!obj.x[0],
-        call: !!obj.x[1],
-        create: obj.x[2],
-        collection: !!obj.x[3],
-        abstract: !!obj.a,
-        each: !!obj.p?.forEach,
-        iterable: !!obj.p?.[Symbol.iterator],
-        async: !!obj.p?.[Symbol.asyncIterator],
-        entries: !!obj.p?.entries,
-        known: obj.k !== 0,
-        object: t === 7 && obj.n !== 'Null'
+        type: types[type],
+        name,
+        ctor,
+        proto,
+        construct: !!x[0],
+        call: !!x[1],
+        create: x[2],
+        collection: !!x[3],
+        abstract: !!abstract,
+        each: !!proto?.forEach,
+        iterable: !!proto?.[Symbol.iterator],
+        async: !!proto?.[Symbol.asyncIterator],
+        entries: !!proto?.entries,
+        known: known !== 0,
+        object: type === 7 && name !== 'Null'
     };
 }
 
@@ -87,20 +92,21 @@ function addType (type) {
     if (!type.known) {
         return;
     }
-    let { name, proto, ctor } = type;
+    let { name, ctor, proto } = type;
     if (!TYPES[name]) {
         TYPES[name] = type;
-    }
-    if (proto && !typesByProto.has(proto)) {
-        typesByProto.set(proto, type);
     }
     if (ctor && !typesByCtor.has(ctor)) {
         typesByCtor.set(ctor, type);
     }
+    if (proto && !typesByProto.has(proto)) {
+        typesByProto.set(proto, type);
+    }
+    return type;
 }
 
 function addTypes (types) {
-    for (const [name, type] of Object.entries(types)) {
+    for (const [name, type] of entries(types)) {
         addType(type);
     }
 }
@@ -158,9 +164,6 @@ const PRIMITIVES = {
 // Add remaining types to cache refs
 addTypes(TYPES);
 
-exports.getPrototypeOf = base.getPrototypeOf;
-exports.hasOwn = base.hasOwn;
-exports.isPrototypeOf = base.isPrototypeOf;
 exports.BREAK = BREAK;
 exports.CLONE = CLONE;
 exports.PRIMITIVES = PRIMITIVES;
@@ -168,6 +171,11 @@ exports.REGEX = REGEX;
 exports.TYPES = TYPES;
 exports.addType = addType;
 exports.addTypes = addTypes;
+exports.entries = entries;
+exports.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
+exports.getPrototypeOf = getPrototypeOf;
+exports.hasOwn = hasOwn;
+exports.isPrototypeOf = isPrototypeOf;
 exports.noop = noop;
 exports.typesByCtor = typesByCtor;
 exports.typesByProto = typesByProto;

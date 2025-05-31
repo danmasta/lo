@@ -1,5 +1,4 @@
-import { typesByProto, TYPES, typesByCtor, typesByType, noop, REGEX, PRIMITIVES } from './constants.js';
-import { getPrototypeOf, isPrototypeOf, hasOwn } from '../types/base.js';
+import { getPrototypeOf, typesByProto, TYPES, addType, isPrototypeOf, typesByCtor, typesByType, getOwnPropertyDescriptor, noop, REGEX, hasOwn, PRIMITIVES } from './constants.js';
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
 function toStringTag (obj) {
@@ -10,18 +9,22 @@ function toStringTag (obj) {
 // Will recurse 3 levels to check parent proto if recurse not explicitly false
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
-function getTypeFromProto (obj, recurse=3) {
+function getTypeFromProto (obj, { recurse=3, of, add=1, ref=obj }={}) {
     let proto = getPrototypeOf(obj);
     let type = typesByProto.get(proto);
     if (type) {
-        // Classes that resolve to object type
-        if (type === TYPES.Object && proto && obj.constructor !== type.ctor) {
-            return TYPES.Unknown;
-        }
         return type;
     }
+    // Unknown class or subclass that resolves to object type
+    if (proto && of === TYPES.Object && add) {
+        return addType({
+            c: ref.constructor,
+            x: [1, 0, 2, 0]
+        });
+    }
     if (recurse) {
-        return getTypeFromProto(proto, --recurse);
+        recurse--;
+        return getTypeFromProto(proto, { recurse, of, add, ref });
     }
     if (isPrototypeOf.call(Error.prototype, obj)) {
         return TYPES.Error;
@@ -29,7 +32,7 @@ function getTypeFromProto (obj, recurse=3) {
     if (type = TYPES[toStringTag(obj)]) {
         return type;
     }
-    // Return unknown because undefined or null are technically known types
+    // Return unknown because null and undefined are technically known types
     return TYPES.Unknown;
 }
 
@@ -37,29 +40,38 @@ function getTypeFromProto (obj, recurse=3) {
 // Will recurse 3 levels to check parent class if recurse not explicitly false
 // Will recurse the whole prototype chain if recurse is -1 or Infinity
 // Returns TYPES.Unknown if type not found
-function getTypeFromCtor (obj, recurse=3) {
+function getTypeFromCtor (obj, { recurse=3, of, add=1, ref=obj }={}) {
     let type = typesByCtor.get(obj);
     if (type) {
         return type;
     }
     let proto = getPrototypeOf(obj);
-    // If obj is a class, but not a subclass (or extends null), it's prototype will be Function.prototype
-    if (proto === Function.prototype) {
+    // Unknown class or subclass
+    if (isClass(obj) && (proto === TYPES.Function.proto || isClass(proto)) && add) {
+        return addType({
+            c: ref,
+            x: [1, 0, 2, 0]
+        });
+    }
+    // If obj is a constructor fn or class (but not a subclass or extends null)
+    // It's prototype will be Function.prototype
+    if (proto === TYPES.Function.proto) {
         return TYPES.Function;
     }
     if (recurse) {
         // If obj is a subclass, the constructor prototype will be the parent class:
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends
-        return getTypeFromCtor(proto, --recurse);
+        recurse--;
+        return getTypeFromCtor(proto, { recurse, of, add, ref });
     }
-    // Because obj is a constructor function we need to check obj.prototype instead of obj itself
+    // Because obj is a constructor fn we need to check obj.prototype
     if (isPrototypeOf.call(Error.prototype, obj.prototype)) {
         return TYPES.Error;
     }
     if (type = TYPES[toStringTag(obj)]) {
         return type;
     }
-    // Return unknown because undefined or null are technically known types
+    // Return unknown because null and undefined are technically known types
     return TYPES.Unknown;
 }
 
@@ -108,7 +120,7 @@ function getType (obj) {
                 }
                 return type;
             }
-            return getTypeFromProto(obj);
+            return getTypeFromProto(obj, { of: TYPES.Object });
         default:
             return type;
     }
@@ -169,6 +181,10 @@ function isCtor (Fn) {
         }
         return true;
     }
+}
+
+function isClass (obj) {
+    return isFunction(obj) && getOwnPropertyDescriptor(obj, 'prototype').writable === false;
 }
 
 function isNil (obj) {
@@ -324,7 +340,7 @@ function isAsyncIterable (obj) {
 }
 
 function isError (obj) {
-    return getType(obj) === TYPES.Error;
+    return obj instanceof TYPES.Error.ctor
 }
 
 function toArrayOrSelf (obj, self) {
@@ -422,4 +438,4 @@ function toNativeType (val) {
     return val;
 }
 
-export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto, getTypeStr, hasEntries, hasForEach, isArray, isArrayBuffer, isAsyncFunction, isAsyncIterable, isBoolean, isCollection, isCtor, isError, isEsm, isFunction, isGeneratorFunction, isIterable, isIterator, isModule, isNil, isNull, isNumber, isNumeric, isObject, isPromise, isRegExp, isString, isTypedArray, isUndefined, notNil, toArray, toFn, toNativeType, toObject, toPath, toString, toType };
+export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto, getTypeStr, hasEntries, hasForEach, isArray, isArrayBuffer, isAsyncFunction, isAsyncIterable, isBoolean, isClass, isCollection, isCtor, isError, isEsm, isFunction, isGeneratorFunction, isIterable, isIterator, isModule, isNil, isNull, isNumber, isNumeric, isObject, isPromise, isRegExp, isString, isTypedArray, isUndefined, notNil, toArray, toFn, toNativeType, toObject, toPath, toString, toType };

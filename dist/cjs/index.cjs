@@ -8,7 +8,6 @@ var types = require('./lib/types.cjs');
 var util = require('./lib/util.cjs');
 var node$1 = require('./types/node.cjs');
 var node_process = require('node:process');
-var base = require('./types/base.cjs');
 
 constants.addTypes(node$1.default);
 
@@ -36,6 +35,7 @@ exports.BREAK = constants.BREAK;
 exports.TYPES = constants.TYPES;
 exports.addType = constants.addType;
 exports.addTypes = constants.addTypes;
+exports.hasOwn = constants.hasOwn;
 exports.noop = constants.noop;
 exports.env = env.env;
 exports.isNilEnv = env.isNilEnv;
@@ -102,6 +102,7 @@ exports.isArrayBuffer = types.isArrayBuffer;
 exports.isAsyncFunction = types.isAsyncFunction;
 exports.isAsyncIterable = types.isAsyncIterable;
 exports.isBoolean = types.isBoolean;
+exports.isClass = types.isClass;
 exports.isCollection = types.isCollection;
 exports.isCtor = types.isCtor;
 exports.isError = types.isError;
@@ -196,5 +197,4 @@ Object.defineProperty(exports, "ENV", {
     enumerable: true,
     get: function () { return node_process.env; }
 });
-exports.hasOwn = base.hasOwn;
 exports.default = index;

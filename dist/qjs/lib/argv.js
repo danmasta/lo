@@ -1,10 +1,9 @@
 import { statSync } from '../polyfill/qjs/fs.js';
 import { argv } from '../polyfill/qjs/process.js';
-import { REGEX } from './constants.js';
+import { REGEX, hasOwn } from './constants.js';
 import { each, forOwn } from './iterate.js';
 import { isArray, toNativeType, isObject } from './types.js';
 import { split, toCamelCase, getOwn } from './util.js';
-import { hasOwn } from '../types/base.js';
 
 // Parse argv
 // Accepts an array or string of arguments

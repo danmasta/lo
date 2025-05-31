@@ -1,7 +1,6 @@
 var constants = require('./constants.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
-var base = require('../types/base.cjs');
 
 // Return a flat array
 function flat (...args) {
@@ -33,11 +32,11 @@ function defaults (...args) {
     let def = types.toObject(args.at(-1));
     function iterate$1 (acc, obj, def) {
         iterate.forOwn(obj, (val, key) => {
-            if (base.hasOwn(def, key)) {
+            if (constants.hasOwn(def, key)) {
                 if (types.isObject(def[key])) {
                     acc[key] = iterate$1(types.toObject(acc[key]), val, def[key]);
                 } else {
-                    if (!base.hasOwn(acc, key) || (types.isNil(acc[key]) && types.notNil(val))) {
+                    if (!constants.hasOwn(acc, key) || (types.isNil(acc[key]) && types.notNil(val))) {
                         acc[key] = val;
                     }
                 }
@@ -65,7 +64,7 @@ function assignWithOpts ({ defaults=0, recurse=0, clone=0, iter=iterate.forOwn }
     }
     iterate.each(args, src => {
         iter(src, (val, key) => {
-            if (!base.hasOwn(res, key)) {
+            if (!constants.hasOwn(res, key)) {
                 if (clone && types.isObject(val)) {
                     res[key] = assignWithOpts({ defaults, recurse: -1, clone, iter }, val);
                 } else {
@@ -137,7 +136,7 @@ function freeze (obj, recurse=1, refs) {
 }
 
 function getOwn (obj, key) {
-    if (types.notNil(obj) && base.hasOwn(obj, key)) {
+    if (types.notNil(obj) && constants.hasOwn(obj, key)) {
         return obj[key];
     }
 }
@@ -151,7 +150,7 @@ function setOwn (obj, key, val) {
 function has (obj, path) {
     if (types.notNil(obj)) {
         return iterate.everyNotNil(types.toPath(path), key => {
-            if (base.hasOwn(obj, key)) {
+            if (constants.hasOwn(obj, key)) {
                 obj = obj[key];
             } else {
                 return false;
@@ -164,7 +163,7 @@ function has (obj, path) {
 function get (obj, path, def) {
     if (types.notNil(obj)) {
         let found = iterate.everyNotNil(types.toPath(path), key => {
-            if (!base.hasOwn(obj, key)) {
+            if (!constants.hasOwn(obj, key)) {
                 return false;
             } else {
                 obj = obj[key];
@@ -184,7 +183,7 @@ function set (obj, path, val) {
             if (index === arr.length - 1) {
                 cur[key] = val;
             } else {
-                if (base.hasOwn(cur, key)) {
+                if (constants.hasOwn(cur, key)) {
                     if (types.isObject(cur[key])) {
                         cur = cur[key];
                     } else {
@@ -594,7 +593,7 @@ function formatter (opts) {
 
 const format = formatter();
 
-exports.hasOwn = base.hasOwn;
+exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
 exports.assignDefaults = assignDefaults;
 exports.assignIn = assignIn;
