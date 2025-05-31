@@ -52,6 +52,7 @@ sidebar_position: 4
 ### `isAsyncFunction`
 ### `isAsyncIterable`
 ### `isBoolean`
+### `isClass`
 ### `isCollection`
 ### `isCtor`
 ### `isError`
