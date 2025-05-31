@@ -20,9 +20,10 @@ describe('Types', () => {
         expect(lo.getType(fx.arrow)).to.equal(TYPES.Function);
         expect(lo.getType(fx.fn)).to.equal(TYPES.Function);
         expect(lo.getType(fx.promise)).to.equal(TYPES.Promise);
-        expect(lo.getType(new fx.TestClass)).to.equal(TYPES.Unknown);
-        expect(lo.getType(new fx.TestError)).to.equal(TYPES.Error);
-        expect(lo.getType(new fx.TestErrorTwo)).to.equal(TYPES.Error);
+        expect(lo.getType(new fx.TestClass)).to.equal(TYPES.TestClass);
+        expect(lo.getType(new fx.TestSubClass)).to.equal(TYPES.TestSubClass);
+        expect(lo.getType(new fx.TestError)).to.equal(TYPES.TestError);
+        expect(lo.getType(new fx.TestSubError)).to.equal(TYPES.TestSubError);
         expect(lo.getType(new fx.TestArray)).to.equal(TYPES.Array);
         expect(lo.getType(fx.readable)).to.equal(TYPES.Readable);
         expect(lo.getType(fx.buff)).to.equal(TYPES.Buffer);
@@ -44,11 +45,11 @@ describe('Types', () => {
         expect(lo.getCtorType(null)).to.equal(TYPES.Null);
         expect(lo.getCtorType(undefined)).to.equal(TYPES.Undefined);
         expect(lo.getCtorType(Error)).to.equal(TYPES.Error);
-        expect(lo.getCtorType(fx.TestClass)).to.equal(TYPES.Function);
-        expect(lo.getCtorType(fx.TestClassTwo)).to.equal(TYPES.Function);
-        expect(lo.getCtorType(fx.TestError)).to.equal(TYPES.Error);
-        expect(lo.getCtorType(fx.TestErrorTwo)).to.equal(TYPES.Error);
-        expect(lo.getCtorType(fx.TestArray)).to.equal(TYPES.Array);
+        expect(lo.getCtorType(fx.TestClass)).to.equal(TYPES.TestClass);
+        expect(lo.getCtorType(fx.TestSubClass)).to.equal(TYPES.TestSubClass);
+        expect(lo.getCtorType(fx.TestError)).to.equal(TYPES.TestError);
+        expect(lo.getCtorType(fx.TestSubError)).to.equal(TYPES.TestSubError);
+        expect(lo.getCtorType(fx.TestArray)).to.equal(TYPES.TestArray);
         expect(lo.getCtorType(fx.Readable)).to.equal(TYPES.Readable);
     });
 

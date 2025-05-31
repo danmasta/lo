@@ -4,9 +4,9 @@ import { Readable } from 'stream';
 import { Buffer } from 'node:buffer';
 
 class TestClass {}
-class TestClassTwo extends TestClass {}
+class TestSubClass extends TestClass {}
 class TestError extends Error {}
-class TestErrorTwo extends TestError {}
+class TestSubError extends TestError {}
 class TestArray extends Array {}
 const arrow = () => {};
 const fn = function () {};
@@ -25,9 +25,9 @@ const buff = Buffer.from('test');
 
 const fixtures = {
     TestClass,
-    TestClassTwo,
+    TestSubClass,
     TestError,
-    TestErrorTwo,
+    TestSubError,
     TestArray,
     readable: new Readable(),
     arrow,
