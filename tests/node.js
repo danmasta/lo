@@ -1,5 +1,6 @@
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
+import { execPath } from 'node:process';
 import { optsFromArgv, parseArgv } from '../lib/argv.js';
 import { env } from '../lib/env.js';
 
@@ -21,7 +22,7 @@ describe('Node', () => {
             sub: {
                 _: ['three', 'four'],
                 test: 'fizz=',
-                'some-dir': '/tmp'
+                'someDir': '/tmp'
             }
         });
         expect(parseArgv(`--test="space str" --param="test str"`)).to.eql({
@@ -39,6 +40,18 @@ describe('Node', () => {
             _: ["str'"],
             t: 'space str',
             p: "'test"
+        });
+        expect(parseArgv('--tmp-dir /tmp', { camel: false })).to.eql({
+            _: [],
+            'tmp-dir': '/tmp'
+        });
+        expect(parseArgv([execPath, '--test'])).to.eql({
+            _:[execPath],
+            test: true
+        });
+        expect(parseArgv([execPath, '--test'], { normalize: true })).to.eql({
+            _:[],
+            test: true
         });
     });
 
