@@ -97,7 +97,9 @@ sidebar_position: 4
 ## **Util**
 ### `assign`
 ### `assignDefaults`
+### `assignDefaultsClone`
 ### `assignIn`
+### `assignInClone`
 ### `capitalize`
 ### `compact`
 ### `concat`
@@ -122,7 +124,9 @@ sidebar_position: 4
 ### `mapLine`
 ### `merge`
 ### `mergeDefaults`
+### `mergeDefaultsClone`
 ### `mergeIn`
+### `mergeInClone`
 ### `pad`
 ### `padLeft`
 ### `padLine`
