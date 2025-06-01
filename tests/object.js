@@ -1,4 +1,5 @@
-import { assign, assignDefaults, assignIn, defaults, merge, mergeDefaults, mergeIn } from '../lib/util.js';
+import { CLONE } from '../lib/constants.js';
+import { assign, assignDefaults, assignDefaultsClone, assignIn, assignInClone, defaults, merge, mergeDefaults, mergeDefaultsClone, mergeIn, mergeInClone } from '../lib/util.js';
 
 describe('Object', () => {
 
@@ -12,11 +13,24 @@ describe('Object', () => {
         expect(assign({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
         expect(assign({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
         expect(assign({ 1: null }, { 1: undefined })).to.eql({ 1: null });
+        let obj = new fx.TestClass();
+        let res = assign(obj, { test: 1 });
+        assert(res === obj);
+        expect(res).to.be.instanceOf(fx.TestClass);
+        expect(res.test).to.equal(1);
     });
 
     it('assignDefaults', () => {
         expect(assignDefaults({ 1: 1 }, { 1: 2 })).to.eql({ 1: 1 });
         expect(assignDefaults({ 1: 1, 2: null }, { 1: 2, 2: 2 })).to.eql({ 1: 1, 2: 2 });
+    });
+
+    it('assignDefaultsClone', () => {
+        let obj = { 1: 1, 2: null };
+        let res = assignDefaultsClone(obj, { 1: 2, 2: 2 });
+        expect(res !== obj);
+        expect(res[CLONE]).to.exist;
+        expect(res).to.eql({ 1: 1, 2: 2 });
     });
 
     it('assignIn', () => {
@@ -26,11 +40,27 @@ describe('Object', () => {
         expect(assignIn({}, { 1: 1 }, obj)).to.eql({ 1: 1, inherit: 1 });
     });
 
+    it('assignInClone', () => {
+        let obj = Object.create({
+            inherit: 1
+        });
+        let res = { 1: 1 };
+        let ret = assignInClone(res, obj);
+        assert(res !== ret);
+        expect(ret[CLONE]).to.exist;
+        expect(ret).to.eql({ 1: 1, inherit: 1 });
+    });
+
     it('merge', () => {
         expect(merge({ 1: 1 }, { 1: 2 })).to.eql({ 1: 2 });
         expect(merge({ 1: 1 }, { 1: null })).to.eql({ 1: 1 });
         expect(merge({ 1: 1 }, { 1: null }, { 1: 3 })).to.eql({ 1: 3 });
         expect(merge({ 1: null }, { 1: undefined })).to.eql({ 1: null });
+        let obj = new fx.TestClass();
+        let res = merge(obj, { test: 1 });
+        assert(res === obj);
+        expect(res).to.be.instanceOf(fx.TestClass);
+        expect(res.test).to.equal(1);
     });
 
     it('mergeDefaults', () => {
@@ -38,11 +68,35 @@ describe('Object', () => {
         expect(mergeDefaults({ 1: 1, 2: null }, { 1: 2, 2: 2 })).to.eql({ 1: 1, 2: 2 });
     });
 
+    it('mergeDefaultsClone', () => {
+        let obj = { 1: 1, 2: { 3: 3 }};
+        let res = mergeDefaultsClone(obj, { 2: { 3: 0, 4: 4 }});
+        assert(res !== obj);
+        expect(res[CLONE]).to.exist;
+        expect(res).to.eql({ 1: 1, 2: { 3: 3, 4: 4 }});
+    });
+
     it('mergeIn', () => {
         let obj = Object.create({
             inherit: 1
         });
         expect(mergeIn({ 2: { 3: 1 }}, { 1: 1, 2: { 3: 3 } }, obj)).to.eql({ 1: 1, 2: { 3: 3 }, inherit: 1 });
+    });
+
+    it('mergeInClone', () => {
+        let obj = Object.create({
+            inherit: 1,
+            2: {
+                3: 0
+            }
+        });
+        let res = { 1: 1, 2: { 3: 3 } }
+        let ret = mergeInClone(res, obj);
+        assert(res !== ret);
+        assert(res[2] !== ret[2]);
+        expect(ret[CLONE]).to.exist;
+        expect(ret[2][CLONE]).to.exist;
+        expect(ret).to.eql({ 1: 1, 2: { 3: 0 }, inherit: 1 });
     });
 
     it('freeze', () => {
