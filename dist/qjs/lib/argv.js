@@ -1,18 +1,45 @@
-import { statSync } from '../polyfill/qjs/fs.js';
+import { resolve } from '../polyfill/qjs/path.js';
 import { argv } from '../polyfill/qjs/process.js';
 import { REGEX, hasOwn } from './constants.js';
 import { each, forOwn } from './iterate.js';
-import { isArray, toNativeType, isObject } from './types.js';
+import { isObject, isArray, toNativeType } from './types.js';
 import { split, toCamelCase, getOwn } from './util.js';
+
+// Note: Argv1 is not always a script file path
+// Node script: [argv0, path, ...]
+// Node REPL: [argv0, ...]
+// QJS script: [argv0, path, ...]
+// QJS standalone: [argv0, ...]
+// QJS REPL: [argv0, ...]
+
+// Note: Argv1 in node can be incorrect when executing from a relative path
+// Eg: (node bin/cmd)
+// Argv1 is resolved using path.resolve:
+// https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/process/pre_execution.js#L239
+// Which is then passed to the loader
+// which uses the cjs resolve mechanism to load the actual file
+// But argv1 is not updated with the resolved file path:
+// https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/main/run_main_module.js#L33
 
 // Parse argv
 // Accepts an array or string of arguments
 // Supports negation, camel casing, and type casting to native types
-// Note: Use quotes for param values with whitespace
+// Note: Use quotes for argument values with whitespace
 // Note: Either quote style can be used, but mixing quote styles isn't supported
-function parseArgv (arr=argv.slice(2), { negate=1, camel=0, native=1, sub='sub' }={}) {
-    if (!isArray(arr)) {
-        arr = split(arr, REGEX.whitespace, { trim: true, quotes: true, extract: true });
+// Normalize checks if first argument is a file path, then removes
+function parseArgv (argv$1, opts) {
+    if (isObject(argv$1)) {
+        [argv$1, opts] = [opts, argv$1];
+    }
+    let { negate=1, camel=1, native=1, sub='sub', normalize=0 } = opts ??= {};
+    argv$1 ??= argv.slice(normalize ? 1 : 2);
+    if (!isArray(argv$1)) {
+        argv$1 = split(argv$1, REGEX.whitespace, { trim: true, quotes: true, extract: true });
+    }
+    if (normalize) {
+        if (argv$1[0] && argv$1[0] === resolve(argv$1[0])) {
+            argv$1.shift();
+        }
     }
     let res = { _: [] };
     let skip = 0;
@@ -39,7 +66,7 @@ function parseArgv (arr=argv.slice(2), { negate=1, camel=0, native=1, sub='sub' 
     function isAlphabetical (p) {
         return (p >= 65 && p <= 90) || (p >= 97 && p <= 122);
     }
-    each(arr, (arg, i, args) => {
+    each(argv$1, (arg, i, args) => {
         if (skip) {
             skip = 0;
             return;
@@ -115,13 +142,13 @@ function parseArgv (arr=argv.slice(2), { negate=1, camel=0, native=1, sub='sub' 
 
 // Return an options object from argv
 // Accepts an object of key/alias pairs to match values from
-function optsFromArgv (opts, { argv: argv$1=argv.slice(2), ...params }={}) {
+function optsFromArgv (opts, { argv, ...params }={}) {
     let res = {};
     let src;
-    if (isObject(argv$1)) {
-        src = argv$1;
+    if (isObject(argv)) {
+        src = argv;
     } else {
-        src = parseArgv(argv$1, params);
+        src = parseArgv(argv, params);
     }
     forOwn(opts, (alias, key) => {
         res[key] = getOwn(src, alias) ?? src[key];
@@ -129,25 +156,4 @@ function optsFromArgv (opts, { argv: argv$1=argv.slice(2), ...params }={}) {
     return res;
 }
 
-const isQJS = (typeof argv0 !== 'undefined');
-
-// Normalize argv pos args based on environment
-// Node: [argv0, file path, ...]
-// Qjs script: [argv0, file path, ...]
-// Qjs standalone: [argv0, ...]
-function getArgv (arr=argv.slice(isQJS ? 1 : 2), opts) {
-    let argv = parseArgv(arr, opts);
-    let pos = argv._;
-    if (isQJS && pos[0]) {
-        try {
-            if (statSync(pos[0]).isFile()) {
-                pos.shift();
-            }
-        } catch (err) {
-            return argv;
-        }
-    }
-    return argv;
-}
-
-export { argv as ARGV, parseArgv as argv, getArgv, isQJS, optsFromArgv, parseArgv };
+export { argv as ARGV, parseArgv as argv, optsFromArgv, parseArgv };

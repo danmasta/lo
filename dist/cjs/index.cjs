@@ -27,8 +27,6 @@ var index = {
 };
 
 exports.argv = argv.parseArgv;
-exports.getArgv = argv.getArgv;
-exports.isQJS = argv.isQJS;
 exports.optsFromArgv = argv.optsFromArgv;
 exports.parseArgv = argv.parseArgv;
 exports.BREAK = constants.BREAK;

@@ -1,18 +1,45 @@
-var node_fs = require('node:fs');
+var PATH = require('node:path');
 var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var iterate = require('./iterate.cjs');
 var types = require('./types.cjs');
 var util = require('./util.cjs');
 
+// Note: Argv1 is not always a script file path
+// Node script: [argv0, path, ...]
+// Node REPL: [argv0, ...]
+// QJS script: [argv0, path, ...]
+// QJS standalone: [argv0, ...]
+// QJS REPL: [argv0, ...]
+
+// Note: Argv1 in node can be incorrect when executing from a relative path
+// Eg: (node bin/cmd)
+// Argv1 is resolved using path.resolve:
+// https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/process/pre_execution.js#L239
+// Which is then passed to the loader
+// which uses the cjs resolve mechanism to load the actual file
+// But argv1 is not updated with the resolved file path:
+// https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/main/run_main_module.js#L33
+
 // Parse argv
 // Accepts an array or string of arguments
 // Supports negation, camel casing, and type casting to native types
-// Note: Use quotes for param values with whitespace
+// Note: Use quotes for argument values with whitespace
 // Note: Either quote style can be used, but mixing quote styles isn't supported
-function parseArgv (arr=node_process.argv.slice(2), { negate=1, camel=0, native=1, sub='sub' }={}) {
-    if (!types.isArray(arr)) {
-        arr = util.split(arr, constants.REGEX.whitespace, { trim: true, quotes: true, extract: true });
+// Normalize checks if first argument is a file path, then removes
+function parseArgv (argv, opts) {
+    if (types.isObject(argv)) {
+        [argv, opts] = [opts, argv];
+    }
+    let { negate=1, camel=1, native=1, sub='sub', normalize=0 } = opts ??= {};
+    argv ??= node_process.argv.slice(normalize ? 1 : 2);
+    if (!types.isArray(argv)) {
+        argv = util.split(argv, constants.REGEX.whitespace, { trim: true, quotes: true, extract: true });
+    }
+    if (normalize) {
+        if (argv[0] && argv[0] === PATH.resolve(argv[0])) {
+            argv.shift();
+        }
     }
     let res = { _: [] };
     let skip = 0;
@@ -39,7 +66,7 @@ function parseArgv (arr=node_process.argv.slice(2), { negate=1, camel=0, native=
     function isAlphabetical (p) {
         return (p >= 65 && p <= 90) || (p >= 97 && p <= 122);
     }
-    iterate.each(arr, (arg, i, args) => {
+    iterate.each(argv, (arg, i, args) => {
         if (skip) {
             skip = 0;
             return;
@@ -115,7 +142,7 @@ function parseArgv (arr=node_process.argv.slice(2), { negate=1, camel=0, native=
 
 // Return an options object from argv
 // Accepts an object of key/alias pairs to match values from
-function optsFromArgv (opts, { argv=node_process.argv.slice(2), ...params }={}) {
+function optsFromArgv (opts, { argv, ...params }={}) {
     let res = {};
     let src;
     if (types.isObject(argv)) {
@@ -129,33 +156,10 @@ function optsFromArgv (opts, { argv=node_process.argv.slice(2), ...params }={}) 
     return res;
 }
 
-const isQJS = (typeof argv0 !== 'undefined');
-
-// Normalize argv pos args based on environment
-// Node: [argv0, file path, ...]
-// Qjs script: [argv0, file path, ...]
-// Qjs standalone: [argv0, ...]
-function getArgv (arr=node_process.argv.slice(isQJS ? 1 : 2), opts) {
-    let argv = parseArgv(arr, opts);
-    let pos = argv._;
-    if (isQJS && pos[0]) {
-        try {
-            if (node_fs.statSync(pos[0]).isFile()) {
-                pos.shift();
-            }
-        } catch (err) {
-            return argv;
-        }
-    }
-    return argv;
-}
-
 Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
 });
 exports.argv = parseArgv;
-exports.getArgv = getArgv;
-exports.isQJS = isQJS;
 exports.optsFromArgv = optsFromArgv;
 exports.parseArgv = parseArgv;
