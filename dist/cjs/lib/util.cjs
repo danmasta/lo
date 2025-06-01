@@ -50,6 +50,7 @@ function defaults (...args) {
     return res;
 }
 
+const cloneProto = { [constants.CLONE]: true };
 // Assign values from multiple sources to res with options
 // Note: Useful for composing other assign/merge methods
 // defaults: Whether or not to overwrite existing values
@@ -60,7 +61,7 @@ function assignWithOpts ({ defaults=0, recurse=0, clone=0, iter=iterate.forOwn }
     res = types.toObject(res);
     if (clone && !res[constants.CLONE]) {
         args.unshift(res);
-        res = { [constants.CLONE]: true };
+        res = Object.create(cloneProto);
     }
     iterate.each(args, src => {
         iter(src, (val, key) => {
@@ -100,8 +101,16 @@ function assignDefaults (...args) {
     return assignWithOpts({ defaults: 1 }, ...args);
 }
 
+function assignDefaultsClone (...args) {
+    return assignWithOpts({ defaults: 1, clone: 1 }, ...args);
+}
+
 function assignIn (...args) {
     return assignWithOpts({ iter: iterate.forIn }, ...args);
+}
+
+function assignInClone (...args) {
+    return assignWithOpts({ iter: iterate.forIn, clone: 1 }, ...args);
 }
 
 // Recursively assign values from multiple sources to res
@@ -116,8 +125,16 @@ function mergeDefaults (...args) {
     return assignWithOpts({ defaults: 1, recurse: -1 }, ...args);
 }
 
+function mergeDefaultsClone (...args) {
+    return assignWithOpts({ defaults: 1, recurse: -1, clone: 1 }, ...args);
+}
+
 function mergeIn (...args) {
     return assignWithOpts({ recurse: -1, iter: iterate.forIn }, ...args);
+}
+
+function mergeInClone (...args) {
+    return assignWithOpts({ recurse: -1, iter: iterate.forIn, clone: 1 }, ...args);
 }
 
 // Recursively freeze an object to become immutable
@@ -596,7 +613,9 @@ const format = formatter();
 exports.hasOwn = constants.hasOwn;
 exports.assign = assign;
 exports.assignDefaults = assignDefaults;
+exports.assignDefaultsClone = assignDefaultsClone;
 exports.assignIn = assignIn;
+exports.assignInClone = assignInClone;
 exports.assignWithOpts = assignWithOpts;
 exports.capitalize = capitalize;
 exports.compact = compact;
@@ -621,7 +640,9 @@ exports.keys = keys;
 exports.mapLine = mapLine;
 exports.merge = merge;
 exports.mergeDefaults = mergeDefaults;
+exports.mergeDefaultsClone = mergeDefaultsClone;
 exports.mergeIn = mergeIn;
+exports.mergeInClone = mergeInClone;
 exports.pad = pad;
 exports.padLeft = padLeft;
 exports.padLine = padLine;

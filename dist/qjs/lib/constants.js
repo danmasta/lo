@@ -2,8 +2,8 @@ import base from '../types/base.js';
 
 const { entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, isPrototypeOf } = Object;
 const noop = ()=>{};
-const BREAK = Symbol();
-const CLONE = Symbol();
+const BREAK = Symbol('break');
+const CLONE = Symbol('clone');
 const Global = globalThis;
 
 const types = {

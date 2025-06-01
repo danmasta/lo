@@ -372,15 +372,18 @@ function toFn (obj) {
 }
 
 // Note: Only iterables that implement entries can be cast to an object
+// Note: @@iterator only works if [[IteratorKind]] is 'entries'
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
 function toObject (obj) {
     let type = getType(obj);
     if (type === TYPES.Object) {
         return obj;
     }
     if (type.entries) {
-        // Note: @@iterator does not work
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
         return Object.fromEntries(obj.entries());
+    }
+    if (type.object) {
+        return obj;
     }
     return {};
 }

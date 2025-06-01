@@ -50,6 +50,7 @@ function defaults (...args) {
     return res;
 }
 
+const cloneProto = { [CLONE]: true };
 // Assign values from multiple sources to res with options
 // Note: Useful for composing other assign/merge methods
 // defaults: Whether or not to overwrite existing values
@@ -60,7 +61,7 @@ function assignWithOpts ({ defaults=0, recurse=0, clone=0, iter=forOwn }={}, res
     res = toObject(res);
     if (clone && !res[CLONE]) {
         args.unshift(res);
-        res = { [CLONE]: true };
+        res = Object.create(cloneProto);
     }
     each(args, src => {
         iter(src, (val, key) => {
@@ -100,8 +101,16 @@ function assignDefaults (...args) {
     return assignWithOpts({ defaults: 1 }, ...args);
 }
 
+function assignDefaultsClone (...args) {
+    return assignWithOpts({ defaults: 1, clone: 1 }, ...args);
+}
+
 function assignIn (...args) {
     return assignWithOpts({ iter: forIn }, ...args);
+}
+
+function assignInClone (...args) {
+    return assignWithOpts({ iter: forIn, clone: 1 }, ...args);
 }
 
 // Recursively assign values from multiple sources to res
@@ -116,8 +125,16 @@ function mergeDefaults (...args) {
     return assignWithOpts({ defaults: 1, recurse: -1 }, ...args);
 }
 
+function mergeDefaultsClone (...args) {
+    return assignWithOpts({ defaults: 1, recurse: -1, clone: 1 }, ...args);
+}
+
 function mergeIn (...args) {
     return assignWithOpts({ recurse: -1, iter: forIn }, ...args);
+}
+
+function mergeInClone (...args) {
+    return assignWithOpts({ recurse: -1, iter: forIn, clone: 1 }, ...args);
 }
 
 // Recursively freeze an object to become immutable
@@ -593,4 +610,4 @@ function formatter (opts) {
 
 const format = formatter();
 
-export { assign, assignDefaults, assignIn, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, formatWithOpts, formatter, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeIn, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
+export { assign, assignDefaults, assignDefaultsClone, assignIn, assignInClone, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, formatWithOpts, formatter, freeze, fromPairs, get, getOwn, has, hasOwn, join, keys, mapLine, merge, mergeDefaults, mergeDefaultsClone, mergeIn, mergeInClone, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words };
