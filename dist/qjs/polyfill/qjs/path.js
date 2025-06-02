@@ -1,20 +1,18 @@
 import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
-import { win32, cwd } from './process.js';
+import { sep, delimiter, isWin32, cwd } from './core.js';
 
-const sep = win32 ? '\\' : '/';
-const delimiter = win32 ? ';' : ':';
 const regex = /[\\/]+/g;
 
 function isAbsolute (path='') {
-    if (win32) {
+    if (isWin32) {
         return /^([A-Z]:[\\/]|[\\/])/.test(path);
     }
     return path[0] === sep;
 }
 
 function isRoot (str='') {
-    if (win32) {
+    if (isWin32) {
         return str === sep || /^([A-Z]:)/.test(str);
     }
     return str === sep;
@@ -27,7 +25,7 @@ function getParts (...paths) {
         let abs = isAbsolute(path);
         let arr = split(path, regex);
         if (abs) {
-            if (win32 && isRoot(arr[0])) {
+            if (isWin32 && isRoot(arr[0])) {
                 root = arr.shift();
             } else {
                 root = sep;
@@ -146,9 +144,9 @@ function format ({ root='', dir='', base='', name='', ext='' }={}) {
     return dir + sep + base;
 }
 
-var PATH = {
-    sep,
-    delimiter,
+const posix = {
+    sep: '/',
+    delimiter: ':',
     isAbsolute,
     relative,
     dirname,
@@ -161,4 +159,41 @@ var PATH = {
     format
 };
 
-export { basename, PATH as default, delimiter, dirname, extname, format, getParts, getPartsWithCwd, isAbsolute, join, normalize, parse, regex, relative, resolve, sep };
+const win32 = {
+    sep: '\\',
+    delimiter: ';',
+    isAbsolute,
+    relative,
+    dirname,
+    basename,
+    extname,
+    normalize,
+    join,
+    resolve,
+    parse,
+    format
+};
+
+posix.posix = posix;
+posix.win32 = win32;
+win32.posix = posix;
+win32.win32 = win32;
+
+var PATH = {
+    sep,
+    delimiter,
+    isAbsolute,
+    relative,
+    dirname,
+    basename,
+    extname,
+    normalize,
+    join,
+    resolve,
+    parse,
+    format,
+    posix,
+    win32
+};
+
+export { basename, PATH as default, dirname, extname, format, getParts, getPartsWithCwd, isAbsolute, join, normalize, parse, posix, relative, resolve, win32 };

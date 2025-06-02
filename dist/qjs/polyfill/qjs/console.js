@@ -1,11 +1,10 @@
-import { stdout, stderr, win32 } from './process.js';
+import { EOL } from './core.js';
+import { stdout, stderr } from './process.js';
 import { format } from './util.js';
-
-const eol = win32 ? '\r\n' : '\n';
 
 function logFn (stdio) {
     return function log (msg, ...args) {
-        stdio.write(format(msg, ...args) + eol);
+        stdio.write(format(msg, ...args) + EOL);
     }
 }
 

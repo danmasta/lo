@@ -1,97 +1,14 @@
-import * as os from 'qjs:os';
-import * as std from 'qjs:std';
-import { each } from '../../lib/iterate.js';
 import { isTypedArray, isArrayBuffer, toString } from '../../lib/types.js';
-import { format, split } from '../../lib/util.js';
+import { argv, env, pid, cwd, uid, gid, groups } from './core.js';
+import { resolve } from './path.js';
 import { Duplex } from './stream.js';
+import { platform } from 'qjs:os';
+export { platform } from 'qjs:os';
 
-const win32 = os.platform === 'win32';
-const env = std.getenviron();
-const pid = os.getpid();
-const argv = [argv0, ...scriptArgs];
-
-let uid = -1;
-let gid = -1;
-let groups = [];
-let id;
-let status;
-
-// For njs, could possibly use env directive to get PWD
-// OR readlink(`/proc/${pid}/cwd`)
-function cwd () {
-    let [str, err] = os.getcwd();
-    if (err) {
-        throw new Error(format('Failed to get cwd: %s', std.strerror(err.errno)));
-    }
-    return str;
+// https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/process/pre_execution.js#L234
+if (argv[1] && argv[1][0] !== '-') {
+    argv[1] = resolve(argv[1]);
 }
-
-// Get proc status as object
-// Note: Works on linux and windows (cmd), but not darwin
-// https://man7.org/linux/man-pages/man5/proc.5.html
-function getProcStatus (stale=true) {
-    if (!status || !stale) {
-        let err = {};
-        let file = std.open(format('/proc/%s/status', pid), 'r', err);
-        if (!file) {
-            throw new Error(format('Failed to read proc: %s', std.strerror(err.errno)));
-        }
-        let res = {};
-        let entry;
-        while ((entry = file.getline()) !== null) {
-            let val = split(entry, /\s+/);
-            let key = val.shift().slice(0, -1);
-            res[key] = val;
-        }
-        err = file.close();
-        if (err) {
-            throw new Error(format('Failed to close file: %s', std.strerror(err)));
-        }
-        status = res;
-    }
-    return status;
-}
-
-// Get proc identity info as object
-// Note: Works on linux, darwin, and windows (cmd)
-function getProcId (stale=true) {
-    if (!id || !stale) {
-        let tmp = std.tmpfile();
-        let pid = os.exec(['id'], { usePath: true, stdout: tmp.fileno(), stderr: tmp.fileno() });
-        let [err, status] = os.waitpid(pid, os.WNOHANG);
-        if (status !== 0) {
-            throw new Error(format('Failed to get proc id: %s', std.strerror(err)))
-        }
-        tmp.seek(0, std.SEEK_SET);
-        let entries = tmp.readAsString();
-        err = tmp.close();
-        if (err) {
-            throw new Error(format('Failed to close file: %s', std.strerror(err)));
-        }
-        let res = {};
-        each(split(entries, /\s+/), entry => {
-            let [key, val] = split(entry, '=', { limit: 1, trim: true });
-            val = split(val, /\D+/, { trim: true });
-            res[key] = val;
-        });
-        id = res;
-    }
-    return id;
-}
-
-// Get proc identity info as array
-// Note: Caches values for future identity fn calls
-function getProcInfo (stale=true) {
-    if (((uid & gid) === -1) || !stale) {
-        let id = getProcId(stale);
-        uid = id.uid[0];
-        gid = id.gid[0];
-        groups = id.groups;
-    }
-    return [uid, gid, groups];
-}
-
-getProcInfo();
 
 function getuid () {
     return uid;
@@ -223,11 +140,11 @@ const stdout = new Stdout();
 const stderr = new Stderr();
 
 var process = {
-    win32,
     env,
     pid,
     argv,
     cwd,
+    platform,
     getuid,
     getgid,
     getgroups,
@@ -237,4 +154,4 @@ var process = {
     stderr
 };
 
-export { argv, cwd, process as default, env, getProcId, getProcInfo, getProcStatus, getgid, getgroups, getuid, nextTick, pid, stderr, stdin, stdout, win32 };
+export { argv, cwd, process as default, env, getgid, getgroups, getuid, nextTick, pid, stderr, stdin, stdout };

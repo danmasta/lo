@@ -2,11 +2,12 @@ import { accessSync, readFileSync, mkdirSync, promises, constants } from '../pol
 import { createRequire } from '../polyfill/qjs/module.js';
 import { homedir } from '../polyfill/qjs/os.js';
 import PATH from '../polyfill/qjs/path.js';
-import { cwd } from '../polyfill/qjs/process.js';
+import '../polyfill/qjs/process.js';
 import { TYPES } from './constants.js';
 import { NotFoundError, NotSupportedError, RequireAsyncError } from './errors.js';
 import { someNotNil, mapNotNil } from './iterate.js';
 import { getType, isEsm, toString } from './types.js';
+import { cwd } from '../polyfill/qjs/core.js';
 
 const { access, mkdir, readFile } = promises;
 const { F_OK } = constants;

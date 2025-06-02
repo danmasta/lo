@@ -1,5 +1,6 @@
-import { env as env$1 } from '../polyfill/qjs/process.js';
+import '../polyfill/qjs/process.js';
 import { isNil, toNativeType } from './types.js';
+import { env as env$1 } from '../polyfill/qjs/core.js';
 
 // If a value was never set on process.env it will return typeof undefined
 // If a value was set on process.env that was typeof undefined it will become string 'undefined'

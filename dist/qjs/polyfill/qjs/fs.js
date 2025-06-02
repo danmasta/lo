@@ -2,9 +2,7 @@ import * as os from 'qjs:os';
 import * as std from 'qjs:std';
 import { isTypedArray, isArrayBuffer, toString } from '../../lib/types.js';
 import { format } from '../../lib/util.js';
-import { getProcInfo } from './process.js';
-
-const [uid, gid, groups] = getProcInfo();
+import { uid, groups } from './core.js';
 
 // https://nodejs.org/api/fs.html#fsconstants
 const constants = {

@@ -15,7 +15,7 @@ export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto
 import * as util from './lib/util.js';
 export { assign, assignDefaults, assignDefaultsClone, assignIn, assignInClone, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, formatWithOpts, formatter, freeze, fromPairs, get, getOwn, has, join, keys, mapLine, merge, mergeDefaults, mergeDefaultsClone, mergeIn, mergeInClone, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words } from './lib/util.js';
 import supplemental from './types/node.js';
-export { argv as ARGV, cwd as CWD, env as ENV } from './polyfill/qjs/process.js';
+export { argv as ARGV, cwd as CWD, env as ENV } from './polyfill/qjs/core.js';
 
 addTypes(supplemental);
 
