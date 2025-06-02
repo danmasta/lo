@@ -161,7 +161,6 @@ sidebar_position: 4
 ### `fromIp`
 ### `fromIp4`
 ### `fromIp6`
-### `getArgv`
 ### `importOrRequire`
 ### `importOrRequireFiles`
 ### `importRequireOrRead`
