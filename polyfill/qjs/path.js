@@ -1,20 +1,18 @@
 import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
-import { cwd, win32 } from './process.js';
+import { cwd, delimiter, isWin32, sep } from './core.js';
 
-export const sep = win32 ? '\\' : '/';
-export const delimiter = win32 ? ';' : ':';
-export const regex = /[\\/]+/g;
+const regex = /[\\/]+/g;
 
 export function isAbsolute (path='') {
-    if (win32) {
+    if (isWin32) {
         return /^([A-Z]:[\\/]|[\\/])/.test(path);
     }
     return path[0] === sep;
 }
 
 function isRoot (str='') {
-    if (win32) {
+    if (isWin32) {
         return str === sep || /^([A-Z]:)/.test(str);
     }
     return str === sep;
@@ -27,7 +25,7 @@ export function getParts (...paths) {
         let abs = isAbsolute(path);
         let arr = split(path, regex);
         if (abs) {
-            if (win32 && isRoot(arr[0])) {
+            if (isWin32 && isRoot(arr[0])) {
                 root = arr.shift();
             } else {
                 root = sep;
@@ -146,6 +144,41 @@ export function format ({ root='', dir='', base='', name='', ext='' }={}) {
     return dir + sep + base;
 }
 
+export const posix = {
+    sep: '/',
+    delimiter: ':',
+    isAbsolute,
+    relative,
+    dirname,
+    basename,
+    extname,
+    normalize,
+    join,
+    resolve,
+    parse,
+    format
+};
+
+export const win32 = {
+    sep: '\\',
+    delimiter: ';',
+    isAbsolute,
+    relative,
+    dirname,
+    basename,
+    extname,
+    normalize,
+    join,
+    resolve,
+    parse,
+    format
+};
+
+posix.posix = posix;
+posix.win32 = win32;
+win32.posix = posix;
+win32.win32 = win32;
+
 export default {
     sep,
     delimiter,
@@ -158,5 +191,7 @@ export default {
     join,
     resolve,
     parse,
-    format
+    format,
+    posix,
+    win32
 };
