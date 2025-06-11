@@ -1,3 +1,4 @@
+const fn = ()=>{};
 const asyncFn = async ()=>{};
 const genFn = function*(){};
 const genFnAsync = async function*(){};
@@ -60,6 +61,7 @@ var base = [
     {
         t: 6,
         n: 'Function',
+        c: fn[ctor],
         x: [1, 1, 2]
     },
     {
