@@ -1,4 +1,4 @@
-import '../polyfill/qjs/process.js';
+import '../polyfill/base/process.js';
 import { isNil, toNativeType } from './types.js';
 import { env as env$1 } from '../polyfill/qjs/core.js';
 

@@ -1,6 +1,6 @@
-import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '../polyfill/qjs/stream.js';
-import { Buffer } from '../polyfill/qjs/buffer.js';
-import '../polyfill/qjs/process.js';
+import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from '../polyfill/base/stream.js';
+import { Buffer } from '../polyfill/base/buffer.js';
+import '../polyfill/base/process.js';
 import { env } from '../polyfill/qjs/core.js';
 
 var supplemental = [

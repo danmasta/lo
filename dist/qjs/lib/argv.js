@@ -1,5 +1,5 @@
-import { resolve } from '../polyfill/qjs/path.js';
-import '../polyfill/qjs/process.js';
+import { resolve } from '../polyfill/base/path.js';
+import '../polyfill/base/process.js';
 import { REGEX, hasOwn } from './constants.js';
 import { each, forOwn } from './iterate.js';
 import { isObject, isArray, toNativeType } from './types.js';

@@ -1,10 +1,11 @@
-import { EOL } from './core.js';
-import { stdout, stderr } from './process.js';
+import { stdout, stderr, EOL } from '../qjs/core.js';
+import './process.js';
 import { format } from './util.js';
 
 function logFn (stdio) {
+    let eol = EOL ;
     return function log (msg, ...args) {
-        stdio.write(format(msg, ...args) + EOL);
+        stdio.write(format(msg, ...args) + eol);
     }
 }
 

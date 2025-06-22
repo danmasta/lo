@@ -1,8 +1,8 @@
 import { accessSync, readFileSync, mkdirSync, promises, constants } from '../polyfill/qjs/fs.js';
-import { createRequire } from '../polyfill/qjs/module.js';
-import { homedir } from '../polyfill/qjs/os.js';
-import PATH from '../polyfill/qjs/path.js';
-import '../polyfill/qjs/process.js';
+import { createRequire } from '../polyfill/base/module.js';
+import { homedir } from '../polyfill/base/os.js';
+import PATH from '../polyfill/base/path.js';
+import '../polyfill/base/process.js';
 import { TYPES } from './constants.js';
 import { NotFoundError, NotSupportedError, RequireAsyncError } from './errors.js';
 import { someNotNil, mapNotNil } from './iterate.js';
