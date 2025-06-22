@@ -27,17 +27,17 @@ export default [
     {
         input: [
             'qjs.js',
-            'polyfill/qjs/buffer.js',
-            'polyfill/qjs/console.js',
+            'polyfill/base/buffer.js',
+            'polyfill/base/console.js',
             'polyfill/qjs/core.js',
-            'polyfill/qjs/events.js',
+            'polyfill/base/events.js',
             'polyfill/qjs/fs.js',
-            'polyfill/qjs/module.js',
-            'polyfill/qjs/os.js',
-            'polyfill/qjs/path.js',
-            'polyfill/qjs/process.js',
-            'polyfill/qjs/stream.js',
-            'polyfill/qjs/util.js'
+            'polyfill/base/module.js',
+            'polyfill/base/os.js',
+            'polyfill/base/path.js',
+            'polyfill/base/process.js',
+            'polyfill/base/stream.js',
+            'polyfill/base/util.js'
         ],
         output: {
             dir: 'dist/qjs',
@@ -56,11 +56,13 @@ export default [
         plugins: [
             pluginAlias({
                 entries: [
-                    { find: /^node:(.+)$/, replacement: resolve(root, 'polyfill/qjs/$1.js') }
-                ]
+                    { find: /.+core\.js$/, replacement: resolve(root, 'polyfill/qjs/core.js') },
+                    { find: 'node:fs', replacement: resolve(root, 'polyfill/qjs/fs.js') },
+                    { find: /^node:(.+)$/, replacement: resolve(root, 'polyfill/base/$1.js') }
+                ],
             }),
             pluginNodeResolve({
-                exportConditions: ['qjs', 'default', 'import']
+                exportConditions: ['qjs', 'import']
             })
         ]
     }
