@@ -1,7 +1,10 @@
-import { EOL } from './core.js';
+import { EOL, isWin32 } from './core.js';
 import { env } from './process.js';
 
 export function homedir () {
+    if (isWin32) {
+        return env.USERPROFILE;
+    }
     return env.HOME;
 }
 
@@ -10,6 +13,6 @@ export {
 };
 
 export default {
-    homedir,
-    EOL
+    EOL,
+    homedir
 };

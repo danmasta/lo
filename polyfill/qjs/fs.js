@@ -1,8 +1,6 @@
-import * as os from 'qjs:os';
-import * as std from 'qjs:std';
 import { isArrayBuffer, isTypedArray, toString } from '../../lib/types.js';
 import { fmt } from '../../lib/util.js';
-import { gid, groups, uid } from './core.js';
+import { groups, os, std, uid } from './core.js';
 
 // https://nodejs.org/api/fs.html#fsconstants
 export const constants = {

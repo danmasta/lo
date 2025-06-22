@@ -1,10 +1,12 @@
+import { appendEOL } from './core.js';
 import { EOL } from './os.js';
 import { stderr, stdout } from './process.js';
 import { format } from './util.js';
 
 function logFn (stdio) {
+    let eol = appendEOL ? EOL : '';
     return function log (msg, ...args) {
-        stdio.write(format(msg, ...args) + EOL);
+        stdio.write(format(msg, ...args) + eol);
     }
 }
 
