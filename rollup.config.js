@@ -56,7 +56,7 @@ export default [
         plugins: [
             pluginAlias({
                 entries: [
-                    { find: /.+core\.js$/, replacement: resolve(root, 'polyfill/qjs/core.js') },
+                    { find: /.+\/core\.js$/, replacement: resolve(root, 'polyfill/qjs/core.js') },
                     { find: 'node:fs', replacement: resolve(root, 'polyfill/qjs/fs.js') },
                     { find: /^node:(.+)$/, replacement: resolve(root, 'polyfill/base/$1.js') }
                 ],
