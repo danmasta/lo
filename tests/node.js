@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { execPath } from 'node:process';
 import { optsFromArgv, parseArgv } from '../lib/argv.js';
 import { env } from '../lib/env.js';
+import { readFiles, readFilesSync } from '../lib/node.js';
 
 describe('Node', () => {
 
@@ -103,6 +104,20 @@ describe('Node', () => {
         expect(lo.resolveIfExistsSync('./package.json')).to.equal(pkg);
         expect(lo.resolveIfExistsSync('./package', { exts: '.json' })).to.equal(pkg);
         expect(lo.resolveIfExistsSync('./package', { require: true })).to.equal(pkg);
+    });
+
+    it('readFiles', async () => {
+        let [pkg] = await readFiles('./package.json');
+        expect(pkg).to.exist;
+        expect(pkg.data).to.be.a.string;
+        expect(pkg.path).to.equal(resolve('./package.json'));
+    });
+
+    it('readFilesSync', () => {
+        let [pkg] = readFilesSync('./package.json');
+        expect(pkg).to.exist;
+        expect(pkg.data).to.be.a.string;
+        expect(pkg.path).to.equal(resolve('./package.json'));
     });
 
 });
