@@ -221,54 +221,54 @@ function requireOrReadSync (str, encoding='utf8') {
 
 async function readFiles (paths, { dir, exts, fn, encoding='utf8' }={}) {
     return await mapNotNil(paths, async str => {
-        let path, contents, error;
+        let path, data, err;
         try {
             path = await resolveIfExists(str, { dir, exts });
             switch (fn) {
                 case importOrRequire:
-                    contents = await fn(path);
+                    data = await fn(path);
                     break;
                 case importRequireOrRead:
-                    contents = await fn(path, encoding);
+                    data = await fn(path, encoding);
                     break;
                 default:
-                    contents = await readFile(path, { encoding });
+                    data = await readFile(path, { encoding });
             }
-        } catch (err) {
-            error = err;
+        } catch (e) {
+            err = e;
         }
         return {
             path,
             original: str,
-            contents,
-            err: error
+            data,
+            err
         }
     });
 }
 
 function readFilesSync (paths, { dir, exts, fn, encoding='utf8' }={}) {
     return mapNotNil(paths, str => {
-        let path, contents, error;
+        let path, data, err;
         try {
             path = resolveIfExistsSync(str, { dir, exts });
             switch (fn) {
                 case require:
-                    contents = fn(path);
+                    data = fn(path);
                     break;
                 case requireOrReadSync:
-                    contents = fn(path, encoding);
+                    data = fn(path, encoding);
                     break;
                 default:
-                    contents = readFileSync(path, { encoding });
+                    data = readFileSync(path, { encoding });
             }
-        } catch (err) {
-            error = err;
+        } catch (e) {
+            err = e;
         }
         return {
             path,
             original: str,
-            contents,
-            err: error
+            data,
+            err
         }
     });
 }
