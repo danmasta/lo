@@ -18,7 +18,8 @@ export default [
             preserveModules: true,
             exports: 'named',
             entryFileNames: '[name].[format]',
-            esModule: false
+            esModule: false,
+            importAttributesKey: 'with'
         },
         plugins: [
             pluginNodeResolve()
@@ -47,7 +48,8 @@ export default [
             preserveModules: true,
             exports: 'named',
             entryFileNames: '[name].js',
-            esModule: false
+            esModule: false,
+            importAttributesKey: 'with'
         },
         external: [
             'qjs:os',
