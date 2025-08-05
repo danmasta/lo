@@ -1,4 +1,6 @@
-.PHONY: test coverage clean build watch status
+.PHONY: test coverage clean build watch version major minor patch status
+
+SEMVER = patch
 
 test:
 	node_modules/.bin/mocha tests
@@ -14,6 +16,18 @@ build: clean
 
 watch: clean
 	node_modules/.bin/rollup -c -w
+
+version: status
+	@npm version $(SEMVER)
+
+major: SEMVER = major
+major: version
+
+minor: SEMVER = minor
+minor: version
+
+patch: SEMVER = patch
+patch: version
 
 status:
 	@if [ -n "$$(git status --porcelain)" ]; then \
