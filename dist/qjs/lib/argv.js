@@ -3,7 +3,7 @@ import '../polyfill/base/process.js';
 import { REGEX, hasOwn } from './constants.js';
 import { each, forOwn } from './iterate.js';
 import { isObject, isArray, toNativeType } from './types.js';
-import { split, toCamelCase, getOwn } from './util.js';
+import { split, getOwn, toCamelCase } from './util.js';
 import { argv } from '../polyfill/qjs/core.js';
 
 // Note: Argv1 is not always a script file path

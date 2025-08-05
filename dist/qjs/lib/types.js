@@ -1,4 +1,4 @@
-import { getPrototypeOf, typesByProto, TYPES, addType, isPrototypeOf, typesByCtor, typesByType, getOwnPropertyDescriptor, noop, REGEX, hasOwn, PRIMITIVES } from './constants.js';
+import { TYPES, typesByType, typesByProto, getPrototypeOf, addType, isPrototypeOf, noop, typesByCtor, getOwnPropertyDescriptor, REGEX, hasOwn, PRIMITIVES } from './constants.js';
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
 function toStringTag (obj) {

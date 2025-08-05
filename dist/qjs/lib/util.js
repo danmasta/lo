@@ -1,6 +1,6 @@
-import { CLONE, hasOwn, REGEX, noop, TYPES } from './constants.js';
-import { each, forOwn, forIn, everyNotNil, map } from './iterate.js';
-import { toArray, notNil, toObject, isObject, isNil, toPath, isArray, isNumeric, toString, isString, isRegExp, getType } from './types.js';
+import { TYPES, REGEX, noop, CLONE, hasOwn } from './constants.js';
+import { map, each, forOwn, forIn, everyNotNil } from './iterate.js';
+import { toString, isString, isRegExp, notNil, getType, toArray, toObject, toPath, isNil, isObject, isArray, isNumeric } from './types.js';
 
 // Return a flat array
 function flat (...args) {

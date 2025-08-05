@@ -1,6 +1,6 @@
 import * as argv from './lib/argv.js';
 export { parseArgv as argv, optsFromArgv, parseArgv } from './lib/argv.js';
-import { addTypes, addType, BREAK, noop, TYPES } from './lib/constants.js';
+import { addTypes, TYPES, noop, BREAK, addType } from './lib/constants.js';
 export { hasOwn } from './lib/constants.js';
 import * as env from './lib/env.js';
 export { env, isNilEnv } from './lib/env.js';

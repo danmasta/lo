@@ -1,5 +1,5 @@
 import { BREAK } from './constants.js';
-import { isAsyncFunction, toFn, hasForEach, getType, isIterable, isAsyncIterable, notNil, isFunction } from './types.js';
+import { getType, isIterable, isAsyncIterable, isAsyncFunction, toFn, notNil, isFunction, hasForEach } from './types.js';
 
 // Async alias
 async function forInA (obj, fn) {

@@ -155,7 +155,7 @@ function importOrRequire (str, ext) {
             }
         case '.json':
             if (types.isEsm()) {
-                return import(str);
+                return import(str, { with: { type: 'json' } });
             } else {
                 return REQUIRE(str);
             }

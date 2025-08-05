@@ -1,4 +1,4 @@
-import { argv, cwd, env, getgid, getgroups, getuid, nextTick, pid, platform, stderr, stdin, stdout } from '../qjs/core.js';
+import { argv, stdout, stdin, stderr, platform, pid, nextTick, getuid, getgroups, getgid, env, cwd } from '../qjs/core.js';
 import { resolve } from './path.js';
 
 // https://github.com/nodejs/node/blob/d89657c29e69043289ae0f75d87cca634d396bff/lib/internal/process/pre_execution.js#L234

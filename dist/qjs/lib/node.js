@@ -1,4 +1,4 @@
-import { accessSync, readFileSync, mkdirSync, promises, constants } from '../polyfill/qjs/fs.js';
+import { promises, constants, accessSync, readFileSync, mkdirSync } from '../polyfill/qjs/fs.js';
 import { createRequire } from '../polyfill/base/module.js';
 import { homedir } from '../polyfill/base/os.js';
 import PATH from '../polyfill/base/path.js';

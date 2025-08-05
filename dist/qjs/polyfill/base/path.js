@@ -1,6 +1,6 @@
 import { each } from '../../lib/iterate.js';
 import { split } from '../../lib/util.js';
-import { sep, delimiter, isWin32, cwd } from '../qjs/core.js';
+import { sep, isWin32, cwd, delimiter } from '../qjs/core.js';
 
 const regex = /[\\/]+/g;
 

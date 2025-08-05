@@ -1,4 +1,4 @@
-import { stdout, stderr, EOL } from '../qjs/core.js';
+import { stderr, EOL, stdout } from '../qjs/core.js';
 import './process.js';
 import { format } from './util.js';
 
