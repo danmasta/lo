@@ -1,3 +1,9 @@
+import { drop, dropNotNil, take, takeNotNil, find, findNotNil } from '../lib/iterate.js';
+
+async function* toAsync (arr) {
+    yield* arr;
+}
+
 describe('Iterate', () => {
 
     it('forIn', () => {
@@ -160,6 +166,30 @@ describe('Iterate', () => {
             return val % 2 === 0 ? true : false;
         });
         expect(res).to.eql([1,3]);
+    });
+
+    it('drop', async () => {
+        expect(drop([1,2,3], 1)).to.eql([2,3]);
+        expect(await drop(toAsync([1,2,3]), 1)).to.eql([2,3]);
+        expect(dropNotNil([1,null,3], 1)).to.eql([3]);
+    });
+
+    it('take', async () => {
+        expect(take([1,2,3], 2)).to.eql([1,2]);
+        expect(await take(toAsync([1,2,3]), 2)).to.eql([1,2]);
+        expect(takeNotNil([1,null,3], 2)).to.eql([1,3]);
+    });
+
+    it('find', async () => {
+        expect(find([1,2,3], val => {
+            return val % 3 === 0;
+        })).to.eql(3);
+        expect(await find(toAsync([1,2,3]), async val => {
+            return val % 3 === 0;
+        })).to.eql(3);
+        expect(findNotNil([1,null,3], val => {
+            return val % 3 === 0;
+        })).to.eql(3);
     });
 
 });
