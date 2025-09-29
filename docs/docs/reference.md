@@ -6,6 +6,7 @@ sidebar_position: 4
 ## **Constants**
 ### `BREAK`
 ### `CLONE`
+### `identity`
 ### `noop`
 ### `TYPES`
 
@@ -18,12 +19,16 @@ sidebar_position: 4
 ### `forOwn`
 
 ## **Iterate** *`collections`*
+### `drop`
+### `dropNotNil`
 ### `each`
 ### `eachNotNil`
 ### `every`
 ### `everyNotNil`
 ### `filter`
 ### `filterNotNil`
+### `find`
+### `findNotNil`
 ### `forEach`
 ### `iterate`
 ### `iterateF`
@@ -33,6 +38,8 @@ sidebar_position: 4
 ### `removeNotNil`
 ### `some`
 ### `someNotNil`
+### `take`
+### `takeNotNil`
 ### `tap`
 ### `tapNotNil`
 
