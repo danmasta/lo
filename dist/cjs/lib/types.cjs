@@ -367,8 +367,8 @@ function toArray (obj, ...args) {
     }
 }
 
-function toFn (obj) {
-    return isFunction(obj) ? obj : constants.noop;
+function toFn (obj, fn=constants.noop) {
+    return isFunction(obj) ? obj : fn;
 }
 
 // Note: Only iterables that implement entries can be cast to an object

@@ -1,4 +1,4 @@
-import { TYPES, typesByType, typesByProto, getPrototypeOf, addType, isPrototypeOf, noop, typesByCtor, getOwnPropertyDescriptor, REGEX, hasOwn, PRIMITIVES } from './constants.js';
+import { TYPES, typesByType, noop, typesByProto, getPrototypeOf, addType, isPrototypeOf, typesByCtor, getOwnPropertyDescriptor, REGEX, hasOwn, PRIMITIVES } from './constants.js';
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
 function toStringTag (obj) {
@@ -367,8 +367,8 @@ function toArray (obj, ...args) {
     }
 }
 
-function toFn (obj) {
-    return isFunction(obj) ? obj : noop;
+function toFn (obj, fn=noop) {
+    return isFunction(obj) ? obj : fn;
 }
 
 // Note: Only iterables that implement entries can be cast to an object

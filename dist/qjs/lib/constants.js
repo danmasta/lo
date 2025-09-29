@@ -1,6 +1,7 @@
 import base from '../types/base.js';
 
 const { entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, isPrototypeOf } = Object;
+const identity = val=>val;
 const noop = ()=>{};
 const BREAK = Symbol('break');
 const CLONE = Symbol('clone');
@@ -164,4 +165,4 @@ const PRIMITIVES = {
 // Add remaining types to cache refs
 addTypes(TYPES);
 
-export { BREAK, CLONE, PRIMITIVES, REGEX, TYPES, addType, addTypes, entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, isPrototypeOf, noop, typesByCtor, typesByProto, typesByType };
+export { BREAK, CLONE, PRIMITIVES, REGEX, TYPES, addType, addTypes, entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, identity as id, identity, isPrototypeOf, noop, typesByCtor, typesByProto, typesByType };

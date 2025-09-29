@@ -1,6 +1,7 @@
 var base = require('../types/base.cjs');
 
 const { entries, getOwnPropertyDescriptor, getPrototypeOf, hasOwn, isPrototypeOf } = Object;
+const identity = val=>val;
 const noop = ()=>{};
 const BREAK = Symbol('break');
 const CLONE = Symbol('clone');
@@ -175,6 +176,8 @@ exports.entries = entries;
 exports.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
 exports.getPrototypeOf = getPrototypeOf;
 exports.hasOwn = hasOwn;
+exports.id = identity;
+exports.identity = identity;
 exports.isPrototypeOf = isPrototypeOf;
 exports.noop = noop;
 exports.typesByCtor = typesByCtor;

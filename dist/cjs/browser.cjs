@@ -12,6 +12,7 @@ var browser = {
     addType: constants.addType,
     addTypes: constants.addTypes,
     BREAK: constants.BREAK,
+    identity: constants.identity,
     noop: constants.noop,
     TYPES: constants.TYPES,
     ...ip,
@@ -28,6 +29,7 @@ exports.TYPES = constants.TYPES;
 exports.addType = constants.addType;
 exports.addTypes = constants.addTypes;
 exports.hasOwn = constants.hasOwn;
+exports.identity = constants.identity;
 exports.noop = constants.noop;
 exports.fromIp = ip.fromIp;
 exports.fromIp4 = ip.fromIp4;
@@ -36,12 +38,16 @@ exports.fromIp6Parts = ip.fromIp6Parts;
 exports.toIp = ip.toIp;
 exports.toIp4 = ip.toIp4;
 exports.toIp6 = ip.toIp6;
+exports.drop = iterate.drop;
+exports.dropNotNil = iterate.dropNotNil;
 exports.each = iterate.each;
 exports.eachNotNil = iterate.eachNotNil;
 exports.every = iterate.every;
 exports.everyNotNil = iterate.everyNotNil;
 exports.filter = iterate.filter;
 exports.filterNotNil = iterate.filterNotNil;
+exports.find = iterate.find;
+exports.findNotNil = iterate.findNotNil;
 exports.forEach = iterate.forEach;
 exports.forIn = iterate.forIn;
 exports.forOwn = iterate.forOwn;
@@ -53,6 +59,8 @@ exports.remove = iterate.remove;
 exports.removeNotNil = iterate.removeNotNil;
 exports.some = iterate.some;
 exports.someNotNil = iterate.someNotNil;
+exports.take = iterate.take;
+exports.takeNotNil = iterate.takeNotNil;
 exports.tap = iterate.tap;
 exports.tapNotNil = iterate.tapNotNil;
 exports.getCtorType = types.getCtorType;

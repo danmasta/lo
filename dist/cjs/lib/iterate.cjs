@@ -2,7 +2,7 @@ var constants = require('./constants.cjs');
 var types = require('./types.cjs');
 
 // Async alias
-async function forInA (obj, fn) {
+async function forInA (obj, fn=constants.identity) {
     for (const key in obj) {
         if (await fn(obj[key], key, obj) === constants.BREAK) {
             break;
@@ -12,7 +12,7 @@ async function forInA (obj, fn) {
 
 // Run an iterator fn for each own and inherited enumerable property in obj
 // Note: Can break iteration early by returning BREAK symbol
-function forIn (obj, fn) {
+function forIn (obj, fn=constants.identity) {
     if (types.isAsyncFunction(fn)) {
         return forInA(obj, fn);
     }
@@ -33,7 +33,7 @@ function forOwn (obj, fn) {
 // Run an iterator fn for each item in obj
 // Defers to object's own forEach method if exists
 // Note: Can break iteration early by returning BREAK symbol
-function forEach (obj, fn) {
+function forEach (obj, fn=constants.identity) {
     fn = types.toFn(fn);
     if (types.hasForEach(obj)) {
         try {
@@ -53,7 +53,7 @@ function forEach (obj, fn) {
 }
 
 // Async alias
-async function iterateA (obj, fn, col=1, type, iter, iterA, fnA) {
+async function iterateA (obj, fn=constants.identity, col=1, type, iter, iterA, fnA) {
     if (types.notNil(obj)) {
         if (col && !type.collection && !type.object) {
             await fn(obj, 0, obj);
@@ -95,7 +95,7 @@ async function iterateA (obj, fn, col=1, type, iter, iterA, fnA) {
 // Run an iterator fn for each item in obj
 // Iterates as collection by default, can disable by passing col=false
 // Note: Can break iteration early by returning BREAK symbol
-function iterate (obj, fn, col=1, type, iter) {
+function iterate (obj, fn=constants.identity, col=1, type, iter) {
     if (types.notNil(obj)) {
         if (col && !type.collection && !type.object) {
             fn(obj, 0, obj);
@@ -128,7 +128,7 @@ function iterate (obj, fn, col=1, type, iter) {
 }
 
 // Async alias
-async function iterateFA (obj, fn, col, retFn, res, valFltr, retFltr, type, iter, iterA, fnA) {
+async function iterateFA (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, type, iter, iterA, fnA) {
     await iterateA(obj, async (val, key, obj) => {
         let ret;
         if (valFltr) {
@@ -159,9 +159,9 @@ async function iterateFA (obj, fn, col, retFn, res, valFltr, retFltr, type, iter
 // Run an iterator fn for each item in obj with filters
 // Accepts optional return function, return value, value filter, and return value filter
 // Note: Useful for composing other types of iteration methods
-// Note: Return function and filter functions are not validated
+// Note: Return function, value filter, and return filter are not validated
 // Note: Can break iteration early by returning BREAK symbol
-function iterateF (obj, fn, col, retFn, res, valFltr, retFltr, type, iter) {
+function iterateF (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, type, iter) {
     iterate(obj, (val, key, obj) => {
         let ret;
         if (valFltr) {
@@ -216,7 +216,7 @@ function compose (obj, fn, col=1) {
     let iterA = types.isAsyncIterable(obj);
     let fnA = types.isAsyncFunction(fn);
     let async = isAsync(iter, iterA, fnA);
-    fn = types.toFn(fn);
+    fn = types.toFn(fn, constants.identity);
     if (async) {
         return iterateA(obj, fn, col, type, iter, iterA);
     }
@@ -232,7 +232,7 @@ function composeF (obj, fn, col=1, retFn, res, valFltr, retFltr) {
     let iterA = types.isAsyncIterable(obj);
     let fnA = types.isAsyncFunction(fn);
     let async = isAsync(iter, iterA, fnA);
-    fn = types.toFn(fn);
+    fn = types.toFn(fn, constants.identity);
     if (async) {
         return iterateFA(obj, fn, col, retFn, res, valFltr, retFltr, type, iter, iterA);
     }
@@ -354,12 +354,76 @@ function removeNotNil (obj, fn, col) {
     return composeF(obj, fn, col, removeFn, [], types.notNil, types.notNil);
 }
 
+// -1 or Infinity to drop all
+function dropFn (num=0) {
+    return function (res, ret, val) {
+        if (num) {
+            num--;
+        } else {
+            res.push(val);
+        }
+    }
+}
+
+// Return new array with n items dropped from head
+function drop (obj, num, col) {
+    return composeF(obj, undefined, col, dropFn(num), []);
+}
+
+// Alias for drop (ignores null and undefined)
+function dropNotNil (obj, num, col) {
+    return composeF(obj, undefined, col, dropFn(num), [], types.notNil, types.notNil);
+}
+
+// -1 or Infinity to take all
+function takeFn (num=-1) {
+    return function (res, ret, val) {
+        if (num) {
+            res.push(val);
+            num--;
+        } else {
+            return constants.BREAK;
+        }
+    }
+}
+
+// Return new array with n number of items from head
+function take (obj, num, col) {
+    return composeF(obj, undefined, col, takeFn(num), []);
+}
+
+// Alias for take (ignores null and undefined)
+function takeNotNil (obj, num, col) {
+    return composeF(obj, undefined, col, takeFn(num), [], types.notNil, types.notNil);
+}
+
+function findFn (res, ret, val) {
+    if (ret) {
+        res(val);
+        return constants.BREAK;
+    }
+}
+
+// Return first item that iterator fn returns truthy for
+function find (obj, fn, col) {
+    return composeF(obj, fn, col, findFn, resFn());
+}
+
+// Alias for find (ignores null and undefined)
+function findNotNil (obj, fn, col) {
+    return composeF(obj, fn, col, findFn, resFn(), types.notNil, types.notNil);
+}
+
+exports.drop = drop;
+exports.dropNotNil = dropNotNil;
 exports.each = each;
 exports.eachNotNil = eachNotNil;
 exports.every = every;
 exports.everyNotNil = everyNotNil;
 exports.filter = filter;
 exports.filterNotNil = filterNotNil;
+exports.find = find;
+exports.findNotNil = findNotNil;
 exports.forEach = forEach;
 exports.forIn = forIn;
 exports.forOwn = forOwn;
@@ -371,5 +435,7 @@ exports.remove = remove;
 exports.removeNotNil = removeNotNil;
 exports.some = some;
 exports.someNotNil = someNotNil;
+exports.take = take;
+exports.takeNotNil = takeNotNil;
 exports.tap = tap;
 exports.tapNotNil = tapNotNil;
