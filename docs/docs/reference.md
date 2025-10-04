@@ -34,6 +34,8 @@ sidebar_position: 4
 ### `iterateF`
 ### `map`
 ### `mapNotNil`
+### `reduce`
+### `reduceNotNil`
 ### `remove`
 ### `removeNotNil`
 ### `some`
@@ -42,6 +44,8 @@ sidebar_position: 4
 ### `takeNotNil`
 ### `tap`
 ### `tapNotNil`
+### `transform`
+### `transformNotNil`
 
 ## **Types**
 ### `addType`
@@ -80,6 +84,7 @@ sidebar_position: 4
 ### `isTypedArray`
 ### `isUndefined`
 ### `notNil`
+### `of`
 ### `toArray`
 ### `toFn`
 ### `toNativeType`
