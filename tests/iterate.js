@@ -1,4 +1,4 @@
-import { drop, dropNotNil, take, takeNotNil, find, findNotNil } from '../lib/iterate.js';
+import { drop, dropNotNil, take, takeNotNil, find, findNotNil, reduce, reduceNotNil, transform, transformNotNil } from '../lib/iterate.js';
 
 async function* toAsync (arr) {
     yield* arr;
@@ -190,6 +190,38 @@ describe('Iterate', () => {
         expect(findNotNil([1,null,3], val => {
             return val % 3 === 0;
         })).to.eql(3);
+    });
+
+    it('reduce', async () => {
+        expect(reduce([1,2,3], (acc, val) => {
+            return acc += val;
+        })).to.eql(6);
+        expect(await reduce(toAsync([1,2,3]), async (acc, val) => {
+            return acc += val;
+        })).to.eql(6);
+        expect(reduceNotNil([1,null,3], (acc, val) => {
+            if (val % 3 === 0) {
+                return acc += val;
+            }
+        })).to.eql(3);
+        expect(reduce(10)).to.equal(0);
+        expect(reduce(10, null, 10)).to.equal(10);
+    });
+
+    it('transform', async () => {
+        expect(transform([1,2,3], (acc, val) => {
+            acc.push(val);
+        })).to.eql([1,2,3]);
+        expect(await transform(toAsync([1,2,3]), async (acc, val) => {
+            acc.push(val);
+        }, [])).to.eql([1,2,3]);
+        expect(transformNotNil([1,null,3], (acc, val) => {
+            if (val % 3 === 0) {
+                return acc.push(val);
+            }
+        })).to.eql([3]);
+        expect(transform(10)).to.equal(0);
+        expect(transform(10, null, 10)).to.equal(10);
     });
 
 });
