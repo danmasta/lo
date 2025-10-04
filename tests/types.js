@@ -1,5 +1,6 @@
-import { TYPES } from '../lib/constants.js';
 import { env } from 'node:process';
+import { TYPES } from '../lib/constants.js';
+import { of } from '../lib/types.js';
 
 describe('Types', () => {
 
@@ -93,6 +94,16 @@ describe('Types', () => {
         expect(lo.toString(123)).to.equal('123');
         expect(lo.toString(BigInt(123))).to.equal('123');
         expect(lo.toString(fx.buff)).to.equal('test');
+    });
+
+    it('of', () => {
+        expect(of([1,2,3])).to.eql([]);
+        expect(of({1:1})).to.eql({});
+        expect(of(10)).to.eql(0);
+        expect(of(true)).to.equal(false);
+        expect(of('test')).to.equal('');
+        expect(of(new Set([1,2,3]))).to.eql(new Set())
+        expect(of(new Map([[1,1],[2,2],[3,3]]))).to.eql(new Map())
     });
 
 });
