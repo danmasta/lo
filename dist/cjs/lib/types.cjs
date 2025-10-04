@@ -169,6 +169,19 @@ function toType (Type, obj, ...args) {
     }
 }
 
+// Initialize empty value of same type
+function of (obj, def) {
+    let type = getType(obj);
+    switch (type.create) {
+        case 1:
+            return type.ctor.call();
+        case 2:
+            return new type.ctor();
+        default:
+            return def;
+    }
+}
+
 // Reflect.construct throws TypeError if target is not a constructor
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/construct
 function isCtor (Fn) {
@@ -475,6 +488,7 @@ exports.isString = isString;
 exports.isTypedArray = isTypedArray;
 exports.isUndefined = isUndefined;
 exports.notNil = notNil;
+exports.of = of;
 exports.toArray = toArray;
 exports.toFn = toFn;
 exports.toNativeType = toNativeType;

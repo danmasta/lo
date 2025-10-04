@@ -128,29 +128,29 @@ function iterate (obj, fn=constants.identity, col=1, type, iter) {
 }
 
 // Async alias
-async function iterateFA (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, type, iter, iterA, fnA) {
+async function iterateFA (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, accFn, type, iter, iterA, fnA) {
     await iterateA(obj, async (val, key, obj) => {
         let ret;
         if (valFltr) {
             if (valFltr(val)) {
-                ret = await fn(val, key, obj);
+                ret = accFn ? await fn(accFn(val), val, key, obj) : await fn(val, key, obj);
             } else {
                 return;
             }
         } else {
-            ret = await fn(val, key, obj);
+            ret = accFn ? await fn(accFn(val), val, key, obj) : await fn(val, key, obj);
         }
         if (ret === constants.BREAK) {
             return ret;
         }
         if (retFltr) {
             if (retFltr(ret)) {
-                return retFn ? retFn(res, ret, val, key) : ret;
+                return retFn ? retFn(res, ret, val, key, accFn) : ret;
             } else {
                 return;
             }
         } else {
-            return retFn ? retFn(res, ret, val, key) : ret;
+            return retFn ? retFn(res, ret, val, key, accFn) : ret;
         }
     }, col, type, iter, iterA);
     return types.isFunction(res) ? res() : res;
@@ -159,31 +159,31 @@ async function iterateFA (obj, fn=constants.identity, col, retFn, res, valFltr, 
 // Run an iterator fn for each item in obj with filters
 // Accepts optional return function, return value, value filter, and return value filter
 // Note: Useful for composing other types of iteration methods
-// Note: Return function, value filter, and return filter are not validated
+// Note: Return function, value filter, return filter, and accumulator function are not validated
 // Note: Can break iteration early by returning BREAK symbol
-function iterateF (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, type, iter) {
+function iterateF (obj, fn=constants.identity, col, retFn, res, valFltr, retFltr, accFn, type, iter) {
     iterate(obj, (val, key, obj) => {
         let ret;
         if (valFltr) {
             if (valFltr(val)) {
-                ret = fn(val, key, obj);
+                ret = accFn ? fn(accFn(val), val, key, obj) : fn(val, key, obj);
             } else {
                 return;
             }
         } else {
-            ret = fn(val, key, obj);
+            ret = accFn ? fn(accFn(val), val, key, obj) : fn(val, key, obj);
         }
         if (ret === constants.BREAK) {
             return ret;
         }
         if (retFltr) {
             if (retFltr(ret)) {
-                return retFn ? retFn(res, ret, val, key) : ret;
+                return retFn ? retFn(res, ret, val, key, accFn) : ret;
             } else {
                 return;
             }
         } else {
-            return retFn ? retFn(res, ret, val, key) : ret;
+            return retFn ? retFn(res, ret, val, key, accFn) : ret;
         }
     }, col, type, iter);
     return types.isFunction(res) ? res() : res;
@@ -209,7 +209,7 @@ function isAsync (iter, iterA, fnA) {
 
 // Compose iteration method
 // Note: Checks type info
-// Returns sync or async based on obj and fn types
+// Returns sync or async based on obj and fn type signatures
 function compose (obj, fn, col=1) {
     let type = types.getType(obj);
     let iter = types.isIterable(obj);
@@ -225,8 +225,8 @@ function compose (obj, fn, col=1) {
 
 // Compose iteration method with filters
 // Note: Checks type info
-// Returns sync or async based on obj and fn types
-function composeF (obj, fn, col=1, retFn, res, valFltr, retFltr) {
+// Returns sync or async based on obj and fn type signatures
+function composeF (obj, fn, col=1, retFn, res, valFltr, retFltr, accFn) {
     let type = types.getType(obj);
     let iter = types.isIterable(obj);
     let iterA = types.isAsyncIterable(obj);
@@ -234,9 +234,9 @@ function composeF (obj, fn, col=1, retFn, res, valFltr, retFltr) {
     let async = isAsync(iter, iterA, fnA);
     fn = types.toFn(fn, constants.identity);
     if (async) {
-        return iterateFA(obj, fn, col, retFn, res, valFltr, retFltr, type, iter, iterA);
+        return iterateFA(obj, fn, col, retFn, res, valFltr, retFltr, accFn, type, iter, iterA);
     }
-    return iterateF(obj, fn, col, retFn, res, valFltr, retFltr, type, iter);
+    return iterateF(obj, fn, col, retFn, res, valFltr, retFltr, accFn, type, iter);
 }
 
 // Run an iterator fn for each item in obj
@@ -414,6 +414,64 @@ function findNotNil (obj, fn, col) {
     return composeF(obj, fn, col, findFn, resFn(), types.notNil, types.notNil);
 }
 
+const GET = Symbol();
+const SET = Symbol();
+
+function reduceFn (res, ret, val, key, accFn) {
+    return res(accFn(ret, SET));
+}
+
+// Getter/Setter
+// Each iteration receives acc as the return value from the previous call
+function reduceAcc (acc) {
+    let init = types.isNil(acc);
+    return (val, action=GET) => {
+        if (init) {
+            acc = types.of(val);
+            init = 0;
+        }
+        if (action === SET) {
+            return acc = val;
+        }
+        return acc;
+    }
+}
+
+// Reduce obj to accumulated result from running each item through iterator fn
+function reduce (obj, fn, acc, col) {
+    return composeF(obj, fn, col, reduceFn, resFn(), undefined, undefined, reduceAcc(acc));
+}
+
+// Alias for reduce (ignores null and undefined)
+function reduceNotNil (obj, fn, acc, col) {
+    return composeF(obj, fn, col, reduceFn, resFn(), types.notNil, types.notNil, reduceAcc(acc));
+}
+
+function transformFn (res, ret, val, key, accFn) {
+    return res(accFn());
+}
+
+// Getter/Setter
+// Each iteration receives acc as the same initial value
+function transformAcc (acc, obj) {
+    if (types.isNil(acc)) {
+        acc = types.of(obj);
+    }
+    return (val, action=GET) => {
+        return acc;
+    }
+}
+
+// Transform obj to new accumulated result from running each item through iterator fn
+function transform (obj, fn, acc, col) {
+    return composeF(obj, fn, col, transformFn, resFn(), undefined, undefined, transformAcc(acc, obj));
+}
+
+// Alias for transform (ignores null and undefined)
+function transformNotNil (obj, fn, acc, col) {
+    return composeF(obj, fn, col, transformFn, resFn(), types.notNil, types.notNil, transformAcc(acc, obj));
+}
+
 exports.drop = drop;
 exports.dropNotNil = dropNotNil;
 exports.each = each;
@@ -431,6 +489,8 @@ exports.iterate = compose;
 exports.iterateF = composeF;
 exports.map = map;
 exports.mapNotNil = mapNotNil;
+exports.reduce = reduce;
+exports.reduceNotNil = reduceNotNil;
 exports.remove = remove;
 exports.removeNotNil = removeNotNil;
 exports.some = some;
@@ -439,3 +499,5 @@ exports.take = take;
 exports.takeNotNil = takeNotNil;
 exports.tap = tap;
 exports.tapNotNil = tapNotNil;
+exports.transform = transform;
+exports.transformNotNil = transformNotNil;
