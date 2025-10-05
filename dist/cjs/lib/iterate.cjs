@@ -472,6 +472,28 @@ function transformNotNil (obj, fn, acc, col) {
     return composeF(obj, fn, col, transformFn, resFn(), types.notNil, types.notNil, transformAcc(acc, obj));
 }
 
+// -1 or Infinity to recurse all depths (susceptible to call stack limit)
+function flatMapFn (obj, fn, recurse=1, col, res=[], ...args) {
+    return composeF(obj, fn, col, (res, ret) => {
+        let type = types.getType(ret);
+        if (type.collection && recurse) {
+            flatMapFn(ret, fn, recurse-1, col, res, ...args);
+        } else {
+            res.push(ret);
+        }
+    }, res, ...args);
+}
+
+// Recursively iterate values returned from iterator fn into flattened result
+function flatMap (obj, fn, recurse, col) {
+    return flatMapFn(obj, fn, recurse, col);
+}
+
+// Alias for flatMap (ignores null and undefined)
+function flatMapNotNil (obj, fn, recurse, col) {
+    return flatMapFn(obj, fn, recurse, col, undefined, types.notNil, types.notNil);
+}
+
 exports.drop = drop;
 exports.dropNotNil = dropNotNil;
 exports.each = each;
@@ -482,6 +504,8 @@ exports.filter = filter;
 exports.filterNotNil = filterNotNil;
 exports.find = find;
 exports.findNotNil = findNotNil;
+exports.flatMap = flatMap;
+exports.flatMapNotNil = flatMapNotNil;
 exports.forEach = forEach;
 exports.forIn = forIn;
 exports.forOwn = forOwn;

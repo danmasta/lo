@@ -472,4 +472,26 @@ function transformNotNil (obj, fn, acc, col) {
     return composeF(obj, fn, col, transformFn, resFn(), notNil, notNil, transformAcc(acc, obj));
 }
 
-export { drop, dropNotNil, each, eachNotNil, every, everyNotNil, filter, filterNotNil, find, findNotNil, forEach, forIn, forOwn, compose as iterate, composeF as iterateF, map, mapNotNil, reduce, reduceNotNil, remove, removeNotNil, some, someNotNil, take, takeNotNil, tap, tapNotNil, transform, transformNotNil };
+// -1 or Infinity to recurse all depths (susceptible to call stack limit)
+function flatMapFn (obj, fn, recurse=1, col, res=[], ...args) {
+    return composeF(obj, fn, col, (res, ret) => {
+        let type = getType(ret);
+        if (type.collection && recurse) {
+            flatMapFn(ret, fn, recurse-1, col, res, ...args);
+        } else {
+            res.push(ret);
+        }
+    }, res, ...args);
+}
+
+// Recursively iterate values returned from iterator fn into flattened result
+function flatMap (obj, fn, recurse, col) {
+    return flatMapFn(obj, fn, recurse, col);
+}
+
+// Alias for flatMap (ignores null and undefined)
+function flatMapNotNil (obj, fn, recurse, col) {
+    return flatMapFn(obj, fn, recurse, col, undefined, notNil, notNil);
+}
+
+export { drop, dropNotNil, each, eachNotNil, every, everyNotNil, filter, filterNotNil, find, findNotNil, flatMap, flatMapNotNil, forEach, forIn, forOwn, compose as iterate, composeF as iterateF, map, mapNotNil, reduce, reduceNotNil, remove, removeNotNil, some, someNotNil, take, takeNotNil, tap, tapNotNil, transform, transformNotNil };

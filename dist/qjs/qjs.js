@@ -7,7 +7,7 @@ export { env, isNilEnv } from './lib/env.js';
 import * as ip from './lib/ip.js';
 export { fromIp, fromIp4, fromIp6, fromIp6Parts, toIp, toIp4, toIp6 } from './lib/ip.js';
 import * as iterate from './lib/iterate.js';
-export { drop, dropNotNil, each, eachNotNil, every, everyNotNil, filter, filterNotNil, find, findNotNil, forEach, forIn, forOwn, iterate, iterateF, map, mapNotNil, reduce, reduceNotNil, remove, removeNotNil, some, someNotNil, take, takeNotNil, tap, tapNotNil, transform, transformNotNil } from './lib/iterate.js';
+export { drop, dropNotNil, each, eachNotNil, every, everyNotNil, filter, filterNotNil, find, findNotNil, flatMap, flatMapNotNil, forEach, forIn, forOwn, iterate, iterateF, map, mapNotNil, reduce, reduceNotNil, remove, removeNotNil, some, someNotNil, take, takeNotNil, tap, tapNotNil, transform, transformNotNil } from './lib/iterate.js';
 import * as node from './lib/node.js';
 export { importOrRequire, importOrRequireFiles, importRequireOrRead, importRequireOrReadFiles, isBuffer, isDuplex, isPassThrough, isReadable, isStream, isTransform, isWritable, mkdirp, mkdirpSync, readFiles, readFilesSync, readJson, readJsonSync, require, requireFiles, requireOrReadFilesSync, requireOrReadSync, resolve, resolveIfExists, resolveIfExistsSync } from './lib/node.js';
 import * as types from './lib/types.js';
