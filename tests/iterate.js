@@ -1,4 +1,4 @@
-import { drop, dropNotNil, take, takeNotNil, find, findNotNil, reduce, reduceNotNil, transform, transformNotNil } from '../lib/iterate.js';
+import { drop, dropNotNil, take, takeNotNil, find, findNotNil, reduce, reduceNotNil, transform, transformNotNil, flatMap, flatMapNotNil } from '../lib/iterate.js';
 
 async function* toAsync (arr) {
     yield* arr;
@@ -222,6 +222,29 @@ describe('Iterate', () => {
         })).to.eql([3]);
         expect(transform(10)).to.equal(0);
         expect(transform(10, null, 10)).to.equal(10);
+    });
+
+    it('flatMap', async () => {
+        expect(flatMap([[1,1],[2,2],[3,3]], val => {
+            return val;
+        })).to.eql([1,1,2,2,3,3]);
+        expect(flatMap([[1,1],[2,2],[3,3]], val => {
+            return val;
+        }, 0)).to.eql([[1,1],[2,2],[3,3]]);
+        expect(await flatMap(toAsync([[1,1],[2,2],[3,3]]), async val => {
+            return val;
+        })).to.eql([1,1,2,2,3,3]);
+        expect(flatMapNotNil([[1,null],[2,undefined],null], val => {
+            return val;
+        })).to.eql([1,2]);
+        expect(flatMapNotNil([[1,null],[2,undefined],[3,3]], val => {
+            if (val % 3 === 0) {
+                return undefined;
+            }
+            return val;
+        })).to.eql([1,2]);
+        expect(flatMap(10)).to.eql([10]);
+        expect(flatMap(10, null)).to.eql([10]);
     });
 
 });
