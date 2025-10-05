@@ -29,6 +29,8 @@ sidebar_position: 4
 ### `filterNotNil`
 ### `find`
 ### `findNotNil`
+### `flatMap`
+### `flatMapNotNil`
 ### `forEach`
 ### `iterate`
 ### `iterateF`
