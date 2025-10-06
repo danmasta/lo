@@ -24,13 +24,15 @@ Install a specific [version](https://github.com/danmasta/lo/tags)
 ```bash
 npm install lo@danmasta/lo#v0.0.1 --save
 ```
+*See documentation regarding git dependencies [here](https://danmasta.github.io/lo/installation)*
+
 Import or require the package in your app
 ```js
 import lo from 'lo';
 ```
 Import specific functions only
 ```js
-import { each, isFunction } from 'lo';
+import { each, map } from 'lo';
 ```
 
 ### Browser
