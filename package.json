@@ -50,10 +50,6 @@
     }
   },
   "scripts": {
-    "test": "make test",
-    "coverage": "make coverage",
-    "build": "make build",
-    "watch": "make watch",
     "preversion": "make build test status"
   },
   "repository": {
