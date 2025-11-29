@@ -1,8 +1,12 @@
 var util = require('./util.cjs');
 
 class BaseError extends Error {
-    constructor (...args) {
-        super(util.format(...args));
+    constructor (msg, ...args) {
+        if (msg instanceof Error) {
+            super(util.format(...args), { cause: msg });
+        } else {
+            super(util.format(msg, ...args));
+        }
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
         this.code = this.constructor.code;

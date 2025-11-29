@@ -4,6 +4,8 @@ var ip = require('./lib/ip.cjs');
 var iterate = require('./lib/iterate.cjs');
 var types = require('./lib/types.cjs');
 var util = require('./lib/util.cjs');
+var time = require('./lib/time.cjs');
+var number = require('./lib/number.cjs');
 var browser$2 = require('./types/browser.cjs');
 
 constants.addTypes(browser$2.default);
@@ -19,7 +21,9 @@ var browser = {
     ...iterate,
     ...browser$1,
     ...types,
-    ...util
+    ...util,
+    ...time,
+    ...number
 };
 
 exports.isElement = browser$1.isElement;
@@ -170,4 +174,15 @@ exports.trimLeft = util.trimLeft;
 exports.trimRight = util.trimRight;
 exports.unescapeHTML = util.unescapeHTML;
 exports.words = util.words;
+exports.epoch = time.epochMs;
+exports.epochMs = time.epochMs;
+exports.epochNs = time.epochNs;
+exports.epochS = time.epochS;
+exports.epochUs = time.epochUs;
+exports.mono = time.monoMs;
+exports.monoMs = time.monoMs;
+exports.monoNs = time.monoNs;
+exports.monoS = time.monoS;
+exports.monoUs = time.monoUs;
+exports.round = number.round;
 exports.default = browser;

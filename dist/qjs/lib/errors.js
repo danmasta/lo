@@ -1,8 +1,12 @@
 import { format } from './util.js';
 
 class BaseError extends Error {
-    constructor (...args) {
-        super(format(...args));
+    constructor (msg, ...args) {
+        if (msg instanceof Error) {
+            super(format(...args), { cause: msg });
+        } else {
+            super(format(msg, ...args));
+        }
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
         this.code = this.constructor.code;

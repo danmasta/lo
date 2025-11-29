@@ -14,6 +14,10 @@ import * as types from './lib/types.js';
 export { getCtorType, getCtorTypeStr, getType, getTypeFromCtor, getTypeFromProto, getTypeStr, hasEntries, hasForEach, isArray, isArrayBuffer, isAsyncFunction, isAsyncIterable, isBoolean, isClass, isCollection, isCtor, isError, isEsm, isFunction, isGeneratorFunction, isIterable, isIterator, isModule, isNil, isNull, isNumber, isNumeric, isObject, isPromise, isRegExp, isString, isTypedArray, isUndefined, notNil, of, toArray, toFn, toNativeType, toObject, toPath, toString, toType } from './lib/types.js';
 import * as util from './lib/util.js';
 export { assign, assignDefaults, assignDefaultsClone, assignIn, assignInClone, assignWithOpts, capitalize, compact, concat, deburr, defaults, eachLine, escapeHTML, flat, flatCompact, format as fmt, format, formatWithOpts, formatter, freeze, fromPairs, get, getOwn, has, join, keys, mapLine, merge, mergeDefaults, mergeDefaultsClone, mergeIn, mergeInClone, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, replace, set, setOwn, split, toCamelCase, toKebabCase, toLower, toLowerCase, toLowerFirst, toPairs, toPascalCase, toSnakeCase, toStartCase, toUpper, toUpperCase, toUpperFirst, trim, trimLeft, trimRight, unescapeHTML, words } from './lib/util.js';
+import * as time from './lib/time.js';
+export { epochMs as epoch, epochMs, epochNs, epochS, epochUs, monoMs as mono, monoMs, monoNs, monoS, monoUs } from './lib/time.js';
+import * as number from './lib/number.js';
+export { round } from './lib/number.js';
 import supplemental from './types/node.js';
 export { argv as ARGV, cwd as CWD, env as ENV } from './polyfill/qjs/core.js';
 
@@ -32,7 +36,9 @@ var qjs = {
     ...iterate,
     ...node,
     ...types,
-    ...util
+    ...util,
+    ...time,
+    ...number
 };
 
 export { BREAK, TYPES, addType, addTypes, qjs as default, identity, noop };

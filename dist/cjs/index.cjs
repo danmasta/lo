@@ -6,6 +6,8 @@ var iterate = require('./lib/iterate.cjs');
 var node = require('./lib/node.cjs');
 var types = require('./lib/types.cjs');
 var util = require('./lib/util.cjs');
+var time = require('./lib/time.cjs');
+var number = require('./lib/number.cjs');
 var node$1 = require('./types/node.cjs');
 var node_process = require('node:process');
 
@@ -24,7 +26,9 @@ var index = {
     ...iterate,
     ...node,
     ...types,
-    ...util
+    ...util,
+    ...time,
+    ...number
 };
 
 exports.argv = argv.parseArgv;
@@ -202,6 +206,17 @@ exports.trimLeft = util.trimLeft;
 exports.trimRight = util.trimRight;
 exports.unescapeHTML = util.unescapeHTML;
 exports.words = util.words;
+exports.epoch = time.epochMs;
+exports.epochMs = time.epochMs;
+exports.epochNs = time.epochNs;
+exports.epochS = time.epochS;
+exports.epochUs = time.epochUs;
+exports.mono = time.monoMs;
+exports.monoMs = time.monoMs;
+exports.monoNs = time.monoNs;
+exports.monoS = time.monoS;
+exports.monoUs = time.monoUs;
+exports.round = number.round;
 Object.defineProperty(exports, "ARGV", {
     enumerable: true,
     get: function () { return node_process.argv; }
