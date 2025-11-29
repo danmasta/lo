@@ -199,3 +199,18 @@ sidebar_position: 4
 ### `toIp6`
 
 ## **Util** *`browser`*
+
+## **Time**
+### `epoch`
+### `epochS`
+### `epochMs`
+### `epochUs`
+### `epochNs`
+### `mono`
+### `monoS`
+### `monoMs`
+### `monoUs`
+### `monoNs`
+
+## **Number**
+### `round`
