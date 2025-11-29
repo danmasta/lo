@@ -6,6 +6,8 @@ import * as iterate from './lib/iterate.js';
 import * as lib from './lib/node.js';
 import * as types from './lib/types.js';
 import * as util from './lib/util.js';
+import * as time from './lib/time.js';
+import * as number from './lib/number.js';
 import supplemental from './types/node.js';
 
 addTypes(supplemental);
@@ -18,6 +20,8 @@ export * from './lib/iterate.js';
 export * from './lib/node.js';
 export * from './lib/types.js';
 export * from './lib/util.js';
+export * from './lib/time.js';
+export * from './lib/number.js';
 
 export default {
     addType,
@@ -32,5 +36,7 @@ export default {
     ...iterate,
     ...lib,
     ...types,
-    ...util
+    ...util,
+    ...time,
+    ...number
 };
