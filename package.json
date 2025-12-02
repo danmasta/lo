@@ -1,7 +1,7 @@
 {
   "name": "@danmasta/lo",
   "private": true,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Daniel Smith <dannmasta@gmail.com>",
   "description": "Lightweight, modern utility library for node, browser, and quickjs",
   "license": "Apache-2.0",
