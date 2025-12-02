@@ -1,4 +1,4 @@
-import { fromIp, fromIp4, fromIp6, toIp, toIp4, toIp6 } from '../lib/ip.js';
+import { fromIp, fromIp4, fromIp6, toIp, toIp4, toIp6, isIp, isIp6, isIp4, ipFamily } from '../lib/ip.js';
 
 let ip6 = {
     short: 'fe80::102:304',
@@ -33,11 +33,12 @@ let mapped = {
 
 describe('Ip', () => {
 
-    it('convert byte array to ip string', () => {
+    it('toIp', () => {
         // ip6
         expect(toIp(ip6.uint16)).to.equal(ip6.short);
         expect(toIp6(ip6.uint16)).to.equal(ip6.short);
         expect(toIp6(ip6.uint16, 0, true)).to.equal(ip6.long);
+        expect(toIp(fromIp('::'))).to.equal('::');
         expect(toIp(fromIp('::1'))).to.equal('::1');
         expect(toIp(fromIp('1::'))).to.equal('1::');
         expect(toIp(ip6.viewMixed)).to.equal('1:2:3:4:5:6:4d4d:5858');
@@ -57,7 +58,7 @@ describe('Ip', () => {
         expect(toIp(fromIp(mapped.short))).to.equal(mapped.short);
     });
 
-    it('convert ip string to byte array', () => {
+    it('fromIp', () => {
         // ip6
         expect(fromIp(ip6.short)).to.eql(ip6.view);
         expect(fromIp6(ip6.short)).to.eql(ip6.view);
@@ -78,6 +79,39 @@ describe('Ip', () => {
         expect(fromIp(toIp(mapped.uint16))).to.eql(mapped.view);
         expect(fromIp(toIp(mapped.uint8))).to.eql(mapped.view);
         expect(fromIp(toIp(mapped.view))).to.eql(mapped.view);
+    });
+
+    it('isIp', () => {
+        expect(isIp('::')).to.equal(6);
+        expect(isIp('::1')).to.equal(6);
+        expect(isIp('1::')).to.equal(6);
+        expect(isIp('::ff')).to.equal(6);
+        expect(isIp(ip4.short)).to.equal(4);
+        expect(isIp(ip4.short6)).to.equal(6);
+        expect(isIp(ip4.long)).to.equal(6);
+        expect(isIp(mapped.short)).to.equal(6);
+        expect(isIp(mapped.long)).to.equal(6);
+        expect(isIp('127.0.0.1')).to.equal(4);
+        expect(isIp('0.0.0.0')).to.equal(4);
+        expect(isIp('255.255.255.255')).to.equal(4);
+        expect(isIp('10.0.0.256')).to.equal(0);
+        expect(isIp('1')).to.equal(0);
+        expect(isIp('0')).to.equal(0);
+        expect(isIp()).to.equal(0);
+        expect(isIp('::ffffff')).to.equal(0);
+        expect(isIp(ip6.short)).to.equal(6);
+        expect(isIp(ip6.long)).to.equal(6);
+        expect(isIp(ip6.mid)).to.equal(6);
+        expect(isIp(ip6.mixed)).to.equal(6);
+    });
+
+    it('ipFamily', () => {
+        expect(ipFamily('::1')).to.equal('ipv6');
+        expect(ipFamily(ip4.short6)).to.equal('ipv6');
+        expect(ipFamily('0.0.0.0')).to.equal('ipv4');
+        expect(ipFamily(ip4.short)).to.equal('ipv4');
+        expect(ipFamily()).to.be.null;
+        expect(ipFamily('1')).to.be.null;
     });
 
 });
