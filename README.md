@@ -16,23 +16,19 @@ Lightweight, modern utility library for node, browser, and quickjs
 I wanted a lighter weight, modern utility library. I had written a bunch of methods over the years that I use between projects as needed, so I decided to normalize them, add a type system, and consolidate them into this package. I also wanted to be able to add different methods for environments like node or browser, not have to use polyfills, and support [async iteration](#async-iteration).
 
 ## Usage
-Add lo as a dependency for your app and install via npm
+Add lo as a dependency and install via npm
 ```bash
 npm install lo@danmasta/lo --save
 ```
 Install a specific [version](https://github.com/danmasta/lo/tags)
 ```bash
-npm install lo@danmasta/lo#v0.0.1 --save
+npm install lo@danmasta/lo#semver:^v0.0.0 --save
 ```
 *See documentation regarding git dependencies [here](https://danmasta.github.io/lo/installation)*
 
-Import or require the package in your app
+Import functions
 ```js
-import lo from 'lo';
-```
-Import specific functions only
-```js
-import { each, map } from 'lo';
+import lo, { each, map } from 'lo';
 ```
 
 ### Browser
