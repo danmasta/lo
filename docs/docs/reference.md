@@ -179,6 +179,10 @@ sidebar_position: 4
 ### `importOrRequireFiles`
 ### `importRequireOrRead`
 ### `importRequireOrReadFiles`
+### `ipFamily`
+### `isIp`
+### `isIp4`
+### `isIp6`
 ### `mkdirp`
 ### `mkdirpSync`
 ### `optsFromArgv`
