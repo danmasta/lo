@@ -79,7 +79,7 @@ function toIp6 (buf, offset, long=0) {
             } else {
                 ref.push(int.toString(16));
             }
-            // Ipv4-mapped ipv6
+            // Ipv4-mapped Ipv6
             // https://datatracker.ietf.org/doc/html/rfc4291#section-2.5.5.2
             if (i === 5 && mask === 0 && int === 65535) {
                 ref.push(toIp4(buf, buf.byteOffset + 12));
@@ -112,32 +112,50 @@ function toIp (buf, offset, long=0) {
 }
 
 // Ipv4 string to byte array
-function fromIp4 (str='') {
-    str = str.split('.');
-    let res = new DataView(new ArrayBuffer(4));
+function fromIp4 (ip='') {
+    let arr = ip.split('.');
+    if (arr.length !== 4 || ip.includes(':')) {
+        throw new errors.IpError('Invalid ipv4: %s', ip);
+    }
+    let n, res = new DataView(new ArrayBuffer(4));
     for (let i = 0; i < 4; i++) {
-        res.setUint8(i, parseInt(str[i], 10));
+        n = parseInt(arr[i], 10);
+        if ((n & 255) !== n) {
+            throw new errors.IpError('Invalid ipv4: %s', ip);
+        }
+        res.setUint8(i, n);
     }
     return res;
 }
 
 // Ipv6 string parts to byte array
 // Supports long and short style
-function fromIp6Parts (start=[], end=[], ip4) {
-    let res = new DataView(new ArrayBuffer(16));
-    let len = start.length;
+function fromIp6Parts ({ ip, short, head=[], tail=[], ip4 }={}) {
+    let h = head.length;
+    let t = tail.length;
     let max = ip4 ? 6 : 8;
-    let dif = max - end.length;
-    let int;
-    for (let i = 0; i < max; i++) {
-        if (i < len) {
-            int = parseInt(start.shift(), 16);
-        } else if (i >= len && i < dif) {
-            int = 0;
-        } else {
-            int = parseInt(end.shift(), 16);
+    let bnd = max - t;
+    if (!short) {
+        if (h !== max) {
+            throw new errors.IpError('Invalid ipv6: %s', ip);
         }
-        res.setUint16(i * 2, int);
+    }
+    if (h + t > max || h > bnd) {
+        throw new errors.IpError('Invalid ipv6: %s', ip);
+    }
+    let n, res = new DataView(new ArrayBuffer(16));
+    for (let i = 0; i < max; i++) {
+        if (i < h) {
+            n = parseInt(head.shift(), 16);
+        } else if (i >= h && i < bnd) {
+            n = 0;
+        } else {
+            n = parseInt(tail.shift(), 16);
+        }
+        if ((n & 65535) !== n) {
+            throw new errors.IpError('Invalid ipv6: %s', ip);
+        }
+        res.setUint16(i * 2, n);
     }
     if (ip4) {
         res.setUint32(12, fromIp4(ip4).getUint32());
@@ -148,36 +166,81 @@ function fromIp6Parts (start=[], end=[], ip4) {
 // Ip string to byte array
 // Supports ipv4 and ipv6
 // Supports long and short style
-function fromIp (str='', ip4=1) {
-    let [start, end] = str.split('::');
-    start = start.split(':');
-    if (!end) {
-        if (start.at(-1).includes('.')) {
-            if (start.length === 1 && ip4) {
-                return fromIp4(start.pop());
+function fromIp (ip='', ip4=1) {
+    if (!ip) {
+        throw new errors.IpError('Invalid ip: %s', ip);
+    }
+    let sub = ip.split('::'), [head, tail] = sub;
+    let short = sub.length === 2;
+    head = head && head.split(':') || undefined;
+    if (!tail) {
+        if (head?.at(-1)?.includes('.')) {
+            if (head.length === 1) {
+                if (ip4) {
+                    return fromIp4(head.pop());
+                } else {
+                    throw new errors.IpError('Invalid ipv6: %s', ip);
+                }
             }
-            return fromIp6Parts(start, undefined, start.pop());
+            return fromIp6Parts({ ip, short, head, ip4: head.pop() });
         }
-        return fromIp6Parts(start);
+        return fromIp6Parts({ ip, short, head });
     } else {
-        end = end.split(':');
-        if (end.at(-1).includes('.')) {
-            return fromIp6Parts(start, end, end.pop());
+        tail = tail.split(':');
+        if (tail.at(-1).includes('.')) {
+            return fromIp6Parts({ ip, short, head, tail, ip4: tail.pop() });
         }
-        return fromIp6Parts(start, end);
+        return fromIp6Parts({ ip, short, head, tail });
     }
 }
 
 // Ipv6 string to byte array
 // Supports long and short style
-function fromIp6 (str) {
-    return fromIp(str, 0);
+function fromIp6 (ip) {
+    return fromIp(ip, 0);
+}
+
+function isIp4 (ip) {
+    try {
+        return !!fromIp4(ip);
+    } catch {
+        return false;
+    }
+}
+
+function isIp6 (ip) {
+    try {
+        return !!fromIp6(ip);
+    } catch {
+        return false;
+    }
+}
+
+function isIp (ip) {
+    if (isIp4(ip)) return 4;
+    if (isIp6(ip)) return 6;
+    return 0;
+}
+
+function ipFamily (ip) {
+    switch (isIp(ip)) {
+        case 4:
+            return 'ipv4';
+        case 6:
+            return 'ipv6';
+        default:
+            return null;
+    }
 }
 
 exports.fromIp = fromIp;
 exports.fromIp4 = fromIp4;
 exports.fromIp6 = fromIp6;
 exports.fromIp6Parts = fromIp6Parts;
+exports.ipFamily = ipFamily;
+exports.isIp = isIp;
+exports.isIp4 = isIp4;
+exports.isIp6 = isIp6;
 exports.toIp = toIp;
 exports.toIp4 = toIp4;
 exports.toIp6 = toIp6;

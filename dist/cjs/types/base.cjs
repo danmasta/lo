@@ -280,6 +280,34 @@ var base = [
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
         n: 'SharedArrayBuffer',
         x: [1, 0, 2]
+    },
+    {
+        n: 'Request',
+        x: [1, 0, 2]
+    },
+    {
+        n: 'Response',
+        x: [1, 0, 2]
+    },
+    {
+        n: 'Headers',
+        x: [1, 0, 2, 1]
+    },
+    {
+        n: 'Blob',
+        x: [1, 0, 2]
+    },
+    {
+        n: 'File',
+        x: [1, 0, 2]
+    },
+    {
+        n: 'FormData',
+        x: [1, 0, 2, 1]
+    },
+    {
+        n: 'URLSearchParams',
+        x: [1, 0, 2, 1]
     }
 ];
 

@@ -5,7 +5,7 @@ export { hasOwn } from './lib/constants.js';
 import * as env from './lib/env.js';
 export { env, isNilEnv } from './lib/env.js';
 import * as ip from './lib/ip.js';
-export { fromIp, fromIp4, fromIp6, fromIp6Parts, toIp, toIp4, toIp6 } from './lib/ip.js';
+export { fromIp, fromIp4, fromIp6, fromIp6Parts, ipFamily, isIp, isIp4, isIp6, toIp, toIp4, toIp6 } from './lib/ip.js';
 import * as iterate from './lib/iterate.js';
 export { drop, dropNotNil, each, eachNotNil, every, everyNotNil, filter, filterNotNil, find, findNotNil, flatMap, flatMapNotNil, forEach, forIn, forOwn, iterate, iterateF, map, mapNotNil, reduce, reduceNotNil, remove, removeNotNil, some, someNotNil, take, takeNotNil, tap, tapNotNil, transform, transformNotNil } from './lib/iterate.js';
 import * as node from './lib/node.js';
