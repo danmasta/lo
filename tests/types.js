@@ -1,6 +1,6 @@
 import { env } from 'node:process';
 import { TYPES } from '../lib/constants.js';
-import { of } from '../lib/types.js';
+import { getType, of } from '../lib/types.js';
 
 describe('Types', () => {
 
@@ -36,6 +36,9 @@ describe('Types', () => {
         expect(lo.getType(fx.TestClass)).to.equal(TYPES.Function);
         expect(lo.getType(fx.TestError)).to.equal(TYPES.Function);
         expect(lo.getType(fx.TestArray)).to.equal(TYPES.Function);
+        // Accept type objects
+        expect(getType(TYPES.Array)).to.equal(TYPES.Array);
+        expect(getType(TYPES.Set)).to.equal(TYPES.Set);
     });
 
     it('get type by constructor', () => {
