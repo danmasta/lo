@@ -11,7 +11,7 @@ npm install lo@danmasta/lo#v0.0.5 --save
 
 ### Reference a Semver Range
 ```sh
-npm install lo@danmasta/lo#semver:0.0.5 --save
+npm install lo@danmasta/lo#semver:^v0.0.5 --save
 ```
 *Supports sub-package installs for multiple conflicting versions*
 
@@ -34,5 +34,5 @@ If you are a library author, you should consider using the [semver](#semver) pat
 ### Semver
 You can use the version format `#semver:<range>` to reference any valid [semver range](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#dependencies). Semver tags will be treated like regular npm dependencies and support sub-package installs for handling different versions. Npm will search the repo for tags or refs that match the range and install the latest satisfiable version if found.
 ```sh
-#semver:0.0.5
+#semver:^v0.0.5
 ```
