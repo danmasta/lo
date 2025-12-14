@@ -2,10 +2,9 @@
 Lightweight, modern utility library for node, browser, and quickjs
 
 #### Features:
-* Easy to use
-* Lightweight (~7.5kb minified, ~2.5kb gzip)
+* Simple and lightweight
 * Node and browser support
-* Native esm and cjs support
+* Native ESM
 * Treeshakeable by default
 * Support for all iterable types
 * Support for [async](#async-iteration) iterables and async iterator functions
@@ -13,10 +12,12 @@ Lightweight, modern utility library for node, browser, and quickjs
 * 0 dependencies
 
 ## About
-I wanted a lighter weight, modern utility library. I had written a bunch of methods over the years that I use between projects as needed, so I decided to normalize them, add a type system, and consolidate them into this package. I also wanted to be able to add different methods for environments like node or browser, not have to use polyfills, and support [async iteration](#async-iteration).
+A lightweight, modern utility library. This package is different from other utility libraries in that it avoids [duck-typing](https://en.wikipedia.org/wiki/Duck_typing) and implements a simple [nominal type system](https://en.wikipedia.org/wiki/Nominal_type_system) at it's core. This allows for very fast and accurate type checking. Information about types is also cached at start up and used to provide advanced functionalities like iteration support for every iterable type, including async iterables, generators, and async iterator functions.
+
+You can read more about the design philosophy in the [docs](https://danmasta.github.io/lo/).
 
 ## Usage
-Add lo as a dependency and install via npm
+Add `lo` as a dependency and install via npm
 ```bash
 npm install lo@danmasta/lo --save
 ```
@@ -32,7 +33,7 @@ import lo, { each, map } from 'lo';
 ```
 
 ### Browser
-This package exports a browser version which excludes functions that depend on node specific apis and includes some browser specific types. If you use a bundler it should automatically be able to resolve the browser entry point. If you want to explicity import it you can do that too:
+This package exports a browser entry point which excludes functions that depend on node specific APIs and includes some browser specific types. If you use a bundler it should automatically be able to resolve the browser entry point. If you want to explicity import it you can do that too:
 ```js
 import lo from 'lo/browser';
 ```
@@ -45,29 +46,32 @@ The current collection types are defined as:
 * `Array`
 * `Map`
 * `Set`
-* `TypedArray`
 * `Array Iterator`
-* `String Iterator`
 * `Map Iterator`
 * `Set Iterator`
+* `String Iterator`
 * `Generator`
 * `AsyncGenerator`
 * `Iterator`
 * `AsyncIterator`
+* `TypedArray`
 * `Buffer`
 * `NodeList`
+* `Headers`
+* `FormData`
+* `URLSearchParams`
 
 What is not a collection type:
-* `Boolean`
-* `Number`
-* `BigInt`
 * `String`
-* `Symbol`
-* `Function`
 * `Object`
 * `ArrayBuffer`
 * `DataView`
 * `Stream`
+* `Number`
+* `BigInt`
+* `Symbol`
+* `Boolean`
+* `Function`
 * ...other `Object` types such as `RegExp`, `Date`, `Promise`, `Error`, etc
 
 ### Iteration
@@ -161,9 +165,9 @@ await map(list(), async val => {
 ```
 
 ### QuickJS
-[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with quickjs and includes some node api [polyfills](polyfill/qjs) to help compile tooling and clis written with node into standalone binaries.
+[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with quickjs and includes some node API [polyfills](polyfill/qjs) to help compile tooling and CLIs written with node into standalone binaries.
 
-While this project doesn't intend to provide complete polyfills for the entire node api, it does include some of the more common ones:
+While this project doesn't intend to provide complete polyfills for the entire node API, it does include some of the more common ones:
 * `console`
 * `events`
 * `fs`
@@ -177,7 +181,7 @@ To use them in your own project, you can point your bundler at the `polyfill/qjs
 import lo from 'lo/qjs';
 ```
 
-*You can find an example project that exposes a node api, cli, and standalone binary built using this package [here](https://github.com/danmasta/envstr).*
+*You can find an example project that exposes a node API, CLI, and standalone binary built using this package [here](https://github.com/danmasta/envstr).*
 
 ## Documentation
 A list of methods and some documentation can be found [here](https://danmasta.github.io/lo/)
