@@ -1,5 +1,5 @@
 const fn = ()=>{};
-const asyncFn = async ()=>{};
+const fnAsync = async ()=>{};
 const genFn = function*(){};
 const genFnAsync = async function*(){};
 const iter = Symbol.iterator;
@@ -219,7 +219,7 @@ export default [
     {
         t: 6,
         n: 'AsyncFunction',
-        c: asyncFn[ctor],
+        c: fnAsync[ctor],
         x: [1, 1, 2]
     },
     {
