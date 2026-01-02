@@ -1,6 +1,6 @@
-import { isArrayBuffer, isTypedArray, toString } from '../../lib/types.js';
-import { fmt } from '../../lib/util.js';
-import { groups, os, std, uid } from './core.js';
+import { isArrayBuffer, isTypedArray, toString } from '#lib/types';
+import { fmt } from '#lib/util';
+import { groups, os, std, uid } from '#polyfill/qjs/core';
 
 // https://nodejs.org/api/fs.html#fsconstants
 export const constants = {

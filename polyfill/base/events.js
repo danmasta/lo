@@ -1,5 +1,5 @@
-import { each, forOwn } from '../../lib/iterate.js';
-import { isFunction } from '../../lib/types.js';
+import { each, forOwn } from '#lib/iterate';
+import { isFunction } from '#lib/types';
 
 export class EventEmitter {
 

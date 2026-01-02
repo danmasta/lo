@@ -1,6 +1,6 @@
-import { each } from '../../lib/iterate.js';
-import { split } from '../../lib/util.js';
-import { cwd, delimiter, isWin32, sep } from './core.js';
+import { each } from '#lib/iterate';
+import { split } from '#lib/util';
+import { cwd, delimiter, isWin32, sep } from '#polyfill/core';
 
 const regex = /[\\/]+/g;
 

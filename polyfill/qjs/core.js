@@ -1,9 +1,9 @@
+import { each } from '#lib/iterate';
+import { isArrayBuffer, isTypedArray, toString } from '#lib/types';
+import { fmt, split } from '#lib/util';
+import { Duplex } from '#polyfill/stream';
 import * as os from 'qjs:os';
 import * as std from 'qjs:std';
-import { each } from '../../lib/iterate.js';
-import { isArrayBuffer, isTypedArray, toString } from '../../lib/types.js';
-import { fmt, split } from '../../lib/util.js';
-import { Duplex } from '../base/stream.js';
 
 const { exec, getcwd, getpid, platform, waitpid, WNOHANG } = os;
 const { getenviron, SEEK_SET, strerror, tmpfile } = std;

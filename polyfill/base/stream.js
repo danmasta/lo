@@ -1,4 +1,4 @@
-import { EventEmitter } from './events.js';
+import { EventEmitter } from '#polyfill/events';
 
 export class Stream extends EventEmitter {};
 

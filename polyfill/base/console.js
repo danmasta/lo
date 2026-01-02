@@ -1,7 +1,7 @@
-import { appendEOL } from './core.js';
-import { EOL } from './os.js';
-import { stderr, stdout } from './process.js';
-import { format } from './util.js';
+import { appendEOL } from '#polyfill/core';
+import { EOL } from '#polyfill/os';
+import { stderr, stdout } from '#polyfill/process';
+import { format } from '#polyfill/util';
 
 function logFn (stdio) {
     let eol = appendEOL ? EOL : '';

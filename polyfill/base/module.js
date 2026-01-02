@@ -1,4 +1,4 @@
-import { resolve } from './path.js';
+import { resolve } from '#polyfill/path';
 
 export function createRequire (dir='.') {
     const cache = new Map();

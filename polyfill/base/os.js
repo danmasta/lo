@@ -1,5 +1,5 @@
-import { EOL, isWin32 } from './core.js';
-import { env } from './process.js';
+import { EOL, isWin32 } from '#polyfill/core';
+import { env } from '#polyfill/process';
 
 export function homedir () {
     if (isWin32) {

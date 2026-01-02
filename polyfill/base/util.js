@@ -1,5 +1,5 @@
-import { inspect } from '../../lib/inspect.js';
-import { formatter, formatWithOpts } from '../../lib/util.js';
+import { inspect } from '#lib/inspect';
+import { formatter, formatWithOpts } from '#lib/util';
 
 export const format = formatter({ inspectArgs: true, inspect });
 
