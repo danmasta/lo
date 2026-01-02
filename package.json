@@ -19,7 +19,6 @@
     "browser.js",
     "index.js",
     "qjs.js",
-    "dist/**",
     "lib/**",
     "polyfill/**",
     "types/**"
@@ -27,30 +26,22 @@
   "exports": {
     ".": {
       "browser": "./browser.js",
-      "qjs": "./dist/qjs/qjs.js",
-      "import": "./index.js",
-      "require": "./dist/cjs/index.cjs"
+      "qjs": "./qjs.js",
+      "default": "./index.js"
     },
-    "./browser": {
-      "import": "./browser.js",
-      "require": "./dist/cjs/browser.cjs"
-    },
-    "./qjs": {
-      "import": "./dist/qjs/qjs.js"
-    },
-    "./constants": {
-      "qjs": "./dist/qjs/lib/constants.js",
-      "import": "./lib/constants.js",
-      "require": "./dist/cjs/lib/constants.cjs"
-    },
-    "./errors": {
-      "qjs": "./dist/qjs/lib/errors.js",
-      "import": "./lib/errors.js",
-      "require": "./dist/cjs/lib/errors.cjs"
-    }
+    "./*": "./lib/*.js",
+    "./browser": "./browser.js",
+    "./polyfill/*": "./polyfill/base/*.js",
+    "./polyfill/qjs/*": "./polyfill/qjs/*.js",
+    "./qjs": "./qjs.js"
+  },
+  "imports": {
+    "#lib/*": "./lib/*.js",
+    "#polyfill/*": "./polyfill/base/*.js",
+    "#polyfill/qjs/*": "./polyfill/qjs/*.js"
   },
   "scripts": {
-    "preversion": "make build test status"
+    "preversion": "make test status"
   },
   "repository": {
     "type": "git",
