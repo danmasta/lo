@@ -33,13 +33,13 @@ import lo, { each, map } from 'lo';
 ```
 
 ### Browser
-This package exports a browser entry point which excludes functions that depend on node specific APIs and includes some browser specific types. If you use a bundler it should automatically be able to resolve the browser entry point. If you want to explicity import it you can do that too:
+A browser entrypoint is also exported, which excludes functions that depend on node specific APIs, and includes some browser specific types. If you use a bundler it should be able to automatically resolve the browser entrypoint. If you want to explicity import it, you can do that too:
 ```js
 import lo from 'lo/browser';
 ```
 
 ### Collections
-This package is different from other utility libraries in that it defines *collection types* for iteration. By default, if it is not a collection type, it is iterated as a whole object.
+This package defines specific [*collection types*](#collection-types) for iteration. By default, if it is not a collection type, it is iterated as a one-object collection.
 
 #### Collection Types
 The current collection types are defined as:
@@ -61,23 +61,10 @@ The current collection types are defined as:
 * `FormData`
 * `URLSearchParams`
 
-What is not a collection type:
-* `String`
-* `Object`
-* `ArrayBuffer`
-* `DataView`
-* `Stream`
-* `Number`
-* `BigInt`
-* `Symbol`
-* `Boolean`
-* `Function`
-* ...other `Object` types such as `RegExp`, `Date`, `Promise`, `Error`, etc
-
 ### Iteration
-When using iterator functions like `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate` the default mode is to iterate *as a collection*. This means they will iterate on whole objects only, and not on the properties of a single object. For iterating the properties of a single object you can use the functions `forIn` and `forOwn`.
+When using iterator functions like: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `reduce`, `transform`, etc, the default mode is to iterate ***as a collection***. This means they will iterate on collections only, and not on the properties of a single object. For iterating the properties of a single object, you can use the functions `forIn` and `forOwn`.
 
-This means if you pass a single object instead of a [collection type](#collection-types) it will treat the object as a one-object collection and iterate one time:
+This means if you pass a single object instead of a [*collection type*](#collection-types), it will treat the object as a one-object collection and iterate one time:
 ```js
 import { each } from 'lo';
 
@@ -106,13 +93,13 @@ each(obj, (val, key) => {
 // a true
 // b false
 ```
-*Note: All iterator functions work for any iterable type including `Array`, `Map`, `Set`, `Iterator`, and `Generator`.*
+*All iterator methods support every iterable type including: `Array`, `Map`, `Set`, `Iterator`, `Generator`, etc.*
 
 #### Iterate Objects
 Methods to iterate the properties of individual objects and iterables: `forIn`, and `forOwn`.
 
 #### Iterate Collections
-Methods for iterating collections of objects: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, and `iterate`.
+Methods for iterating collections: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `drop`, `take`, `reduce`, `transform`, `find`, `flatMap`, and `iterate`.
 
 #### forEach
 Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
@@ -132,7 +119,7 @@ map(arr, val => {
 ```
 
 #### Nil Filtering
-A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration methods. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, and, `every`. To use, just append `NotNil` to the function name:
+A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration methods. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, `every`, etc. To use, just append `NotNil` to the function name:
 ```js
 import { mapNotNil as map } from 'lo';
 
@@ -144,10 +131,10 @@ map(arr, val => {
 
 // [1, 2]
 ```
-*Methods that support `nil` filtering include: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`*
+*All iterator methods support `nil` filtering*
 
 #### Async Iteration
-Every iteration method also supports both async iterables and async iterator functions. You don't need to do anything special, just use them as normal:
+Every iteration method also supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
 ```js
 import { map } from 'lo';
 
@@ -158,7 +145,7 @@ async function* list () {
 }
 
 await map(list(), async val => {
-    return await val * 2;
+    return val * 2;
 });
 
 // [2, 4, 6]
