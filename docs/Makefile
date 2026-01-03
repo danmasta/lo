@@ -3,7 +3,7 @@
 build:
 	@node_modules/.bin/docusaurus build
 
-start:
+run:
 	@node_modules/.bin/docusaurus serve
 
 watch:
