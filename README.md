@@ -3,12 +3,12 @@ Lightweight, modern utility library for node, browser, and quickjs
 
 #### Features:
 * Simple and lightweight
-* Node and browser support
+* Supports node, browser, and [quickjs](#quickjs)
 * Native ESM
 * Treeshakeable by default
 * Support for all iterable types
 * Support for [async](#async-iteration) iterables and async iterator functions
-* Support for [quickjs](#quickjs)
+* Nominal type system
 * 0 dependencies
 
 ## About
@@ -165,7 +165,7 @@ await map(list(), async val => {
 ```
 
 ### QuickJS
-[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with quickjs and includes some node API [polyfills](polyfill/qjs) to help compile tooling and CLIs written with node into standalone binaries.
+[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async/await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with QuickJS and includes some node API [polyfills](polyfill) to help compile tooling and CLIs written with node into standalone binaries.
 
 While this project doesn't intend to provide complete polyfills for the entire node API, it does include some of the more common ones:
 * `console`
@@ -176,12 +176,7 @@ While this project doesn't intend to provide complete polyfills for the entire n
 * `path`
 * `process`
 
-To use them in your own project, you can point your bundler at the `polyfill/qjs` directory for any of the supported node polyfills. If you want to explicity import the qjs entry point, you can do that too:
-```js
-import lo from 'lo/qjs';
-```
-
-*You can find an example project that exposes a node API, CLI, and standalone binary built using this package [here](https://github.com/danmasta/envstr).*
+To use them in your own project, you can point your bundler at the `lo` polyfills directory for node imports. You can see an example in the [docs](https://danmasta.github.io/lo/polyfills#quickjs).
 
 ## Documentation
 A list of methods and some documentation can be found [here](https://danmasta.github.io/lo/)
