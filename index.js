@@ -1,5 +1,5 @@
 import * as argv from './lib/argv.js';
-import { addType, addTypes, BREAK, identity, noop, TYPES } from './lib/constants.js';
+import { addType, addTypes, BREAK, identity, noop, TYPES, SYMBOLS } from './lib/constants.js';
 import * as env from './lib/env.js';
 import * as ip from './lib/ip.js';
 import * as iterate from './lib/iterate.js';
@@ -14,7 +14,7 @@ import supplemental from './types/node.js';
 addTypes(supplemental);
 
 export * from './lib/argv.js';
-export { addType, addTypes, BREAK, identity, noop, TYPES } from './lib/constants.js';
+export { addType, addTypes, BREAK, identity, noop, TYPES, SYMBOLS } from './lib/constants.js';
 export * from './lib/env.js';
 export * from './lib/ip.js';
 export * from './lib/iterate.js';
@@ -32,6 +32,7 @@ export default {
     identity,
     noop,
     TYPES,
+    SYMBOLS,
     ...argv,
     ...env,
     ...ip,
