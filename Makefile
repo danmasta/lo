@@ -1,4 +1,4 @@
-.PHONY: test coverage clean build watch version major minor patch status
+.PHONY: test coverage version major minor patch status
 
 SEMVER = patch
 
@@ -7,15 +7,6 @@ test:
 
 coverage:
 	node_modules/.bin/c8 --reporter=lcov node_modules/.bin/mocha tests
-
-clean:
-	@rm -rf dist/*
-
-build: clean
-	node_modules/.bin/rollup -c
-
-watch: clean
-	node_modules/.bin/rollup -c -w
 
 version: status
 	@npm version $(SEMVER)
