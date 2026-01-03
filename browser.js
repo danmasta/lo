@@ -6,6 +6,7 @@ import * as types from './lib/types.js';
 import * as util from './lib/util.js';
 import * as time from './lib/time.js';
 import * as number from './lib/number.js';
+import * as lru from './lib/lru.js';
 import supplemental from './types/browser.js';
 
 addTypes(supplemental);
@@ -18,6 +19,7 @@ export * from './lib/types.js';
 export * from './lib/util.js';
 export * from './lib/time.js';
 export * from './lib/number.js';
+export * from './lib/lru.js';
 
 export default {
     addType,
@@ -32,5 +34,6 @@ export default {
     ...types,
     ...util,
     ...time,
-    ...number
+    ...number,
+    ...lru
 };
