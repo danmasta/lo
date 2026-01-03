@@ -1,4 +1,4 @@
-.PHONY: build start watch
+.PHONY: build run watch
 
 build:
 	@node_modules/.bin/docusaurus build
