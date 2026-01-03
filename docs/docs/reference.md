@@ -135,6 +135,8 @@ sidebar_position: 4
 ### `hasOwn`
 ### `join`
 ### `keys`
+### `LRU`
+### `lru`
 ### `mapLine`
 ### `merge`
 ### `mergeDefaults`
