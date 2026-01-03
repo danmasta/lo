@@ -16,7 +16,7 @@ This project doesn't intend to provide polyfills for the entire node API, but it
 * `util`
 
 ## Usage
-If you want to use the base polyfills as alternative implementations for environments that already support node APIs, you can import the module paths directly:
+If you want to use the base polyfills as alternative implementations in environments that already support node APIs, you can import the module paths directly:
 ```js
 import { resolve } from 'lo/polyfill/path';
 ```
@@ -52,7 +52,7 @@ export default [
         ],
         plugins: [
             alias({
-                entries:[
+                entries: [
                     {
                         find: '#polyfill/core',
                         replacement: '#polyfill/qjs/core'

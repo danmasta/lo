@@ -8,6 +8,7 @@ sidebar_position: 4
 ### `CLONE`
 ### `identity`
 ### `noop`
+### `SYMBOLS`
 ### `TYPES`
 
 ## **Constants** *`node`*
@@ -20,34 +21,21 @@ sidebar_position: 4
 
 ## **Iterate** *`collections`*
 ### `drop`
-### `dropNotNil`
 ### `each`
-### `eachNotNil`
 ### `every`
-### `everyNotNil`
 ### `filter`
-### `filterNotNil`
 ### `find`
-### `findNotNil`
 ### `flatMap`
-### `flatMapNotNil`
 ### `forEach`
 ### `iterate`
 ### `iterateF`
 ### `map`
-### `mapNotNil`
 ### `reduce`
-### `reduceNotNil`
 ### `remove`
-### `removeNotNil`
 ### `some`
-### `someNotNil`
 ### `take`
-### `takeNotNil`
 ### `tap`
-### `tapNotNil`
 ### `transform`
-### `transformNotNil`
 
 ## **Types**
 ### `addType`
