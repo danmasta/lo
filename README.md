@@ -33,7 +33,7 @@ import lo, { each, map } from 'lo';
 ```
 
 ### Browser
-A browser entrypoint is also exported, which excludes functions that depend on node specific APIs, and includes some browser specific types. If you use a bundler it should be able to automatically resolve the browser entrypoint. If you want to explicity import it, you can do that too:
+This library also exports a browser entrypoint, which excludes functions that depend on node specific APIs, and includes some browser specific types. If you use a bundler it should be able to automatically resolve the browser entrypoint. If you want to explicity import it, you can do that too:
 ```js
 import lo from 'lo/browser';
 ```
