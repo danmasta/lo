@@ -1,6 +1,7 @@
-import { Stream, Readable, Writable, Transform, Duplex, PassThrough } from 'node:stream';
 import { Buffer } from 'node:buffer';
+import { ReadStream, WriteStream } from 'node:fs';
 import { env } from 'node:process';
+import { Duplex, PassThrough, Readable, Stream, Transform, Writable } from 'node:stream';
 
 export default [
     {
@@ -41,6 +42,16 @@ export default [
     {
         n: 'Env',
         c: env.constructor,
+        x: [1, 1, 2]
+    },
+    {
+        n: 'ReadStream',
+        c: ReadStream,
+        x: [1, 1, 2]
+    },
+    {
+        n: 'WriteStream',
+        c: WriteStream,
         x: [1, 1, 2]
     }
 ];
