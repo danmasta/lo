@@ -217,6 +217,10 @@ export default [
         x: [1, 0, 2]
     },
     {
+        n: 'CompressionStream',
+        x: [1, 0, 2]
+    },
+    {
         t: 6,
         n: 'AsyncFunction',
         c: fnAsync[ctor],
