@@ -68,6 +68,7 @@ describe('Ip', () => {
         expect(toIp(fromIp('2001:db8::1'))).to.equal('2001:db8::1');
         expect(toIp(fromIp('1:2:3:4:5:6:7:8'))).to.equal('1:2:3:4:5:6:7:8');
         expect(toIp(fromIp('fe80:0:0:0:0:0:0:1'))).to.equal('fe80::1');
+        expect(toIp(fromIp('1:0:2:0:0:0:0:0'))).to.equal('1:0:2::');
     });
 
     it('fromIp', () => {
