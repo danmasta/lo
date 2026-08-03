@@ -56,6 +56,18 @@ describe('Ip', () => {
         expect(toIp6(mapped.uint8)).to.equal(mapped.short);
         expect(toIp6(mapped.uint16, 0, true)).to.equal(mapped.long);
         expect(toIp(fromIp(mapped.short))).to.equal(mapped.short);
+        // canonical (RFC 5952)
+        // https://datatracker.ietf.org/doc/html/rfc5952#section-4
+        expect(toIp(fromIp('2001:0db8::0001'))).to.equal('2001:db8::1');
+        expect(toIp(fromIp('2001:db8:0:0:0:0:2:1'))).to.equal('2001:db8::2:1');
+        expect(toIp(fromIp('2001:db8:0:1:1:1:1:1'))).to.equal('2001:db8:0:1:1:1:1:1');
+        expect(toIp(fromIp('2001:0:0:1:0:0:0:1'))).to.equal('2001:0:0:1::1');
+        expect(toIp(fromIp('2001:db8:0:0:1:0:0:1'))).to.equal('2001:db8::1:0:0:1');
+        expect(toIp(fromIp('::ffff:1.2.3.4'))).to.equal('::ffff:1.2.3.4');
+        expect(toIp(fromIp('1:0:0:2:0:0:3:4'))).to.equal('1::2:0:0:3:4');
+        expect(toIp(fromIp('2001:db8::1'))).to.equal('2001:db8::1');
+        expect(toIp(fromIp('1:2:3:4:5:6:7:8'))).to.equal('1:2:3:4:5:6:7:8');
+        expect(toIp(fromIp('fe80:0:0:0:0:0:0:1'))).to.equal('fe80::1');
     });
 
     it('fromIp', () => {
