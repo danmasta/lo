@@ -195,16 +195,17 @@ sidebar_position: 4
 ## **Util** *`browser`*
 
 ## **Time**
-### `epoch`
-### `epochS`
-### `epochMs`
-### `epochUs`
-### `epochNs`
-### `mono`
-### `monoS`
-### `monoMs`
-### `monoUs`
-### `monoNs`
+### `epoch.origin`
+### `epoch.now`
+### `epoch.ms`
+### `epoch.s`
+### `epoch.us`
+### `epoch.ns`
+### `mono.now`
+### `mono.ms`
+### `mono.s`
+### `mono.us`
+### `mono.ns`
 
 ## **Number**
 ### `round`
