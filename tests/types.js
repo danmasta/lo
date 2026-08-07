@@ -1,4 +1,5 @@
 import { env } from 'node:process';
+import { runInNewContext } from 'node:vm';
 import { TYPES } from '../lib/constants.js';
 import { getType, of } from '../lib/types.js';
 
@@ -55,6 +56,21 @@ describe('Types', () => {
         expect(lo.getCtorType(fx.TestSubError)).to.equal(TYPES.TestSubError);
         expect(lo.getCtorType(fx.TestArray)).to.equal(TYPES.TestArray);
         expect(lo.getCtorType(fx.Readable)).to.equal(TYPES.Readable);
+    });
+
+    it('get type for exotic callables', () => {
+        // Async/Generator functions
+        expect(getType(async () => {})).to.equal(TYPES.AsyncFunction);
+        expect(getType(function* () {})).to.equal(TYPES.GeneratorFunction);
+        expect(getType(async function* () {})).to.equal(TYPES.AsyncGeneratorFunction);
+        // Callables with non-Function constructor and no known toStringTag resolve to Function
+        class Fn extends Function {}
+        expect(getType(new Fn)).to.equal(TYPES.Function);
+        // Cross-realm functions have a foreign Function constructor
+        expect(getType(runInNewContext('(function () {})'))).to.equal(TYPES.Function);
+        expect(getType(runInNewContext('(async () => {})'))).to.equal(TYPES.AsyncFunction);
+        // Never return undefined
+        expect(getType(new Fn)).to.not.be.undefined;
     });
 
     it('cast to type', () => {
