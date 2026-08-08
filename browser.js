@@ -7,8 +7,8 @@ import * as util from './lib/util.js';
 import * as time from './lib/time.js';
 import * as number from './lib/number.js';
 import * as lru from './lib/lru.js';
-import { extended } from './types/base.js';
-import { supplemental } from './types/browser.js';
+import { extended } from './lib/types/base.js';
+import { supplemental } from './lib/types/browser.js';
 
 addTypes(extended);
 addTypes(supplemental);
