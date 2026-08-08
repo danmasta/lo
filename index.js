@@ -9,8 +9,10 @@ import * as util from './lib/util.js';
 import * as time from './lib/time.js';
 import * as number from './lib/number.js';
 import * as lru from './lib/lru.js';
-import supplemental from './types/node.js';
+import { extended } from './types/base.js';
+import { supplemental } from './types/node.js';
 
+addTypes(extended);
 addTypes(supplemental);
 
 export * from './lib/argv.js';
