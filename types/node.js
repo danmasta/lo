@@ -1,13 +1,25 @@
 import { Buffer } from 'node:buffer';
+import { EventEmitter } from 'node:events';
 import { ReadStream, WriteStream } from 'node:fs';
 import { env } from 'node:process';
 import { Duplex, PassThrough, Readable, Stream, Transform, Writable } from 'node:stream';
+import { StringDecoder } from 'node:string_decoder';
 
-export default [
+export const supplemental = [
     {
         n: 'Buffer',
         c: Buffer,
         x: [1, 1, 2, 1]
+    },
+    {
+        n: 'StringDecoder',
+        c: StringDecoder,
+        x: [1, 0, 2]
+    },
+    {
+        n: 'EventEmitter',
+        c: EventEmitter,
+        x: [1, 0, 2]
     },
     {
         n: 'Stream',
@@ -55,3 +67,5 @@ export default [
         x: [1, 1, 2]
     }
 ];
+
+export default supplemental;
