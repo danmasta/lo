@@ -1,4 +1,4 @@
-export default [
+export const supplemental = [
     {
         n: 'NodeList',
         x: [0, 0, 0, 1],
@@ -10,3 +10,5 @@ export default [
         a: 1
     }
 ];
+
+export default supplemental;
