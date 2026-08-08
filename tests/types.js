@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import { env } from 'node:process';
 import { StringDecoder } from 'node:string_decoder';
 import { runInNewContext } from 'node:vm';
-import { TYPES } from '../lib/constants.js';
+import { settings, TYPES } from '../lib/constants.js';
 import {
     getCtorType,
     getType,
@@ -34,10 +34,6 @@ describe('Types', () => {
         expect(getType(fx.arrow)).to.equal(TYPES.Function);
         expect(getType(fx.fn)).to.equal(TYPES.Function);
         expect(getType(fx.promise)).to.equal(TYPES.Promise);
-        expect(getType(new fx.TestClass)).to.equal(TYPES.TestClass);
-        expect(getType(new fx.TestSubClass)).to.equal(TYPES.TestSubClass);
-        expect(getType(new fx.TestError)).to.equal(TYPES.TestError);
-        expect(getType(new fx.TestSubError)).to.equal(TYPES.TestSubError);
         expect(getType(new fx.TestArray)).to.equal(TYPES.Array);
         expect(getType(fx.readable)).to.equal(TYPES.Readable);
         expect(getType(fx.buff)).to.equal(TYPES.Buffer);
@@ -64,12 +60,25 @@ describe('Types', () => {
         expect(getCtorType(null)).to.equal(TYPES.Null);
         expect(getCtorType(undefined)).to.equal(TYPES.Undefined);
         expect(getCtorType(Error)).to.equal(TYPES.Error);
+        expect(getCtorType(fx.Readable)).to.equal(TYPES.Readable);
+    });
+
+    // Toggle settings.addUnknownTypes and verify unknown user-defined subclasses
+    // resolve to their own type (not the nearest registered parent)
+    it('add unknown types', () => {
+        settings.addUnknownTypes = true;
+        // Get type by instance
+        expect(getType(new fx.TestClass)).to.equal(TYPES.TestClass);
+        expect(getType(new fx.TestSubClass)).to.equal(TYPES.TestSubClass);
+        expect(getType(new fx.TestError)).to.equal(TYPES.TestError);
+        expect(getType(new fx.TestSubError)).to.equal(TYPES.TestSubError);
+        // Get type by constructor
         expect(getCtorType(fx.TestClass)).to.equal(TYPES.TestClass);
         expect(getCtorType(fx.TestSubClass)).to.equal(TYPES.TestSubClass);
         expect(getCtorType(fx.TestError)).to.equal(TYPES.TestError);
         expect(getCtorType(fx.TestSubError)).to.equal(TYPES.TestSubError);
         expect(getCtorType(fx.TestArray)).to.equal(TYPES.TestArray);
-        expect(getCtorType(fx.Readable)).to.equal(TYPES.Readable);
+        settings.addUnknownTypes = false;
     });
 
     it('get type for exotic callables', () => {
