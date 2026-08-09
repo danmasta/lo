@@ -2,8 +2,7 @@ import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { execPath } from 'node:process';
 import { optsFromArgv, parseArgv } from '../lib/argv.js';
-import { env } from '../lib/env.js';
-import { readFiles, readFilesSync } from '../lib/node.js';
+import { env, readFiles, readFilesSync } from '../lib/node.js';
 
 describe('Node', () => {
 
