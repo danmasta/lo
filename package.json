@@ -22,6 +22,12 @@
     "lib/**",
     "polyfill/**"
   ],
+  "sideEffects": [
+    "./browser.js",
+    "./index.js",
+    "./qjs.js",
+    "./lib/constants.js"
+  ],
   "exports": {
     ".": {
       "browser": "./browser.js",
