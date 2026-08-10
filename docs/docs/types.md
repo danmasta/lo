@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 # Types
 
-The type system is the foundation everything in `lo` is built on. This page covers how to use it directly: getting a value's type, checking capabilities, converting between types, and extending the registry. For the reasoning behind the design, see [About](./about.md).
+The type system is the foundation everything in Lo is built on. This page covers how to use it directly: getting a value's type, checking capabilities, converting between types, and extending the registry. For reasoning behind the design, check out the [about](./about.md) page.
 
 ## Getting the type of a value
 
@@ -37,7 +37,7 @@ Passing a descriptor back into `getType` returns it unchanged, so the function i
 getType(TYPES.Set) === TYPES.Set;
 ```
 
-If you just want the name as a string, you can use `getTypeStr` (it falls back to the value's `toStringTag` for unknown types)
+If you just want the name as a string, you can use `getTypeStr` (which falls back to the value's `toStringTag` for unknown types)
 
 ```js
 import { getTypeStr } from 'lo';
@@ -48,7 +48,7 @@ getTypeStr(42);        // 'Number'
 
 ## Type descriptors
 
-A descriptor includes both a type's identity and its capabilities
+Each descriptor includes both a type's **identity** and its **capabilities**
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -65,7 +65,7 @@ A descriptor includes both a type's identity and its capabilities
 | `async` | `boolean` | Has `@@asyncIterator` |
 | `entries` | `boolean` | Has `entries()` |
 | `object` | `boolean` | Is a non-null object type |
-| `known` | `boolean` | Exists in this runtime |
+| `known` | `boolean` | Exists in the current runtime |
 
 *The `each`, `iterable`, `async`, and `entries` flags are derived from the prototype automatically, so they always match reality*
 
@@ -94,7 +94,7 @@ isError(new TypeError()); // true
 
 ## Iteration and collection types
 
-The iteration helpers are how `lo` supports every iterable shape (arrays, maps, sets, typed arrays, iterators, generators, and async iterables), through one consistent surface
+Iteration helpers are how Lo supports every iterable shape (arrays, maps, sets, typed arrays, iterators, generators, and async iterables), through one consistent surface
 
 ```js
 import { isCollection, isIterable, isAsyncIterable, hasForEach, hasEntries } from 'lo';
@@ -106,7 +106,7 @@ hasForEach(new Uint8Array(4)); // true
 hasEntries(new Map());         // true
 ```
 
-A **collection type** is iterated element-by-element. Anything that is *not* a collection type is treated as a single-item collection, so utilities behave predictably on scalars and plain objects alike. Collection types include `Array`, `Map`, `Set`, the `*Iterator` types, `Generator` / `AsyncGenerator`, `TypedArray`, `Buffer`, and platform collections like `NodeList` and `Headers`.
+A **collection type** is iterated element-by-element. Anything that is *not* a collection type is treated as a single-item collection, so operations behave predictably on scalars and plain objects alike. Collection types include `Array`, `Map`, `Set`, the `*Iterator` types, `Generator` / `AsyncGenerator`, `TypedArray`, `Buffer`, and platform collections like `NodeList` and `Headers`.
 
 The distinction between `iterable` and `collection` is deliberate: a `String` is iterable but is **not** a collection, so it's treated as one value rather than a stream of characters unless you ask otherwise.
 
@@ -159,11 +159,11 @@ toObject(new Map([['a', 1]])); // { a: 1 }
 toString([1, 2, 3]);           // '1,2,3'
 ```
 
-These conversions are driven by the same descriptors, so they work across every registered type (including iterables and iterator objects) rather than a hard-coded list.
+These conversions are driven by the same descriptors, so they work across every registered type (including iterables and iterator objects), rather than a hard-coded list.
 
 ## The type registry
 
-All known types live in `TYPES`, keyed by name
+All known types live in the `TYPES` constant (keyed by name)
 
 ```js
 import { TYPES } from 'lo';
@@ -172,20 +172,20 @@ TYPES.Map.collection;  // true
 TYPES.String.iterable; // true
 ```
 
-The table is split into tree-shakeable logical groups. Each entry point registers the groups relevant to its target. You can register additional types (including optional groups the library ships, but doesn't load by default) with `addTypes`
+The table is split into tree-shakeable logical groups. Each entry point registers groups relevant to its target. You can register additional types (including optional groups the library ships, but doesn't load by default) with `addTypes`
 
 ```js
 import { addTypes } from 'lo';
 import { io } from 'lo/types/io';
 
-addTypes(io); // adds server/IO handle types (http, net, dgram, child_process)
+addTypes(io); // add server/IO handle types (http, net, dgram, child_process)
 ```
 
 *`addType` registers a single type record the same way*
 
 ### Unknown types
 
-By default, an unregistered subclass resolves to its nearest registered ancestor with the correct derived capability flags. A custom readable stream subclass resolves to `Readable`, and a DOM node subtype to `Node`. To cache unknown types using their own identity instead, enable `addUnknownTypes`
+By default, an unregistered subclass resolves to its nearest registered ancestor (with the correct derived capability flags). A custom readable stream subclass resolves to `Readable`, and a DOM node subtype resolves to `Node`. To cache unknown types in the registry using their own identity instead, you can enable the `addUnknownTypes` setting
 
 ```js
 import { settings } from 'lo/constants';
@@ -193,4 +193,4 @@ import { settings } from 'lo/constants';
 settings.addUnknownTypes = true;
 ```
 
-This trades a bounded, predictable type table for more specific naming of user-defined types. See [About](./about.md#graceful-degradation) for the tradeoffs.
+This trades a bounded, predictable type table for more specific naming of user-defined types. See the [about](./about.md#graceful-degradation) page for tradeoffs.

@@ -13,11 +13,11 @@ What sets it apart from most utility libraries is its foundation. Instead of gue
 
 Most utility libraries answer "what is this object?" by probing the object's shape. Does it have a `.length`, a `.then`, a `Symbol.iterator`? That is called duck-typing. It works, but it's not inherently correct: a plain object with a `then` method looks like a promise, an object with a numeric `length` looks like an array, and cross-realm values slip through `instanceof`.
 
-Lo takes the opposite approach. Types are identified **nominally** (by the identity of their prototype and constructor) and resolved against a table of known types. This makes type checks both fast (a map lookup) and accurate (a `Set` is a `Set`, never something that merely resembles one).
+Lo takes the opposite approach. Types are identified **nominally** (by the identity of their prototype and constructor) and resolved against a table of known types. This makes type checks both fast (a map lookup) and accurate (only a real `Set` can return the `Set` descriptor, never something that merely resembles one).
 
 ### Capabilities without guessing
 
-Nominal identity alone can't answer "can I iterate this object?" or "does this value support `for await...of`?" Those questions are genuinely about structure. Rather than fall back to duck-typing, Lo records those structural facts **once**, as flags on each type descriptor, derived from the prototype at registration time. You get the accuracy of nominal typing and the flexibility of structural queries, without paying the cost or the ambiguity of probing values at call time.
+Nominal identity alone can't answer questions like "can I iterate this object?", or "does this value support `for await...of`?". Those questions are genuinely about structure. Rather than fall back to duck-typing, Lo records those structural facts **once**, as flags on each type descriptor, derived from the prototype at registration time. You get the accuracy of nominal typing and the flexibility of structural queries, without paying the cost or the ambiguity of probing values at call time.
 
 ### Lightweight and deterministic
 
@@ -45,7 +45,7 @@ t.async      // false (no @@asyncIterator)
 t.create     // 2     (created via new)
 ```
 
-Every descriptor is a singleton: `getType(a) === getType(b)` whenever `a` and `b` are the same type, so downstream code can compare descriptors by identity and read capability flags directly.
+Every descriptor is a singleton: `getType(x) === getType(y)` whenever `x` and `y` are the same type, so downstream code can compare descriptors by identity and read capability flags directly.
 
 Each descriptor includes both **identity** and **capability**
 
@@ -64,11 +64,11 @@ Each descriptor includes both **identity** and **capability**
 | `async` | `boolean` | Has `@@asyncIterator` |
 | `entries` | `boolean` | Has `entries()` |
 | `object` | `boolean` | Is a non-null object type |
-| `known` | `boolean` | Exists in this runtime |
+| `known` | `boolean` | Exists in the current runtime |
 
 ### Safe by design
 
-`getType` always returns a descriptor and never `undefined`. Unknown values resolve to `TYPES.Unknown` at worst. And because the result is always a descriptor, accessors like `getType(x).each` are safe without a guard, which keeps the rest of the library terse and branch-light.
+`getType` always returns a descriptor and never `undefined`, and unknown values resolve to `TYPES.Unknown` at worst. Because the result is always a descriptor, accessors like `getType(x).each` are safe without a guard, which keeps the rest of the library terse and branch-light.
 
 ### Caching and lookup
 
@@ -78,14 +78,14 @@ Type information is computed once and cached in three maps internally
 - Ref by constructor (values and `getCtorType`)
 - Ref by prototype (prototype-chain resolution)
 
-A `getType` call takes a fast path through `typeof` and constructor identity for common built-ins, and only walks the prototype chain when it must. Resolved types are memoized, so repeated checks are effectively free.
+A `getType` call takes a fast path through `typeof` and constructor identity for common built-ins, and only walks the prototype chain when needed. Resolved types are memoized, so repeated checks are effectively free.
 
 ### Terse tables and derived flags
 
-Types are declared as compact records and expanded into full descriptors at load. Only the facts that *can't* be inferred are defined statically (the four-slot `x` tuple `[construct, call, create, collection]`), while the structural flags (`each`, `iterable`, `async`, `entries`) are **derived from the prototype** automatically
+Types are declared as compact records and expanded into full descriptors at load time. Only the facts that *can't* be inferred are defined statically (the four-slot `x` tuple `[construct, call, create, collection]`), while structural flags (`each`, `iterable`, `async`, `entries`) are **derived from the prototype** automatically
 
 ```js
-// A registered type record
+// Compact type descriptor definition
 {
     n: 'Set',
     x: [1, 0, 2, 1] // construct, not callable, create via new, is a collection
@@ -104,9 +104,9 @@ Only `core` is seeded by default, and each entry point composes the groups neede
 
 ### Graceful degradation
 
-By default, encountering an unregistered subclass doesn't fail or silently bloat the type table. Instead it resolves to the **nearest registered ancestor**, inheriting correct capability flags derived from the prototype. A custom readable stream subclass resolves to `Readable`, and a DOM node subtype resolves to `Node`.
+By default, encountering an unregistered subclass doesn't fail (or silently add to the type table). Instead it resolves to the **nearest registered ancestor**, inheriting correct capability flags derived from the prototype. A custom readable stream subclass resolves to `Readable`, and a DOM node subtype resolves to `Node`.
 
-The `settings.addUnknownTypes` flag (false by default) can opt in to caching unknown types by their own identity instead, trading a small, bounded, predictable footprint for more specific naming.
+The `settings.addUnknownTypes` flag (`false` by default) can opt in to caching unknown types by their own identity instead, trading a small, bounded, predictable footprint for more specific naming.
 
 ### Extending the type registry
 
@@ -116,18 +116,18 @@ Consumers can register their own type descriptors with the same mechanism the li
 import { addTypes } from 'lo';
 import { io } from 'lo/types/io';
 
-addTypes(io); // adds server/IO handle types
+addTypes(io); // add server/IO handle types
 ```
 
 The optional groups are regular importable modules, so applications can pull in only the types (and underlying platform imports) they actually want.
 
 ## Unified iteration
 
-Because every type descriptor already records whether a value is a collection, has `forEach`, is iterable, or is async-iterable, Lo can offer a single iteration interface that spans *every* type instead of just a pile of type-specific loops.
+Because every type descriptor already defines whether a value is a collection, has `forEach`, is iterable, or async-iterable, Lo can offer a single iteration interface that spans *every* type instead of just a couple type-specific loops.
 
-The same functions (`each`, `map`, `filter`, `reduce`, `find`, `some`, `every`, `flatMap`, and more), operate on arrays, plain objects, `Map`s, `Set`s, typed arrays, generators, and even single non-collection values, dispatching on the nominal type rather than probing the value. Early termination is uniform as well: return the `BREAK` symbol from any callback to cancel iteration.
+The same functions (`each`, `map`, `filter`, `reduce`, `find`, `some`, `every`, `flatMap`, and more), operate on arrays, plain objects, `Map`, `Set`, typed arrays, generators, and even single non-collection values, dispatching on the nominal type rather than probing the value. Early termination is uniform as well: return the `BREAK` symbol from any callback to cancel iteration.
 
-Most importantly, the same functions support **sync and async** transparently. Lo inspects both the input and the callback, and if the value is an async iterable or the callback is an async function, iteration switches to an awaited path and returns a promise; otherwise it stays fully synchronous. You call `map(x, fn)` once, and it does the right thing whether `x` is an array or an async generator, and whether `fn` is sync or `async`.
+Most importantly, the same iteration functions support **sync and async** transparently. Lo inspects both the input and the callback, and if the value is an async iterable or the callback is an async function, iteration switches to an awaited path and returns a promise; otherwise it stays fully synchronous. You call `map(x, fn)` once, and it does the right thing whether `x` is an array or an async generator, and whether `fn` is sync or `async`.
 
 Every iteration operation also comes with a `NotNil` variant (`mapNotNil`, `eachNotNil`, `filterNotNil`, etc), that skips `null` and `undefined` entries and return values, a common need that otherwise litters applications with nil guards.
 
