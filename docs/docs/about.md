@@ -17,13 +17,13 @@ Lo takes the opposite approach. Types are identified **nominally** (by the ident
 
 ### Capabilities without guessing
 
-Nominal identity alone can't answer "can I iterate this object?" or "does this value support `for await...of`?" Those questions are genuinely about structure. Rather than fall back to duck-typing, `lo` records those structural facts **once**, as flags on each type descriptor, derived from the prototype at registration time. You get the accuracy of nominal typing and the flexibility of structural queries, without paying the cost or the ambiguity of probing values at call time.
+Nominal identity alone can't answer "can I iterate this object?" or "does this value support `for await...of`?" Those questions are genuinely about structure. Rather than fall back to duck-typing, Lo records those structural facts **once**, as flags on each type descriptor, derived from the prototype at registration time. You get the accuracy of nominal typing and the flexibility of structural queries, without paying the cost or the ambiguity of probing values at call time.
 
 ### Lightweight and deterministic
 
-This library favors small, useful primitives with predictable behavior over magic
+This library favors small, useful primitives with predictable behavior
 
-- **Zero dependencies**, native ESM, tree-shakeable
+- **Zero dependencies**, native ESM, and tree-shakeable
 - **No side-effecty detection** - Type capabilities are declared or derived from prototypes, never discovered by invoking constructors or calling functions to "see what happens"
 - **Lean defaults, with opt-in depth** - The default core type set covers the common built-ins. Larger and/or environment-specific type sets are separate groups you can register as needed
 
@@ -100,13 +100,13 @@ This keeps the tables readable and hard to get subtly wrong: capabilities that l
 
 The type descriptor tables are split into logical, independently registerable groups: `core`, `errors`, `collections`, `binary`, `iterators`, `functions`, `web`, plus environment-specific sets (node streams/buffers, optional server/IO handles, DOM nodes, and browser APIs).
 
-Only `core` is seeded by default, and each entry point composes the groups needed for its target. Because the registration calls are the library's only import-time side effects, they are declared explicitly in `package.json` `sideEffects`, so bundlers can tree-shake everything a consumer doesn't use while never dropping the type registrations that are required.
+Only `core` is seeded by default, and each entry point composes the groups needed for its target. Because the registration calls are the library's only import-time side effects, they are declared explicitly in `package.json` `sideEffects`, so bundlers can tree-shake everything a consumer doesn't use without dropping the type registrations that are needed.
 
 ### Graceful degradation
 
-By default, encountering an unregistered subclass doesn't fail or silently bloat the type table. Instead it resolves to the **nearest registered ancestor**, inheriting correct capability flags derived from the prototype. A custom stream subclass resolves to `Readable`, and a DOM node subtype resolves to `Node`.
+By default, encountering an unregistered subclass doesn't fail or silently bloat the type table. Instead it resolves to the **nearest registered ancestor**, inheriting correct capability flags derived from the prototype. A custom readable stream subclass resolves to `Readable`, and a DOM node subtype resolves to `Node`.
 
-The `settings.addUnknownTypes` flag (off by default) can opt into caching unknown types by their own identity instead, trading a small, bounded, predictable footprint for more specific naming.
+The `settings.addUnknownTypes` flag (false by default) can opt in to caching unknown types by their own identity instead, trading a small, bounded, predictable footprint for more specific naming.
 
 ### Extending the type registry
 
@@ -121,10 +121,33 @@ addTypes(io); // adds server/IO handle types
 
 The optional groups are regular importable modules, so applications can pull in only the types (and underlying platform imports) they actually want.
 
+## Unified iteration
+
+Because every type descriptor already records whether a value is a collection, has `forEach`, is iterable, or is async-iterable, Lo can offer a single iteration interface that spans *every* type instead of just a pile of type-specific loops.
+
+The same functions (`each`, `map`, `filter`, `reduce`, `find`, `some`, `every`, `flatMap`, and more), operate on arrays, plain objects, `Map`s, `Set`s, typed arrays, generators, and even single non-collection values, dispatching on the nominal type rather than probing the value. Early termination is uniform as well: return the `BREAK` symbol from any callback to cancel iteration.
+
+Most importantly, the same functions support **sync and async** transparently. Lo inspects both the input and the callback, and if the value is an async iterable or the callback is an async function, iteration switches to an awaited path and returns a promise; otherwise it stays fully synchronous. You call `map(x, fn)` once, and it does the right thing whether `x` is an array or an async generator, and whether `fn` is sync or `async`.
+
+Every iteration operation also comes with a `NotNil` variant (`mapNotNil`, `eachNotNil`, `filterNotNil`, etc), that skips `null` and `undefined` entries and return values, a common need that otherwise litters applications with nil guards.
+
+## Application helpers
+
+Beyond identity, capabilities, and iteration, Lo includes small, practical utilities that real programs need, but aren't part of the JavaScript standard library, or available in embedded runtimes like quickjs:
+
+- **Environment variables** - `env` variable getter/setter that returns native types, with support for bulk assignment
+- **Argv parsing** - `parseArgv` and `optsFromArgv`, with support for negation, camel-casing, native type casting, and sub-command groups
+- **LRU cache** - Compact `LRU` implementation with both space (`max` entry bound) and time (`ttl`) expiry. Supports passive (expire on access) or active (timer-driven) modes. Includes hooks for `dispose`/`refresh`, and a factory helper
+- **String formatting** - printf-style `format`/`fmt` functions, case conversion (`toCamelCase`, `toKebabCase`, `toSnakeCase`, etc), padding, trimming, and line-aware formatting
+- **Time and numbers** - Epoch and monotonic time helpers, and numeric rounding
+- **IP addresses** - Conversion between string and buffer formats, validation, and family detection
+
+Because these build on the same nominal core, they behave identically everywhere. A few helpers (such as `env` and `argv`) rely on platform APIs for their defaults, and for that Lo ships an optional set of lightweight `node:` polyfills. These aren't loaded by default, but you can point a bundler at them to supply those built-ins on runtimes that don't provide them.
+
 ## Multi-target by design
 
-Lo ships distinct entry points for **node**, **browser**, and **quickjs**, selectable through conditional `exports`. Each entry point registers the type groups and platform bindings that make sense for its environment, and shared logic stays identical across all three.
+Lo ships distinct entry points for **node**, **browser**, and **quickjs**, selectable through conditional `exports`. Each entry point registers the type groups and platform bindings for its environment, and shared logic stays identical across all three.
 
-For embedded targets like quickjs, node built-ins can be supplied through lightweight polyfills, so the same nominal type system and iteration utilities work even in runtimes without `node:` modules.
+Most of the library (the nominal type system, iteration, and the majority of utilities), has no dependency on `node:` built-ins and runs anywhere as-is. Only a handful of helpers need platform APIs, and for runtimes that lack them, the optional polyfills can be aliased at bundle time (they are not pulled in automatically).
 
 The result is a single, coherent library. Fast and accurate at its core, small at the edges, and consistent everywhere it runs.
