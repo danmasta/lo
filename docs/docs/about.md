@@ -15,17 +15,18 @@ Most utility libraries answer "what is this object?" by probing the object's sha
 
 Lo takes the opposite approach. Types are identified **nominally** (by the identity of their prototype and constructor) and resolved against a table of known types. This makes type checks both fast (a map lookup) and accurate (only a real `Set` can return the `Set` descriptor, never something that merely resembles one).
 
-### Capabilities without guessing
+### Structural capabilities
 
 Nominal identity alone can't answer questions like "can I iterate this object?", or "does this value support `for await...of`?". Those questions are genuinely about structure. Rather than fall back to duck-typing, Lo records those structural facts **once**, as flags on each type descriptor, derived from the prototype at registration time. You get the accuracy of nominal typing and the flexibility of structural queries, without paying the cost or the ambiguity of probing values at call time.
 
-### Lightweight and deterministic
+### Functional and predictable
 
-This library favors small, useful primitives with predictable behavior
+Lo favors small, composable functions with predictable behavior. The same input always resolves to the same type and takes the same code path, because dispatch is driven by nominal identity.
 
-- **Zero dependencies**, native ESM, and tree-shakeable
-- **No side-effecty detection** - Type capabilities are declared or derived from prototypes, never discovered by invoking constructors or calling functions to "see what happens"
-- **Lean defaults, with opt-in depth** - The default core type set covers the common built-ins. Larger and/or environment-specific type sets are separate groups you can register as needed
+- **Pure, composable primitives** - Utilities are small functions that compose cleanly, whether you're checking types, iterating collections, transforming strings, or parsing argv
+- **Deterministic dispatch** - Type resolution is a pure lookup on a value's identity, so a given value always resolves to the same descriptor and the same branch, on every run
+- **No side-effecty detection** - Type capabilities are derived from prototypes, not discovered by invoking constructors or calling functions to "see what happens"
+- **Lean defaults and opt-in depth** - The default core type descriptor set covers the common built-ins. Larger and runtime-specific type sets are separate groups you can register as needed
 
 ## Type system
 
@@ -80,7 +81,7 @@ Type information is computed once and cached in three maps internally
 
 A `getType` call takes a fast path through `typeof` and constructor identity for common built-ins, and only walks the prototype chain when needed. Resolved types are memoized, so repeated checks are effectively free.
 
-### Terse tables and derived flags
+### Compact records
 
 Types are declared as compact records and expanded into full descriptors at load time. Only the facts that *can't* be inferred are defined statically (the four-slot `x` tuple `[construct, call, create, collection]`), while structural flags (`each`, `iterable`, `async`, `entries`) are **derived from the prototype** automatically
 
@@ -144,7 +145,7 @@ Beyond identity, capabilities, and iteration, Lo includes small, practical utili
 
 Because these build on the same nominal core, they behave identically everywhere. A few helpers (such as `env` and `argv`) rely on platform APIs for their defaults, and for that Lo ships an optional set of lightweight `node:` polyfills. These aren't loaded by default, but you can point a bundler at them to supply those built-ins on runtimes that don't provide them.
 
-## Multi-target by design
+## Multi-target
 
 Lo ships distinct entry points for **node**, **browser**, and **quickjs**, selectable through conditional `exports`. Each entry point registers the type groups and platform bindings for its environment, and shared logic stays identical across all three.
 
