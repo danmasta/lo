@@ -1,9 +1,13 @@
+import { createRequire as nodeCreateRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath as nodeFileURLToPath } from 'node:url';
+import { createRequire } from '../polyfill/base/module.js';
 import { posix, relative, resolve, win32 } from '../polyfill/base/path.js';
+import { fileURLToPath } from '../polyfill/base/url.js';
 
 describe('Polyfill', () => {
 
-    it('path', () => {
+    it('path resolve', () => {
         assert.equal(resolve(), path.resolve());
         assert.equal(resolve('.'), path.resolve('.'));
         assert.equal(resolve('..'), path.resolve('..'));
@@ -74,6 +78,51 @@ describe('Polyfill', () => {
         assert.equal(win32.dirname('C:\\a\\b\\c.txt'), path.win32.dirname('C:\\a\\b\\c.txt'));
         assert.equal(win32.basename('C:\\a\\b\\c.txt'), path.win32.basename('C:\\a\\b\\c.txt'));
         assert.equal(win32.extname('C:\\a\\b\\c.txt'), path.win32.extname('C:\\a\\b\\c.txt'));
+    });
+
+    it('url fileURLToPath', () => {
+        // Matches node for file:// URLs
+        assert.equal(fileURLToPath('file:///a/b/c.js'), nodeFileURLToPath('file:///a/b/c.js'));
+        // URI-encoded chars are decoded
+        assert.equal(fileURLToPath('file:///a/b%20c.js'), nodeFileURLToPath('file:///a/b%20c.js'));
+        // Non file:// input is returned unchanged
+        assert.equal(fileURLToPath('/a/b/c.js'), '/a/b/c.js');
+        assert.equal(fileURLToPath('./a/b'), './a/b');
+    });
+
+    it('module createRequire resolve', () => {
+        const cwd = process.cwd();
+        // Default resolves from cwd
+        assert.equal(createRequire().resolve('./a/b'), path.resolve(cwd, './a/b'));
+        // Filename resolves from its parent directory (like node)
+        assert.equal(createRequire('/foo/bar/mod.js').resolve('./x'), path.resolve('/foo/bar', './x'));
+        // File URL resolves from its parent directory
+        assert.equal(createRequire('file:///foo/bar/mod.js').resolve('./x'), path.resolve('/foo/bar', './x'));
+        // Directory (trailing sep) resolves from that directory
+        assert.equal(createRequire('/foo/bar/').resolve('./x'), path.resolve('/foo/bar', './x'));
+        // require and require.resolve have the same resolution
+        const req = createRequire('/foo/bar/mod.js');
+        assert.equal(req.resolve('./x'), req.resolve('./x'));
+        // Supports import.meta.url correctly
+        assert.equal(
+            createRequire(import.meta.url).resolve('./_setup.js'),
+            nodeCreateRequire(import.meta.url).resolve('./_setup.js')
+        );
+    });
+
+    it('module require caches and evicts', async () => {
+        const req = createRequire();
+        // Repeat calls return the same cached promise
+        const p1 = req('./polyfill/base/url.js');
+        const p2 = req('./polyfill/base/url.js');
+        assert.equal(p1, p2);
+        // Promise resolves to the imported module namespace
+        const mod = await p1;
+        assert.equal(typeof mod.fileURLToPath, 'function');
+        // Rejected import is evicted for retry
+        const missing = './does-not-exist.mjs';
+        await req(missing).then(() => assert.fail('should reject'), () => {});
+        assert.equal(req.cache.has(req.resolve(missing)), false);
     });
 
 });
