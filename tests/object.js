@@ -1,4 +1,4 @@
-import { CLONE } from '../lib/constants.js';
+import { SYMBOLS } from '../lib/constants.js';
 import { assign, assignDefaults, assignDefaultsClone, assignIn, assignInClone, defaults, merge, mergeDefaults, mergeDefaultsClone, mergeIn, mergeInClone } from '../lib/util.js';
 
 describe('Object', () => {
@@ -29,7 +29,7 @@ describe('Object', () => {
         let obj = { 1: 1, 2: null };
         let res = assignDefaultsClone(obj, { 1: 2, 2: 2 });
         expect(res !== obj);
-        expect(res[CLONE]).to.exist;
+        expect(res[SYMBOLS.clone]).to.exist;
         expect(res).to.eql({ 1: 1, 2: 2 });
     });
 
@@ -47,7 +47,7 @@ describe('Object', () => {
         let res = { 1: 1 };
         let ret = assignInClone(res, obj);
         assert(res !== ret);
-        expect(ret[CLONE]).to.exist;
+        expect(ret[SYMBOLS.clone]).to.exist;
         expect(ret).to.eql({ 1: 1, inherit: 1 });
     });
 
@@ -72,7 +72,7 @@ describe('Object', () => {
         let obj = { 1: 1, 2: { 3: 3 }};
         let res = mergeDefaultsClone(obj, { 2: { 3: 0, 4: 4 }});
         assert(res !== obj);
-        expect(res[CLONE]).to.exist;
+        expect(res[SYMBOLS.clone]).to.exist;
         expect(res).to.eql({ 1: 1, 2: { 3: 3, 4: 4 }});
     });
 
@@ -94,8 +94,8 @@ describe('Object', () => {
         let ret = mergeInClone(res, obj);
         assert(res !== ret);
         assert(res[2] !== ret[2]);
-        expect(ret[CLONE]).to.exist;
-        expect(ret[2][CLONE]).to.exist;
+        expect(ret[SYMBOLS.clone]).to.exist;
+        expect(ret[2][SYMBOLS.clone]).to.exist;
         expect(ret).to.eql({ 1: 1, 2: { 3: 0 }, inherit: 1 });
     });
 
