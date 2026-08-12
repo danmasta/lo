@@ -1,4 +1,4 @@
-import { deburr, eachLine, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, split, trim, trimLeft, trimRight } from '../lib/util.js';
+import { deburr, eachLine, format, inspectLite, mapLine, pad, padLeft, padLine, padLineLeft, padLineRight, padRight, split, trim, trimLeft, trimRight } from '../lib/util.js';
 
 describe('Util', () => {
 
@@ -106,6 +106,28 @@ describe('Util', () => {
         let str = '1\n2\n3';
         expect(padLineRight(str, 2)).to.equal('1\n2  \n3  ');
         expect(padLineRight(str, 2, { head: 1 })).to.equal('1  \n2  \n3  ');
+    });
+
+    it('inspectLite', () => {
+        expect(inspectLite({ a: 1, b: 2 })).to.equal('{ a: 1, b: 2 }');
+        expect(inspectLite({})).to.equal('{}');
+        // Nested containers collapse to [Type] tag (single-level)
+        expect(inspectLite({ a: { b: 1 }, c: [1, 2] })).to.equal('{ a: [Object], c: [Array] }');
+        expect(inspectLite(new Set([1, 2, 3]))).to.equal('Set(3) { 1, 2, 3 }');
+        expect(inspectLite(new Set())).to.equal('Set(0) {}');
+        expect(inspectLite(new Map([['a', 1], ['b', 2]]))).to.equal('Map(2) { a => 1, b => 2 }');
+        expect(inspectLite(function foo(){})).to.equal('[Function: foo]');
+        expect(inspectLite(() => {})).to.equal('[Function (anonymous)]');
+        // Leaf types delegate to toString
+        expect(inspectLite(42)).to.equal('42');
+        expect(inspectLite([1, 2, 3])).to.equal('1,2,3');
+    });
+
+    it('format', () => {
+        // Format uses inspectLite for %s by default
+        expect(format('%s', { a: 1 })).to.equal('{ a: 1 }');
+        expect(format('%s', new Map([['a', 1]]))).to.equal('Map(1) { a => 1 }');
+        expect(format('%s = %d', 'x', 42)).to.equal('x = 42');
     });
 
 });
