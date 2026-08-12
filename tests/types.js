@@ -138,6 +138,14 @@ describe('Types', () => {
         expect(isError(new fx.TestError)).to.be.true;
     });
 
+    it('isClass', () => {
+        expect(lo.isClass(fx.TestClass)).to.be.true;
+        expect(lo.isClass(fx.TestSubClass)).to.be.true;
+        expect(lo.isClass(fx.fn)).to.be.false;
+        // Arrow functions have no prototype descriptor
+        expect(lo.isClass(fx.arrow)).to.be.false;
+    });
+
     it('toArray', () => {
         expect(toArray(null)).to.eql([]);
         expect(toArray(undefined)).to.eql([]);
@@ -157,11 +165,22 @@ describe('Types', () => {
         expect(toString(undefined)).to.equal('');
         expect(toString(NaN)).to.equal('NaN');
         expect(toString([1,2,3])).to.equal('1,2,3');
-        expect(toString({1: 1, 2: 2})).to.equal('1,1,2,2');
         expect(toString(true)).to.equal('true');
         expect(toString(123)).to.equal('123');
         expect(toString(BigInt(123))).to.equal('123');
         expect(toString(fx.buff)).to.equal('test');
+        // Symbol coerces without throwing
+        expect(toString(Symbol('x'))).to.equal('Symbol(x)');
+        // Objects without meaningful toString fall back to tag
+        expect(toString({1: 1, 2: 2})).to.equal('[object Object]');
+        expect(toString(new WeakMap())).to.equal('[object WeakMap]');
+        // Re-iterable collections render contents
+        expect(toString(new Set([1, 2, 3]))).to.equal('1,2,3');
+        expect(toString(new Map([['a', 1]]))).to.equal('a,1');
+        // One-shot iterators are tagged (not consumed)
+        let it = [1, 2, 3][Symbol.iterator]();
+        expect(toString(it)).to.equal('[object Array Iterator]');
+        expect(it.next().value).to.equal(1);
     });
 
     it('of', () => {
