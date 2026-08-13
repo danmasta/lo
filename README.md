@@ -33,7 +33,7 @@ import lo, { each, map } from 'lo';
 ```
 
 ### Browser
-This library also exports a browser entrypoint, which excludes functions that depend on node specific APIs, and includes some browser specific types. If you use a bundler it should be able to automatically resolve the browser entrypoint. If you want to explicity import it, you can do that too:
+This library also exposes a browser entrypoint, which excludes functions that depend on node specific APIs, and includes some browser specific types. If you use a bundler it should be able to automatically resolve the browser entrypoint. If you want to explicity import it, you can do that too:
 ```js
 import lo from 'lo/browser';
 ```
@@ -43,26 +43,38 @@ This package defines specific [*collection types*](#collection-types) for iterat
 
 #### Collection Types
 The current collection types are defined as:
+
+##### Default (always registered)
 * `Array`
 * `Map`
 * `Set`
+* `TypedArray` (and subtypes `Int8Array`, `Uint8Array`, etc)
 * `Array Iterator`
+* `String Iterator`
 * `Map Iterator`
 * `Set Iterator`
-* `String Iterator`
-* `Generator`
-* `AsyncGenerator`
+* `RegExp String Iterator`
 * `Iterator`
 * `AsyncIterator`
-* `TypedArray`
-* `Buffer`
-* `NodeList`
+* `Generator`
+* `AsyncGenerator`
+* `URLSearchParams`
 * `Headers`
 * `FormData`
-* `URLSearchParams`
+* `ReadableStream`
+
+##### Node (node entrypoint)
+* `Buffer`
+
+##### Browser (browser entrypoint)
+* `NodeList`
+* `HTMLCollection`
+* `DOMTokenList`
+* `FileList`
+* `NamedNodeMap`
 
 ### Iteration
-When using iterator functions like: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `reduce`, `transform`, etc, the default mode is to iterate ***as a collection***. This means they will iterate on collections only, and not on the properties of a single object. For iterating the properties of a single object, you can use the functions `forIn` and `forOwn`.
+When using iteration functions like: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `reduce`, `transform`, etc, the default mode is to iterate ***as a collection***. This means they will iterate on collections only, and not on the properties of a single object. For iterating the properties of a single object, you can use the functions `forIn` and `forOwn`.
 
 This means if you pass a single object instead of a [*collection type*](#collection-types), it will treat the object as a one-object collection and iterate one time:
 ```js
@@ -76,11 +88,11 @@ each(obj, (val, key) => {
 
 // 0 { a: true, b: false }
 ```
-Each iterator function has the following signature:
+Each iteration function accepts a trailing options object:
 ```js
-method(iterable, iteratorFn, collection?)
+method(obj, fn, { entries, notNil })
 ```
-Where `collection` is `true` by default. If you want to use an iterator method to iterate the properties of a single object you can set the `collection` argument to `false`:
+The `entries` option is `false` by default, and non-collection values are iterated as a one-object collection. If you want to iterate the properties/entries of a single object, you can set `entries` to `true`:
 ```js
 import { each } from 'lo';
 
@@ -88,24 +100,24 @@ let obj = { a: true, b: false };
 
 each(obj, (val, key) => {
     console.log(key, val);
-}, false);
+}, { entries: true });
 
 // a true
 // b false
 ```
-*All iterator methods support every iterable type including: `Array`, `Map`, `Set`, `Iterator`, `Generator`, etc.*
+*All iteration functions support every iterable type including: `Array`, `Map`, `Set`, `Iterator`, `Generator`, etc.*
 
 #### Iterate Objects
-Methods to iterate the properties of individual objects and iterables: `forIn`, and `forOwn`.
+Functions to iterate the properties of individual objects and iterables: `forIn`, and `forOwn`.
 
 #### Iterate Collections
-Methods for iterating collections: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `drop`, `take`, `reduce`, `transform`, `find`, `flatMap`, and `iterate`.
+Functions for iterating collections: `each`, `map`, `tap`, `some`, `every`, `filter`, `remove`, `drop`, `take`, `reduce`, `transform`, `find`, `flatMap`, and `iterate`.
 
 #### forEach
-Using the `forEach` method works slightly different from other iterator methods. It defers to the object's own `forEach` method if it exists. This means it works for things like `Array`, `Map`, `Set`, `Iterator`, and `Buffer`, but will also work for `Streams`.
+The `forEach` function is an alias for `each`. It iterates any [*collection type*](#collection-types), including async iterables like `Streams`, and supports the same options.
 
 #### Break Iteration Early
-All iteration methods can be stopped early by returning the `BREAK` symbol:
+All iteration functions can be stopped early by returning the `BREAK` symbol:
 ```js
 import { map, BREAK } from 'lo';
 
@@ -119,22 +131,22 @@ map(arr, val => {
 ```
 
 #### Nil Filtering
-A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration methods. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, `every`, etc. To use, just append `NotNil` to the function name:
+A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration functions. It will ignore `nil` values before the callback is called. It will also filter return values for functions that return, such as `map`, `some`, `every`, etc. To use, pass the `notNil` option:
 ```js
-import { mapNotNil as map } from 'lo';
+import { map } from 'lo';
 
 let arr = [1, undefined, 2, 3, null];
 
 map(arr, val => {
     return val % 3 === 0 ? undefined : val;
-});
+}, { notNil: true });
 
 // [1, 2]
 ```
-*All iterator methods support `nil` filtering*
+*All iteration functions support `nil` filtering*
 
 #### Async Iteration
-Every iteration method also supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
+Every iteration function also supports both async iterables and async iterator functions. You don't need to do anything special, just use them like normal:
 ```js
 import { map } from 'lo';
 
@@ -166,7 +178,7 @@ While this project doesn't intend to provide complete polyfills for the entire n
 To use them in your own project, you can point your bundler at the `lo` polyfills directory for node imports. You can see an example in the [docs](https://danmasta.github.io/lo/polyfills#quickjs).
 
 ## Documentation
-A list of methods and some documentation can be found [here](https://danmasta.github.io/lo/)
+A list of functions and some documentation can be found [here](https://danmasta.github.io/lo/)
 
 ## Testing
 Tests are currently run using mocha and chai. To execute tests run `make test`. To generate unit test coverage reports run `make coverage`
