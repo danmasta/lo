@@ -92,7 +92,7 @@ Each iteration function accepts a trailing options object:
 ```js
 method(obj, fn, { entries, notNil })
 ```
-The `entries` option is `false` by default, and non-collection values are iterated as a one-object collection. If you want to iterate the properties/entries of a single object, you can set `entries` to `true`:
+The `entries` option is `false` by default, and non-collection values are iterated as a one-object collection. If you want to iterate the properties/entries of a single object, you can set the `entries` option to `true`:
 ```js
 import { each } from 'lo';
 
@@ -131,7 +131,7 @@ map(arr, val => {
 ```
 
 #### Nil Filtering
-A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration functions. It will ignore `nil` values before the callback is called. It will also filter return values for functions that return, such as `map`, `some`, `every`, etc. To use, pass the `notNil` option:
+A common task during iteration is checking for `nil` (`null` or `undefined`) values. This package has support for filtering `nil` values for various iteration functions. It will ignore `nil` values before the iterator function is called. It will also filter return values for functions that return, such as `map`, `some`, `every`, etc. To use, pass the `notNil` option:
 ```js
 import { map } from 'lo';
 
