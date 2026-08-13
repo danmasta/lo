@@ -88,10 +88,12 @@ each(obj, (val, key) => {
 
 // 0 { a: true, b: false }
 ```
-Each iteration function accepts a trailing options object:
+Each iteration function has the following signature and accepts a trailing options object:
 ```js
-method(obj, fn, { entries, notNil })
+method(obj, fn, arg?, { entries, notNil })
 ```
+*Functions like take/drop, reduce/transform, and flatMap accept an extra positional argument*
+
 The `entries` option is `false` by default, and non-collection values are iterated as a one-object collection. If you want to iterate the properties/entries of a single object, you can set the `entries` option to `true`:
 ```js
 import { each } from 'lo';
