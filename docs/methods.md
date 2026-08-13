@@ -14,22 +14,15 @@
 * `forOwn`
 #### Collections
 * `each`
-* `eachNotNil`
 * `every`
-* `everyNotNil`
 * `filter`
-* `filterNotNil`
 * `forEach`
 * `iterate`
 * `iterateF`
 * `map`
-* `mapNotNil`
 * `remove`
-* `removeNotNil`
 * `some`
-* `someNotNil`
 * `tap`
-* `tapNotNil`
 
 ## Types
 #### Base

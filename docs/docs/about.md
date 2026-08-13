@@ -130,7 +130,7 @@ The same functions (`each`, `map`, `filter`, `reduce`, `find`, `some`, `every`, 
 
 Most importantly, the same iteration functions support **sync and async** transparently. Lo inspects both the input and the callback, and if the value is an async iterable or the callback is an async function, iteration switches to an awaited path and returns a promise; otherwise it stays fully synchronous. You call `map(x, fn)` once, and it does the right thing whether `x` is an array or an async generator, and whether `fn` is sync or `async`.
 
-Every iteration operation also comes with a `NotNil` variant (`mapNotNil`, `eachNotNil`, `filterNotNil`, etc), that skips `null` and `undefined` entries and return values, a common need that otherwise litters applications with nil guards.
+Every iteration function supports a `notNil` option (`map(x, fn, { notNil: true })`), which skips `null` and `undefined` entries and return values. A common need that otherwise clutters code with checks for empty values.
 
 ## Application helpers
 
