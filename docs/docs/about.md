@@ -138,7 +138,7 @@ Beyond identity, capabilities, and iteration, Lo includes small, practical utili
 
 - **Environment variables** - `env` variable getter/setter that returns native types, with support for bulk assignment
 - **Argv parsing** - `parseArgv` and `optsFromArgv`, with support for negation, camel-casing, native type casting, and sub-command groups
-- **LRU cache** - Compact `LRU` implementation with both space (`max` entry bound) and time (`ttl`) expiry. Supports passive (expire on access) or active (timer-driven) modes. Includes hooks for `dispose`/`refresh`, and a factory helper
+- **LRU cache** - Compact `LRU` implementation with both space (`max` entry bound) and time (`ttl`) expiry. Supports passive (expire on access) or active (timer-driven) modes. Includes hooks for `onDispose`/`refresh`, and a factory helper
 - **String formatting** - printf-style `format`/`fmt` functions, case conversion (`toCamelCase`, `toKebabCase`, `toSnakeCase`, etc), padding, trimming, and line-aware formatting
 - **Time and numbers** - Epoch and monotonic time helpers, and numeric rounding
 - **IP addresses** - Conversion between string and buffer formats, validation, and family detection
