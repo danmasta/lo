@@ -3,7 +3,7 @@ Lightweight, modern utility library for node, browser, and quickjs
 
 #### Features:
 * Simple and lightweight
-* Supports node, browser, and [quickjs](#quickjs)
+* First-class support for node, browser, and [quickjs](#quickjs)
 * Native ESM
 * Treeshakeable by default
 * Support for all iterable types
@@ -166,9 +166,16 @@ await map(list(), async val => {
 ```
 
 ### QuickJS
-[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async/await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables. This library works great with QuickJS and includes some node API [polyfills](polyfill) to help compile tooling and CLIs written with node into standalone binaries.
+[QuickJS](https://github.com/quickjs-ng/quickjs) is a small, embeddable javascript engine written in C that supports the latest ECMAScript specification including modules, async/await, iterators, generators, proxies, etc. It can also be used to compile and package javascript code into standalone executables.
 
-While this project doesn't intend to provide complete polyfills for the entire node API, it does include some of the more common ones:
+This library includes first-class support for QuickJS. The `lo/qjs` entrypoint runs natively on the engine with no polyfills or bundling required. It uses the engine's own primitives (`qjs:os`, `qjs:std`) to provide things like `console`, `argv`, `env`, and `cwd`. So you can write tooling and CLIs with Lo and QuickJS, and compile straight to standalone executables.
+
+```js
+import { console, argv, env } from 'lo/qjs';
+```
+
+#### Node compat polyfills
+The library also ships an optional compatibility layer for running scripts written with node APIs. This isn't meant to be a complete polyfill of node, but it does cover some of the more common modules:
 * `console`
 * `events`
 * `fs`
@@ -177,7 +184,7 @@ While this project doesn't intend to provide complete polyfills for the entire n
 * `path`
 * `process`
 
-To use them in your own project, you can point your bundler at the `lo` polyfills directory for node imports. You can see an example in the [docs](https://danmasta.github.io/lo/polyfills#quickjs).
+To use them, point your bundler at the Lo polyfills directory for node imports. You can see an example in the [docs](https://danmasta.github.io/lo/polyfills#quickjs).
 
 ## Documentation
 A list of functions and some documentation can be found [here](https://danmasta.github.io/lo/)
