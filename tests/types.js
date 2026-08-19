@@ -47,9 +47,9 @@ describe('Types', () => {
         expect(getType(fx.TestClass)).to.equal(TYPES.Function);
         expect(getType(fx.TestError)).to.equal(TYPES.Function);
         expect(getType(fx.TestArray)).to.equal(TYPES.Function);
-        // Accept type objects
-        expect(getType(TYPES.Array)).to.equal(TYPES.Array);
-        expect(getType(TYPES.Set)).to.equal(TYPES.Set);
+        // Type defs are plain objects, not their own type
+        expect(getType(TYPES.Array)).to.equal(TYPES.Object);
+        expect(getType(TYPES.Set)).to.equal(TYPES.Object);
     });
 
     it('get type by constructor', () => {
