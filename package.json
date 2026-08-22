@@ -38,7 +38,8 @@
     "./browser": "./browser.js",
     "./polyfill/*": "./polyfill/base/*.js",
     "./polyfill/qjs/*": "./polyfill/qjs/*.js",
-    "./qjs": "./qjs.js"
+    "./qjs": "./qjs.js",
+    "./package.json": "./package.json"
   },
   "imports": {
     "#lib/*": "./lib/*.js",
